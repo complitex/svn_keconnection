@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<template xmlns="http://www.complitex.org/web/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.complitex.org/web/template http://www.complitex.org/web/template/complitex-template.xsd">
+    <sidebar>
+        <menu class="org.complitex.address.menu.AddressMenu"/>
+        <menu class="org.complitex.organization.web.OrganizationMenu"/>
+        <menu class="org.complitex.organization_type.menu.OrganizationTypeMenu"/>
+
+        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>
+        <menu class="org.complitex.organization.web.OrganizationDescriptionTemplateMenu"/>
+    </sidebar>
+</template>
