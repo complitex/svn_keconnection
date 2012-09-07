@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeater.service.HeatmeaterBean">
+    <resultMap id="heatmeaterResultMap" type="org.complitex.keconnection.heatmeater.entity.Heatmeater">
+        <id column="id" property="id"/>
+        <result column="gek"/>
+        <result column="dom"/>
+        <result column="ul"/>
+        <result column="ndom"/>
+        <result column="lotop0"/>
+        <result column="lotop1"/>
+        <result column="lotop2"/>
+        <result column="lotop3"/>
+        <result column="lotop4"/>
+        <result column="organization_id"/>
+        <result column="building_id"/>
+    </resultMap>
+
+    <insert id="insertHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
+        insert into `heatmeater` (`gek`, `dom`, `ul`, `ndom`, `lotop0`, `lotop1`, `lotop2`, `lotop3`, `lotop4`,
+          `organization_id`, `building_id`)
+        values (#{gek}, #{dom}, #{ul}, #{ndom}, #{lotop0}, #{lotop1}, #{lotop2}, #{lotop3}, #{lotop4},
+          #{organizationId}, #{buildingId})
+    </insert>
+
+    <update id="updateHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
+        update `heatmeater` set `gek` = #{gek}, `dom` = #{dom}, `ul` = #{ul}, `ndom` = #{ndom}, `lotop0` = #{lotop0},
+          `lotop1` = #{lotop1}, `lotop2` = #{lotop2}, `lotop3` = #{lotop3}, `lotop4` = #{lotop4},
+          `organization_id` = #{organizationId}, `building_id` = #{buildingId}
+    </update>
+
+    <select id="selectHeatmeater" parameterType="long" resultMap="heatmeaterResultMap">
+        select * from `heatmeater` where `id` = #{id}
+    </select>
+
+    <sql id="selectHeatmeatersWhere">
+        <where>
+            <if test="object.gek != null">`gek` = #{object.gek}</if>
+            <if test="object.dom != null">`dom` = #{object.dom}</if>
+            <if test="object.ul != null">`ul` = #{object.ul}</if>
+            <if test="object.ndom != null">`ndom` = #{object.ndom}</if>
+            <if test="object.lotop0 != null">`lotop0` = #{object.lotop0}</if>
+            <if test="object.lotop1 != null">`lotop1` = #{object.lotop1}</if>
+            <if test="object.lotop2 != null">`lotop2` = #{object.lotop2}</if>
+            <if test="object.lotop3 != null">`lotop3` = #{object.lotop3}</if>
+            <if test="object.lotop4 != null">`lotop4` = #{object.lotop4}</if>
+            <if test="object.organizationId != null">`organization_id` = #{object.organizationId}</if>
+            <if test="object.buildingId != null">`building_id` = #{object.buildingId}</if>
+        </where>
+    </sql>
+
+    <select id="selectHeatmeaters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="heatmeaterResultMap">
+        select * from `heatmeater` <include refid="selectHeatmeatersWhere"/>
+        order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectHeatmeatersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(*) from `heatmeater` <include refid="selectHeatmeatersWhere"/>
+    </select>
+</mapper>

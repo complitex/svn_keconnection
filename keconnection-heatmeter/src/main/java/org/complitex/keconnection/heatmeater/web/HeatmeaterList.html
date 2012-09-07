@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+<body>
+<wicket:extend>
+    <h1><wicket:message key="title"/></h1>
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="filter_form">
+        <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+            <thead>
+            <tr>
+                <th></th>
+                <th class="center" wicket:id="header.id"><wicket:message key="id"/></th>
+                <th class="center" wicket:id="header.ul"><wicket:message key="ul"/></th>
+                <th class="center" wicket:id="header.ndom"><wicket:message key="ndom"/></th>
+                <th class="center" wicket:id="header.gek"><wicket:message key="gek"/></th>
+                <th class="center" wicket:id="header.dom"><wicket:message key="dom"/></th>
+                <th class="center" wicket:id="header.lotop0"><wicket:message key="lotop0"/></th>
+                <th class="center" wicket:id="header.lotop1"><wicket:message key="lotop1"/></th>
+                <th class="center" wicket:id="header.lotop2"><wicket:message key="lotop2"/></th>
+                <th class="center" wicket:id="header.lotop3"><wicket:message key="lotop3"/></th>
+                <th class="center" wicket:id="header.lotop4"><wicket:message key="lotop4"/></th>
+                <th class="center" wicket:id="header.organizationId"><wicket:message key="organizationId"/></th>
+                <th class="center" wicket:id="header.buildingId"><wicket:message key="buildingId"/></th>
+
+                <th class="center">
+                    <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                </th>
+            </tr>
+            <tr>
+                <th></th>
+                <th><input type="text" wicket:id="object.id"/></th>
+                <th><input type="text" wicket:id="object.ul"/></th>
+                <th><input type="text" wicket:id="object.ndom"/></th>
+                <th><input type="text" wicket:id="object.gek"/></th>
+                <th><input type="text" wicket:id="object.dom"/></th>
+                <th><input type="text" wicket:id="object.lotop0"/></th>
+                <th><input type="text" wicket:id="object.lotop1"/></th>
+                <th><input type="text" wicket:id="object.lotop2"/></th>
+                <th><input type="text" wicket:id="object.lotop3"/></th>
+                <th><input type="text" wicket:id="object.lotop4"/></th>
+                <th><input type="text" wicket:id="object.organizationId"/></th>
+                <th><input type="text" wicket:id="object.buildingId"/></th>
+
+                <th class="center">
+                    <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
+                </th>
+            </tr>
+            </thead>
+            <tbody wicket:id="data_container">
+            <tr wicket:id="data_view">
+                <td></td>
+                <td wicket:id="id"></td>
+                <td wicket:id="ul"></td>
+                <td wicket:id="ndom"></td>
+                <td wicket:id="gek"></td>
+                <td wicket:id="dom"></td>
+                <td wicket:id="lotop0"></td>
+                <td wicket:id="lotop1"></td>
+                <td wicket:id="lotop2"></td>
+                <td wicket:id="lotop3"></td>
+                <td wicket:id="lotop4"></td>
+                <td wicket:id="organizationId"></td>
+                <td wicket:id="buildingId"></td>
+                <td><!--status--></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div wicket:id="paging"></div>
+    </form>
+</wicket:extend>
+</body>
+</html>
