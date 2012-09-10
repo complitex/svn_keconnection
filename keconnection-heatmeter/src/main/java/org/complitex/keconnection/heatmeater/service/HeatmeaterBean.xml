@@ -59,4 +59,8 @@
             resultType="int">
         select count(*) from `heatmeater` <include refid="selectHeatmeatersWhere"/>
     </select>
+
+    <delete id="deleteHeatmeater" parameterType="long">
+        delete from `heatmeater` where `id` = #{id}
+    </delete>
 </mapper>
