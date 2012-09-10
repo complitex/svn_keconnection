@@ -2,18 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeater.service.HeatmeaterBean">
     <resultMap id="heatmeaterResultMap" type="org.complitex.keconnection.heatmeater.entity.Heatmeater">
-        <id column="id" property="id"/>
-        <result column="gek"/>
-        <result column="dom"/>
-        <result column="ul"/>
-        <result column="ndom"/>
-        <result column="lotop0"/>
-        <result column="lotop1"/>
-        <result column="lotop2"/>
-        <result column="lotop3"/>
-        <result column="lotop4"/>
-        <result column="organization_id"/>
-        <result column="building_id"/>
+        <id property="id"/>
+        <result property="gek"/>
+        <result property="dom"/>
+        <result property="ul"/>
+        <result property="ndom"/>
+        <result property="lotop0"/>
+        <result property="lotop1"/>
+        <result property="lotop2"/>
+        <result property="lotop3"/>
+        <result property="lotop4"/>
+        <result property="organizationId"/>
+        <result property="buildingId"/>
     </resultMap>
 
     <insert id="insertHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
