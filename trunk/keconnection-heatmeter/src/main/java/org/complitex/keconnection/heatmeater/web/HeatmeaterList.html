@@ -69,7 +69,12 @@
                 <td wicket:id="lotop4"></td>
                 <td wicket:id="organizationId"></td>
                 <td wicket:id="buildingId"></td>
-                <td><!--status--></td>
+                <td>
+                    <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
+                    <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
+                        <wicket:message key="delete"/>
+                    </a>
+                </td>
             </tr>
             </tbody>
         </table>

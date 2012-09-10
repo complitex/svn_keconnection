@@ -34,4 +34,8 @@ public class HeatmeaterBean extends AbstractBean{
     public int getHeatmeaterCount(FilterWrapper<Heatmeater> filterWrapper){
         return sqlSession().selectOne("selectHeatmeatersCount", filterWrapper);
     }
+
+    public void delete(Long id){
+        sqlSession().delete("deleteHeatmeater", id);
+    }
 }

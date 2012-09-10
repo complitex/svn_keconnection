@@ -2,26 +2,35 @@ package org.complitex.keconnection.heatmeater.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeater.entity.Heatmeater;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterBean;
+import org.complitex.template.web.component.toolbar.AddItemButton;
+import org.complitex.template.web.component.toolbar.ToolbarButton;
+import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.complitex.dictionary.util.PageUtil.*;
@@ -30,6 +39,7 @@ import static org.complitex.dictionary.util.PageUtil.*;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.09.12 15:25
  */
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class HeatmeaterList extends TemplatePage{
     @EJB
     private HeatmeaterBean heatmeaterBean;
@@ -131,8 +141,23 @@ public class HeatmeaterList extends TemplatePage{
         DataView dataView = new DataView<Heatmeater>("data_view", dataProvider) {
             @Override
             protected void populateItem(Item<Heatmeater> item) {
+                final Long id = item.getModelObject().getId();
+
                 item.add(newTextLabels(properties));
                 item.add(newTextLabels(new String[]{"organizationId", "buildingId"}));
+
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("id", id);
+                item.add(new BookmarkablePageLink<>("edit", HeatmeaterEdit.class, pageParameters));
+
+                item.add(new Link("delete") {
+                    @Override
+                    public void onClick() {
+                        info(getString("info_deleted"));
+                        heatmeaterBean.delete(id);
+                    }
+                });
+
                 //todo add date updated
             }
         };
@@ -144,5 +169,15 @@ public class HeatmeaterList extends TemplatePage{
         //Sorting
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, properties));
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, new String[]{"organizationId", "buildingId"}));
+    }
+
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        return Arrays.asList(new AddItemButton(id) {
+            @Override
+            protected void onClick() {
+                setResponsePage(HeatmeaterEdit.class);
+            }
+        });
     }
 }
