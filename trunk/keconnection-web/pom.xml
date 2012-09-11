@@ -63,6 +63,11 @@
             <groupId>org.complitex.keconnection</groupId>
             <artifactId>keconnection-organization-type</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-address</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.wicket</groupId>
