@@ -53,6 +53,16 @@
             <groupId>org.complitex.keconnection</groupId>
             <artifactId>keconnection-heatmeter</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-organization</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-organization-type</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.wicket</groupId>
