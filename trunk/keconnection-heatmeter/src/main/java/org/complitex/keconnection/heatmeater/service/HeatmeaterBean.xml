@@ -36,16 +36,16 @@
     <sql id="selectHeatmeatersWhere">
         <where>
             <if test="object.gek != null">`gek` = #{object.gek}</if>
-            <if test="object.dom != null">`dom` = #{object.dom}</if>
-            <if test="object.ul != null">`ul` = #{object.ul}</if>
-            <if test="object.ndom != null">`ndom` = #{object.ndom}</if>
-            <if test="object.lotop0 != null">`lotop0` = #{object.lotop0}</if>
-            <if test="object.lotop1 != null">`lotop1` = #{object.lotop1}</if>
-            <if test="object.lotop2 != null">`lotop2` = #{object.lotop2}</if>
-            <if test="object.lotop3 != null">`lotop3` = #{object.lotop3}</if>
-            <if test="object.lotop4 != null">`lotop4` = #{object.lotop4}</if>
-            <if test="object.organizationId != null">`organization_id` = #{object.organizationId}</if>
-            <if test="object.buildingId != null">`building_id` = #{object.buildingId}</if>
+            <if test="object.dom != null">and `dom` = #{object.dom}</if>
+            <if test="object.ul != null">and `ul` like concat('%', #{object.ul}, '%')</if>
+            <if test="object.ndom != null">and `ndom` like concat('%', #{object.ndom}, '%')</if>
+            <if test="object.lotop0 != null">and `lotop0` = #{object.lotop0}</if>
+            <if test="object.lotop1 != null">and `lotop1` = #{object.lotop1}</if>
+            <if test="object.lotop2 != null">and `lotop2` = #{object.lotop2}</if>
+            <if test="object.lotop3 != null">and `lotop3` = #{object.lotop3}</if>
+            <if test="object.lotop4 != null">and `lotop4` = #{object.lotop4}</if>
+            <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
+            <if test="object.buildingId != null">and `building_id` = #{object.buildingId}</if>
         </where>
     </sql>
 
