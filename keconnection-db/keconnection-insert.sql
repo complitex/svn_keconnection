@@ -2,41 +2,44 @@
 -- Organization type
 -- --------------------------------
 
+INSERT INTO `organization_type`(`object_id`) VALUES (2);
+INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
+  VALUES (2, 1, UPPER('МОДУЛЬ НАЧИСЛЕНИЙ')), (2, 2, UPPER('МОДУЛЬ НАЧИСЛЕНИЙ'));
+INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
+  VALUES (1, 2, 2300, 2, 2300);
+
 INSERT INTO `organization_type`(`object_id`) VALUES (3);
 INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
-  VALUES (3, 1, 'МОДУЛЬ НАЧИСЛЕНИЙ'), (3, 2, 'МОДУЛЬ НАЧИСЛЕНИЙ');
+  VALUES (3, 1, UPPER('БАЛАНСОДЕРЖАТЕЛЬ')), (3, 2, UPPER('БАЛАНСОДЕРЖАТЕЛЬ'));
 INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
-  VALUES (3, 3, 2300, 3, 2300);
+  VALUES (1, 3, 2300, 3, 2300);
 
-INSERT INTO `organization_type`(`object_id`) VALUES (10);
+INSERT INTO `organization_type`(`object_id`) VALUES (4);
 INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
-  VALUES (10, 1, 'БАЛАНСОДЕРЖАТЕЛЬ'), (10, 2, 'БАЛАНСОДЕРЖАТЕЛЬ');
+  VALUES (4, 1, UPPER('ОБСЛУЖИВАЮЩАЯ ОРГАНИЗАЦИЯ')), (4, 2, UPPER('ОБСЛУЖИВАЮЩАЯ ОРГАНИЗАЦИЯ'));
 INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
-  VALUES (10, 10, 2300, 10, 2300);
+  VALUES (1, 4, 2300, 4, 2300);
 
-INSERT INTO `organization_type`(`object_id`) VALUES (11);
+INSERT INTO `organization_type`(`object_id`) VALUES (5);
 INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
-  VALUES (11, 1, 'ОБСЛУЖИВАЮЩАЯ ОРГАНИЗАЦИЯ'), (11, 2, 'ОБСЛУЖИВАЮЩАЯ ОРГАНИЗАЦИЯ');
+  VALUES (5, 1, UPPER('ПОСТАВЩИК УСЛУГ')), (5, 2, UPPER('ПОСТАВЩИК УСЛУГ'));
 INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
-  VALUES (11, 11, 2300, 11, 2300);
+  VALUES (1, 5, 2300, 5, 2300);
 
-INSERT INTO `organization_type`(`object_id`) VALUES (12);
+INSERT INTO `organization_type`(`object_id`) VALUES (6);
 INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
-  VALUES (12, 1, 'ПОСТАВЩИК УСЛУГ'), (12, 2, 'ПОСТАВЩИК УСЛУГ');
+  VALUES (6, 1, UPPER('ПОДРЯДЧИК')), (6, 2, UPPER('ПОДРЯДЧИК'));
 INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
-  VALUES (12, 12, 2300, 12, 2300);
-
-INSERT INTO `organization_type`(`object_id`) VALUES (13);
-INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
-  VALUES (13, 1, 'ПОДРЯДЧИК'), (13, 2, 'ПОДРЯДЧИК');
-INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
-  VALUES (13, 13, 2300, 13, 2300);
+  VALUES (1, 6, 2300, 6, 2300);
 
 -- --------------------------------
 -- Organization
 -- --------------------------------
 
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (920, 1, UPPER('ИСПОЛНИТЕЛЬ')), (920, 2, 'ИСПОЛНИТЕЛЬ');
-INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (920, 900, 1, 920, 1);
-INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (920, 920, 'boolean');
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (920, 1, UPPER('Короткое наименование')), (920, 2, UPPER('Короткое наименование'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (920, 900, 0, 920, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (920, 920, 'string_culture');
 
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (921, 1, UPPER('ИСПОЛНИТЕЛЬ')), (921, 2, UPPER('ИСПОЛНИТЕЛЬ'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (921, 900, 1, 921, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (921, 921, 'boolean');
