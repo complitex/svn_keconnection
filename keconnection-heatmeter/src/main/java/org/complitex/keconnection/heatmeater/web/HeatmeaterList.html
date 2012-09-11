@@ -12,6 +12,13 @@
     <h1><wicket:message key="title"/></h1>
     <div wicket:id="messages"></div>
 
+    <div wicket:id="import_dialog">
+        <form action="#" wicket:id="upload_form">
+            <input type="file" wicket:id="file_upload_field"/>
+            <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
+        </form>
+    </div>
+
     <form action="#" wicket:id="filter_form">
         <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
             <thead>
@@ -36,16 +43,16 @@
             </tr>
             <tr>
                 <th></th>
-                <th><input type="text" wicket:id="object.id"/></th>
+                <th><input type="text" wicket:id="object.id" size="4"/></th>
                 <th><input type="text" wicket:id="object.ul"/></th>
-                <th><input type="text" wicket:id="object.ndom"/></th>
-                <th><input type="text" wicket:id="object.gek"/></th>
-                <th><input type="text" wicket:id="object.dom"/></th>
-                <th><input type="text" wicket:id="object.lotop0"/></th>
-                <th><input type="text" wicket:id="object.lotop1"/></th>
-                <th><input type="text" wicket:id="object.lotop2"/></th>
-                <th><input type="text" wicket:id="object.lotop3"/></th>
-                <th><input type="text" wicket:id="object.lotop4"/></th>
+                <th><input type="text" wicket:id="object.ndom" size="3"/></th>
+                <th><input type="text" wicket:id="object.gek" size="3"/></th>
+                <th><input type="text" wicket:id="object.dom" size="3"/></th>
+                <th><input type="text" wicket:id="object.lotop0" size="1"/></th>
+                <th><input type="text" wicket:id="object.lotop1" size="1"/></th>
+                <th><input type="text" wicket:id="object.lotop2" size="1"/></th>
+                <th><input type="text" wicket:id="object.lotop3" size="1"/></th>
+                <th><input type="text" wicket:id="object.lotop4" size="1"/></th>
                 <th><input type="text" wicket:id="object.organizationId"/></th>
                 <th><input type="text" wicket:id="object.buildingId"/></th>
 

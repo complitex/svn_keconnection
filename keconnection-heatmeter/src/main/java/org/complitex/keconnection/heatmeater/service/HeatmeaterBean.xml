@@ -63,4 +63,10 @@
     <delete id="deleteHeatmeater" parameterType="long">
         delete from `heatmeater` where `id` = #{id}
     </delete>
+
+    <select id="isExistHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater"
+            resultType="boolean">
+        select count(*) > 0 from `heatmeater` where `gek` = #{gek} and `dom` = #{dom} and `ul` = #{ul}
+                and `ndom` = #{ndom}
+    </select>
 </mapper>

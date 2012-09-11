@@ -38,4 +38,8 @@ public class HeatmeaterBean extends AbstractBean{
     public void delete(Long id){
         sqlSession().delete("deleteHeatmeater", id);
     }
+
+    public boolean isExist(Heatmeater heatmeater){
+        return sqlSession().selectOne("isExistHeatmeater", heatmeater);
+    }
 }
