@@ -5,11 +5,11 @@
     <sidebar>
         <menu class="org.complitex.keconnection.heatmeater.web.HeatmeaterMenu"/>
 
-        <menu class="org.complitex.address.menu.AddressMenu"/>
+        <menu class="org.complitex.keconnection.address.menu.KeConnectionAddressMenu"/>
         <menu class="org.complitex.keconnection.organization.menu.KeConnectionOrganizationMenu"/>
         <menu class="org.complitex.keconnection.organization_type.menu.KeConnectionOrganizationTypeMenu"/>
 
-        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>
+<!--        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>-->
         <menu class="org.complitex.organization.web.OrganizationDescriptionTemplateMenu"/>
     </sidebar>
 </template>

@@ -28,6 +28,7 @@
         <module>keconnection-heatmeter</module>
         <module>keconnection-organization-type</module>
         <module>keconnection-organization</module>
+        <module>keconnection-address</module>
   </modules>
 
     <properties>
@@ -105,6 +106,12 @@
             <dependency>
                 <groupId>org.complitex.keconnection</groupId>
                 <artifactId>keconnection-organization</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.complitex.keconnection</groupId>
+                <artifactId>keconnection-address</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
