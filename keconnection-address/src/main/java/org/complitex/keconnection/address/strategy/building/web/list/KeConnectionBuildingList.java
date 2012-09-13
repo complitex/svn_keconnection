@@ -6,7 +6,7 @@ package org.complitex.keconnection.address.strategy.building.web.list;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.address.strategy.building.web.list.BuildingList;
-import org.complitex.keconnection.address.strategy.KeConnectionBuildingStrategy;
+import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.template.web.security.SecurityRole;
 
 /**
