@@ -15,5 +15,9 @@
             <groupId>org.complitex</groupId>
             <artifactId>complitex-address</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-organization</artifactId>
+        </dependency>
     </dependencies>
 </project>

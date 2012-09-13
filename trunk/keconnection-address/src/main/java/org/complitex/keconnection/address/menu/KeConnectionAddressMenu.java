@@ -18,7 +18,7 @@ import org.complitex.address.resource.CommonResources;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.EjbBeanLocator;
-import org.complitex.keconnection.address.strategy.KeConnectionBuildingStrategy;
+import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.template.web.security.SecurityRole;
 
 /**

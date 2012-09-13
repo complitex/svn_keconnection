@@ -12,11 +12,22 @@ import org.complitex.address.strategy.building.entity.Building;
  */
 public class KeConnectionBuilding extends Building {
 
-    public KeConnectionBuilding(Building copy) {
+    private final BuildingOrganizationAssociationList buildingOrganizationAssociationList;
+
+    public KeConnectionBuilding(Building copy, BuildingOrganizationAssociationList associationList) {
         super(copy);
         setPrimaryAddress(copy.getPrimaryAddress());
         setAlternativeAddresses(copy.getAlternativeAddresses());
         setDistrict(copy.getDistrict());
         setAccompaniedAddress(copy.getAccompaniedAddress());
+        this.buildingOrganizationAssociationList = associationList;
+    }
+
+    public KeConnectionBuilding(BuildingOrganizationAssociationList associationList) {
+        this.buildingOrganizationAssociationList = associationList;
+    }
+
+    public BuildingOrganizationAssociationList getBuildingOrganizationAssociationList() {
+        return buildingOrganizationAssociationList;
     }
 }
