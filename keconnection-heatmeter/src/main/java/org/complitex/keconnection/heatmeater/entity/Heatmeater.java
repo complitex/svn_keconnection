@@ -10,18 +10,9 @@ import org.complitex.dictionary.entity.ILongId;
  */
 public class Heatmeater implements ILongId{
     private Long id; //Идентификатор
-    private Integer gek; //Код структурной единицы
-    private Integer dom; //Код дома
-    private String ul; //Название улицы вместе с типом
-    private String ndom; //Номер дома
-    private Integer lotop0; //Номер л/с первого счетчика в доме
-    private Integer lotop1;
-    private Integer lotop2;
-    private Integer lotop3;
-    private Integer lotop4;
-
-    private Long organizationId; //Идентификатор структурной единицы
-    private Long buildingId; //Идентификатор дома
+    private Integer ls; //Номер л/с счетчика
+    private HeatmeterType typeId; //Тип счетчика
+    private Long buildingCodeId; //Ссылка на код дома
 
     public Long getId() {
         return id;
@@ -31,91 +22,27 @@ public class Heatmeater implements ILongId{
         this.id = id;
     }
 
-    public Integer getGek() {
-        return gek;
+    public Integer getLs() {
+        return ls;
     }
 
-    public void setGek(Integer gek) {
-        this.gek = gek;
+    public void setLs(Integer ls) {
+        this.ls = ls;
     }
 
-    public Integer getDom() {
-        return dom;
+    public HeatmeterType getTypeId() {
+        return typeId;
     }
 
-    public void setDom(Integer dom) {
-        this.dom = dom;
+    public void setTypeId(HeatmeterType typeId) {
+        this.typeId = typeId;
     }
 
-    public String getUl() {
-        return ul;
+    public Long getBuildingCodeId() {
+        return buildingCodeId;
     }
 
-    public void setUl(String ul) {
-        this.ul = ul;
-    }
-
-    public String getNdom() {
-        return ndom;
-    }
-
-    public void setNdom(String ndom) {
-        this.ndom = ndom;
-    }
-
-    public Integer getLotop0() {
-        return lotop0;
-    }
-
-    public void setLotop0(Integer lotop0) {
-        this.lotop0 = lotop0;
-    }
-
-    public Integer getLotop1() {
-        return lotop1;
-    }
-
-    public void setLotop1(Integer lotop1) {
-        this.lotop1 = lotop1;
-    }
-
-    public Integer getLotop2() {
-        return lotop2;
-    }
-
-    public void setLotop2(Integer lotop2) {
-        this.lotop2 = lotop2;
-    }
-
-    public Integer getLotop3() {
-        return lotop3;
-    }
-
-    public void setLotop3(Integer lotop3) {
-        this.lotop3 = lotop3;
-    }
-
-    public Integer getLotop4() {
-        return lotop4;
-    }
-
-    public void setLotop4(Integer lotop4) {
-        this.lotop4 = lotop4;
-    }
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public Long getBuildingId() {
-        return buildingId;
-    }
-
-    public void setBuildingId(Long buildingId) {
-        this.buildingId = buildingId;
+    public void setBuildingCodeId(Long buildingCodeId) {
+        this.buildingCodeId = buildingCodeId;
     }
 }

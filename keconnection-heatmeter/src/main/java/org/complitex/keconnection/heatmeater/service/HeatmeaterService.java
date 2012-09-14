@@ -49,15 +49,7 @@ public class HeatmeaterService {
 
                 heatmeater = new Heatmeater();
 
-                heatmeater.setGek(parseInt(line[0]));
-                heatmeater.setDom(parseInt(line[1]));
-                heatmeater.setUl(line[2].replace("\"", ""));
-                heatmeater.setNdom(line[3].replace("\"", ""));
-                heatmeater.setLotop0(parseInt(line[4]));
-                heatmeater.setLotop1(parseInt(line[5]));
-                heatmeater.setLotop2(parseInt(line[6]));
-                heatmeater.setLotop3(parseInt(line[7]));
-                heatmeater.setLotop4(parseInt(line[8]));
+                //todo
 
                 if (heatmeaterBean.isExist(heatmeater)){
                     listener.skip(heatmeater);

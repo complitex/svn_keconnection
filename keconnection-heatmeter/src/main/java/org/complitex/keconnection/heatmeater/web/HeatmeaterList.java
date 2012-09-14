@@ -65,7 +65,7 @@ public class HeatmeaterList extends TemplatePage{
     @EJB
     private HeatmeaterService heatmeaterService;
 
-    private final String[] properties = {"id", "ul", "ndom", "gek", "dom", "lotop0", "lotop1", "lotop2", "lotop3", "lotop4"};
+    private final String[] properties = {"ls", "typeId", "buildingCodeId"};
 
     private Dialog importDialog;
 
@@ -120,12 +120,6 @@ public class HeatmeaterList extends TemplatePage{
         //Filter Fields
         filterForm.add(newTextFields("object.", properties));
 
-        //Filter Organization todo add choice
-        filterForm.add(new TextField<>("object.organizationId"));
-
-        //Filter Building todo add choice
-        filterForm.add(new TextField<>("object.buildingId"));
-
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
 
@@ -167,7 +161,6 @@ public class HeatmeaterList extends TemplatePage{
                 final Long id = item.getModelObject().getId();
 
                 item.add(newTextLabels(properties));
-                item.add(newTextLabels(new String[]{"organizationId", "buildingId"}));
 
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("id", id);
@@ -191,7 +184,6 @@ public class HeatmeaterList extends TemplatePage{
 
         //Sorting
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, properties));
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, new String[]{"organizationId", "buildingId"}));
 
         //Import Dialog
         importDialog = new Dialog("import_dialog");
@@ -239,7 +231,7 @@ public class HeatmeaterList extends TemplatePage{
                         @Override
                         public void skip(Heatmeater object) {
                             ThreadContext.restore(threadContext);
-                            getSession().info(getStringFormat("info_skipped", object.getUl(), object.getNdom()));
+                            getSession().info(getStringFormat("info_skipped", object.getLs()));
                             skippedCount++;
                         }
 
