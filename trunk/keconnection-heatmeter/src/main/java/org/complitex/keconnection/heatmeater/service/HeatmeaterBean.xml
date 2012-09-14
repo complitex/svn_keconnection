@@ -3,30 +3,18 @@
 <mapper namespace="org.complitex.keconnection.heatmeater.service.HeatmeaterBean">
     <resultMap id="heatmeaterResultMap" type="org.complitex.keconnection.heatmeater.entity.Heatmeater">
         <id property="id"/>
-        <result property="gek"/>
-        <result property="dom"/>
-        <result property="ul"/>
-        <result property="ndom"/>
-        <result property="lotop0"/>
-        <result property="lotop1"/>
-        <result property="lotop2"/>
-        <result property="lotop3"/>
-        <result property="lotop4"/>
-        <result property="organizationId"/>
-        <result property="buildingId"/>
+        <result property="ls"/>
+        <result property="typeId"/>
+        <result property="buildingCodeId"/>
     </resultMap>
 
     <insert id="insertHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
-        insert into `heatmeater` (`gek`, `dom`, `ul`, `ndom`, `lotop0`, `lotop1`, `lotop2`, `lotop3`, `lotop4`,
-          `organization_id`, `building_id`)
-        values (#{gek}, #{dom}, #{ul}, #{ndom}, #{lotop0}, #{lotop1}, #{lotop2}, #{lotop3}, #{lotop4},
-          #{organizationId}, #{buildingId})
+        insert into `heatmeater` (`ls`, `type_id`, `building_code_id`)
+        values (#{ls}, #{typeId}, #{buildingCodeId})
     </insert>
 
     <update id="updateHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
-        update `heatmeater` set `gek` = #{gek}, `dom` = #{dom}, `ul` = #{ul}, `ndom` = #{ndom}, `lotop0` = #{lotop0},
-          `lotop1` = #{lotop1}, `lotop2` = #{lotop2}, `lotop3` = #{lotop3}, `lotop4` = #{lotop4},
-          `organization_id` = #{organizationId}, `building_id` = #{buildingId}
+        update `heatmeater` set `ls` = #{ls}, `type_id` = #{typeId}, `building_code_id` = #{buildingCodeId}
     </update>
 
     <select id="selectHeatmeater" parameterType="long" resultMap="heatmeaterResultMap">
@@ -35,17 +23,9 @@
 
     <sql id="selectHeatmeatersWhere">
         <where>
-            <if test="object.gek != null">`gek` = #{object.gek}</if>
-            <if test="object.dom != null">and `dom` = #{object.dom}</if>
-            <if test="object.ul != null">and `ul` like concat('%', #{object.ul}, '%')</if>
-            <if test="object.ndom != null">and `ndom` like concat('%', #{object.ndom}, '%')</if>
-            <if test="object.lotop0 != null">and `lotop0` = #{object.lotop0}</if>
-            <if test="object.lotop1 != null">and `lotop1` = #{object.lotop1}</if>
-            <if test="object.lotop2 != null">and `lotop2` = #{object.lotop2}</if>
-            <if test="object.lotop3 != null">and `lotop3` = #{object.lotop3}</if>
-            <if test="object.lotop4 != null">and `lotop4` = #{object.lotop4}</if>
-            <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
-            <if test="object.buildingId != null">and `building_id` = #{object.buildingId}</if>
+            <if test="object.ls != null">`ls` = #{object.ls}</if>
+            <if test="object.typeId != null">and `type_id` = #{object.typeId}</if>
+            <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
         </where>
     </sql>
 
@@ -66,7 +46,6 @@
 
     <select id="isExistHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater"
             resultType="boolean">
-        select count(*) > 0 from `heatmeater` where `gek` = #{gek} and `dom` = #{dom} and `ul` = #{ul}
-                and `ndom` = #{ndom}
+        select count(*) > 0 from `heatmeater` where `ls` = #{ls}
     </select>
 </mapper>

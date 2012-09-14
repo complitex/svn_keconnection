@@ -11,6 +11,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.util.PageUtil;
 import org.complitex.keconnection.heatmeater.entity.Heatmeater;
+import org.complitex.keconnection.heatmeater.entity.HeatmeterType;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterBean;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
@@ -51,16 +52,16 @@ public class HeatmeaterEdit extends FormTemplatePage{
         Form form = new Form<>("form", model);
         add(form);
 
-        form.add(newRequiredTextFields(new String[]{"gek", "dom", "ul", "ndom"}));
-        form.add(newTextFields(new String[]{"lotop0", "lotop1", "lotop2", "lotop3", "lotop4"}));
-
-        //todo add organization and building?
+        form.add(newRequiredTextFields(new String[]{"ls", "buildingCodeId"}));
 
         form.add(new Button("save"){
             @Override
             public void onSubmit() {
                 try {
-                    heatmeaterBean.save(model.getObject());
+                    Heatmeater heatmeater = model.getObject();
+                    heatmeater.setTypeId(HeatmeterType.HEATING);
+
+                    heatmeaterBean.save(heatmeater);
 
                     getSession().info(getString("info_saved"));
                     setResponsePage(HeatmeaterList.class);
