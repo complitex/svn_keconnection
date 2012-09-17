@@ -9,7 +9,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.dictionary.util.PageUtil;
 import org.complitex.keconnection.heatmeater.entity.Heatmeater;
 import org.complitex.keconnection.heatmeater.entity.HeatmeterType;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterBean;
@@ -59,7 +58,7 @@ public class HeatmeaterEdit extends FormTemplatePage{
             public void onSubmit() {
                 try {
                     Heatmeater heatmeater = model.getObject();
-                    heatmeater.setTypeId(HeatmeterType.HEATING);
+                    heatmeater.setType(HeatmeterType.HEATING);
 
                     heatmeaterBean.save(heatmeater);
 

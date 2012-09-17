@@ -1,17 +1,14 @@
 package org.complitex.keconnection.heatmeater.web;
 
-import org.apache.wicket.Session;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -29,6 +26,7 @@ import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeater.entity.Heatmeater;
+import org.complitex.keconnection.heatmeater.entity.HeatmeaterWrapper;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterBean;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterService;
 import org.complitex.template.web.component.toolbar.AddItemButton;
@@ -65,7 +63,7 @@ public class HeatmeaterList extends TemplatePage{
     @EJB
     private HeatmeaterService heatmeaterService;
 
-    private final String[] properties = {"ls", "typeId", "buildingCodeId"};
+    private final String[] properties = {"ls", "type", "buildingCodeId"};
 
     private Dialog importDialog;
 
@@ -218,28 +216,27 @@ public class HeatmeaterList extends TemplatePage{
                 try {
                     InputStream inputStream = fileUpload.getInputStream();
 
-                    IProcessListener<Heatmeater> listener = new IProcessListener<Heatmeater>() {
+                    IProcessListener<HeatmeaterWrapper> listener = new IProcessListener<HeatmeaterWrapper>() {
                         private int processedCount = 0;
                         private int skippedCount = 0;
                         private ThreadContext threadContext = ThreadContext.get(false);
 
                         @Override
-                        public void processed(Heatmeater object) {
+                        public void processed(HeatmeaterWrapper object) {
                             processedCount++;
                         }
 
                         @Override
-                        public void skip(Heatmeater object) {
+                        public void skip(HeatmeaterWrapper object) {
                             ThreadContext.restore(threadContext);
                             getSession().info(getStringFormat("info_skipped", object.getLs()));
                             skippedCount++;
                         }
 
                         @Override
-                        public void error(Heatmeater object, Exception e) {
+                        public void error(HeatmeaterWrapper object, Exception e) {
                             ThreadContext.restore(threadContext);
                             getSession().error(getStringFormat("error_upload", e.getMessage()));
-                            stopTimer();
                         }
 
                         @Override

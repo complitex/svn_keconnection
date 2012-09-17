@@ -11,7 +11,7 @@ import org.complitex.dictionary.entity.ILongId;
 public class Heatmeater implements ILongId{
     private Long id; //Идентификатор
     private Integer ls; //Номер л/с счетчика
-    private HeatmeterType typeId; //Тип счетчика
+    private HeatmeterType type; //Тип счетчика
     private Long buildingCodeId; //Ссылка на код дома
 
     public Long getId() {
@@ -30,12 +30,12 @@ public class Heatmeater implements ILongId{
         this.ls = ls;
     }
 
-    public HeatmeterType getTypeId() {
-        return typeId;
+    public HeatmeterType getType() {
+        return type;
     }
 
-    public void setTypeId(HeatmeterType typeId) {
-        this.typeId = typeId;
+    public void setType(HeatmeterType type) {
+        this.type = type;
     }
 
     public Long getBuildingCodeId() {
