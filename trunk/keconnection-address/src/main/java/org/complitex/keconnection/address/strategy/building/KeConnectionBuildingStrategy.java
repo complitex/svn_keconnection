@@ -6,15 +6,6 @@ package org.complitex.keconnection.address.strategy.building;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.address.strategy.building.BuildingStrategy;
@@ -32,6 +23,10 @@ import org.complitex.keconnection.address.strategy.building.entity.KeConnectionB
 import org.complitex.keconnection.address.strategy.building.web.edit.KeConnectionBuildingEditComponent;
 import org.complitex.keconnection.address.strategy.building.web.edit.KeConnectionBuildingValidator;
 import org.complitex.keconnection.address.strategy.building.web.list.KeConnectionBuildingList;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.*;
 
 /**
  *
@@ -195,5 +190,12 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     @Override
     public IValidator getValidator() {
         return new KeConnectionBuildingValidator(localeBean.getSystemLocale());
+    }
+
+    public Long getBuildingCodeId(final Long organizationId, final String buildingCode){
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeId", new HashMap<String, Object>(){{
+            put("organizationId", organizationId);
+            put("buildingCode", buildingCode);
+        }});
     }
 }

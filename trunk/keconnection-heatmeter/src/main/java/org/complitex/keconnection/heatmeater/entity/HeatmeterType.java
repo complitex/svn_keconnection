@@ -9,7 +9,7 @@ import org.complitex.dictionary.mybatis.FixedIdTypeHandler;
  */
 @FixedIdTypeHandler
 public enum HeatmeterType implements IFixedIdType {
-    HEATING(1L), HEATING_AND_WATER(2L);
+    HEATING(100L), HEATING_AND_WATER(200L);
 
     private Long id;
 

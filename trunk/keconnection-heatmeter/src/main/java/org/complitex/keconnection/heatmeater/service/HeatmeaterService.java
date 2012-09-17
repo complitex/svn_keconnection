@@ -2,7 +2,13 @@ package org.complitex.keconnection.heatmeater.service;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.complitex.dictionary.service.IProcessListener;
+import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeater.entity.Heatmeater;
+import org.complitex.keconnection.heatmeater.entity.HeatmeaterWrapper;
+import org.complitex.keconnection.heatmeater.entity.HeatmeterType;
+import org.complitex.keconnection.heatmeater.service.exception.BuildingNotFoundException;
+import org.complitex.keconnection.heatmeater.service.exception.OrganizationNotFoundException;
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +18,6 @@ import javax.ejb.Stateless;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import static org.complitex.dictionary.util.StringUtil.parseInt;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -26,9 +30,15 @@ public class HeatmeaterService {
     @EJB
     private HeatmeaterBean heatmeaterBean;
 
+    @EJB
+    private IKeConnectionOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private KeConnectionBuildingStrategy buildingStrategy;
+
     @Asynchronous
-    public void uploadHeatmeaters(InputStream inputStream, IProcessListener<Heatmeater> listener){
-        Heatmeater heatmeater = null;
+    public void uploadHeatmeaters(InputStream inputStream, IProcessListener<HeatmeaterWrapper> listener){
+        HeatmeaterWrapper heatmeaterWrapper = null;
 
         int lineNum = 0;
 
@@ -47,19 +57,28 @@ public class HeatmeaterService {
             while ((line = reader.readNext()) != null){
                 lineNum++;
 
-                heatmeater = new Heatmeater();
+                for (int i = 0; i < 5; ++i){
+                    String ls = line[4 + i];
 
-                //todo
+                    //skip zero or empty lotop
+                    if (ls.isEmpty() || ls.equals("0")){
+                        continue;
+                    }
 
-                if (heatmeaterBean.isExist(heatmeater)){
-                    listener.skip(heatmeater);
-                    continue;
+                    heatmeaterWrapper = new HeatmeaterWrapper(lineNum, line[0], line[1], ls);
+
+                    //check duplicates
+                    if (heatmeaterBean.isExist(heatmeaterWrapper.getHeatmeater())){
+                        listener.skip(heatmeaterWrapper);
+                        continue;
+                    }
+
+                    //create heatmeater
+                    createHeatmeater(heatmeaterWrapper);
+
+                    //processed
+                    listener.processed(heatmeaterWrapper);
                 }
-
-                heatmeaterBean.save(heatmeater);
-
-                //processed
-                listener.processed(heatmeater);
             }
 
             //manual close stream
@@ -68,9 +87,34 @@ public class HeatmeaterService {
             //done
             listener.done();
         } catch (Exception e) {
-            listener.error(heatmeater, e);
+            listener.error(heatmeaterWrapper, e);
+            listener.done();
 
-            log.error("Ошибка импорта счетчика. Строка: {} ", lineNum, e);
+            log.error("Ошибка импорта счетчика {} ", heatmeaterWrapper, e);
         }
+    }
+
+    public void createHeatmeater(HeatmeaterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
+            OrganizationNotFoundException {
+        //find organization
+        Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getBuildingCode());
+
+        if (organizationId == null){
+            throw new OrganizationNotFoundException(heatmeaterWrapper);
+        }
+
+        //find building code
+        Long buildingCodeId = buildingStrategy.getBuildingCodeId(organizationId, heatmeaterWrapper.getBuildingCode());
+
+        if (buildingCodeId == null){
+            throw new BuildingNotFoundException(heatmeaterWrapper);
+        }
+
+        //save
+        Heatmeater heatmeater = heatmeaterWrapper.getHeatmeater();
+        heatmeater.setBuildingCodeId(buildingCodeId);
+        heatmeater.setType(HeatmeterType.HEATING_AND_WATER);
+
+        heatmeaterBean.save(heatmeater);
     }
 }

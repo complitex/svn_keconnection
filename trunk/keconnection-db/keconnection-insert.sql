@@ -56,10 +56,10 @@ INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_
 -- Heatmeater Type
 -- ------------------------------
 
-INSERT INTO `heatmeater_type`(`id`, `name`) VALUES (1, 'Отопление'), (2, 'Отопление и подогрев воды');
+INSERT INTO `heatmeater_type`(`id`, `name`) VALUES (100, 'Отопление'), (200, 'Отопление и подогрев воды');
 
 -- ------------------------------
 -- Heatmeater Period Type
 -- ------------------------------
 
-INSERT INTO `heatmeater_period_type`(`id`, `name`) VALUES (1, 'Функционирование'), (2, 'Юстировка');
+INSERT INTO `heatmeater_period_type`(`id`, `name`) VALUES (100, 'Функционирование'), (200, 'Юстировка');

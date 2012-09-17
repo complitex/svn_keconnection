@@ -25,4 +25,7 @@
                 AND a.`attribute_type_id` = #{buildingOrganizationAssociationsAT})
     </delete>
 
+    <select id="selectBuildingCodeId" parameterType="map" resultType="long">
+        select `id` from `building_code` where `organization_id` = #{organizationId} and `code` = #{buildingCode}
+    </select>
 </mapper>

@@ -2,19 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeater.service.HeatmeaterBean">
     <resultMap id="heatmeaterResultMap" type="org.complitex.keconnection.heatmeater.entity.Heatmeater">
-        <id property="id"/>
-        <result property="ls"/>
-        <result property="typeId"/>
-        <result property="buildingCodeId"/>
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="buildingCodeId" column="building_code_id"/>
     </resultMap>
 
     <insert id="insertHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
         insert into `heatmeater` (`ls`, `type_id`, `building_code_id`)
-        values (#{ls}, #{typeId}, #{buildingCodeId})
+        values (#{ls}, #{type}, #{buildingCodeId})
     </insert>
 
     <update id="updateHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
-        update `heatmeater` set `ls` = #{ls}, `type_id` = #{typeId}, `building_code_id` = #{buildingCodeId}
+        update `heatmeater` set `ls` = #{ls}, `type_id` = #{type}, `building_code_id` = #{buildingCodeId}
     </update>
 
     <select id="selectHeatmeater" parameterType="long" resultMap="heatmeaterResultMap">
@@ -24,7 +24,7 @@
     <sql id="selectHeatmeatersWhere">
         <where>
             <if test="object.ls != null">`ls` = #{object.ls}</if>
-            <if test="object.typeId != null">and `type_id` = #{object.typeId}</if>
+            <if test="object.type != null">and `type_id` = #{object.type}</if>
             <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
         </where>
     </sql>

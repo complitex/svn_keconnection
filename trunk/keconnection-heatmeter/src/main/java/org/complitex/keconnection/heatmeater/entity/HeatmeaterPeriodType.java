@@ -9,7 +9,7 @@ import org.complitex.dictionary.mybatis.IFixedIdType;
  */
 @FixedIdTypeHandler
 public enum HeatmeaterPeriodType implements IFixedIdType{
-    OPERATION(1L), ADJUSTMENT(2L);
+    OPERATION(100L), ADJUSTMENT(200L);
 
     private Long id;
 
