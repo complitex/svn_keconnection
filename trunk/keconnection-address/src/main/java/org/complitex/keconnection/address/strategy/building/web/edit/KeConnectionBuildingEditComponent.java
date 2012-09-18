@@ -4,10 +4,7 @@
  */
 package org.complitex.keconnection.address.strategy.building.web.edit;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import java.util.List;
-import java.util.Set;
 import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -16,7 +13,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -134,26 +130,9 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
                             }
                         }
 
-                        IModel<List<DomainObject>> selectOrganizationModel = new AbstractReadOnlyModel<List<DomainObject>>() {
-
-                            @Override
-                            public List<DomainObject> getObject() {
-                                List<DomainObject> selectList = Lists.newArrayList();
-
-                                Long organizationId = association.getOrganizationId();
-                                for (DomainObject o : allServicingOrganizations) {
-                                    if (!associationList.containsOrganization(o.getId())
-                                            || o.getId().equals(organizationId)) {
-                                        selectList.add(o);
-                                    }
-                                }
-                                return selectList;
-                            }
-                        };
-
                         DisableAwareDropDownChoice<DomainObject> organization =
                                 new DisableAwareDropDownChoice<DomainObject>("organization", organizationModel,
-                                selectOrganizationModel, organizationRenderer);
+                                allServicingOrganizations, organizationRenderer);
                         organization.setEnabled(enabled);
                         organization.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
@@ -205,23 +184,5 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
 
     public boolean isBuildingOrganizationAssociationListHasNulls() {
         return getDomainObject().getBuildingOrganizationAssociationList().hasNulls();
-    }
-
-    public Set<String> getDuplicateOrganizations() {
-        Set<Long> duplicates = getDomainObject().getBuildingOrganizationAssociationList().getDuplicateOrganizationIds();
-        if (duplicates != null) {
-            Set<String> result = Sets.newHashSet();
-            final List<DomainObject> allServisingOrganizations = organizationStrategy.getAllServicingOrganizations(getLocale());
-            for (long organizationId : duplicates) {
-                for (DomainObject o : allServisingOrganizations) {
-                    if (o.getId().equals(organizationId)) {
-                        result.add(organizationStrategy.displayDomainObject(o, getLocale()));
-                        break;
-                    }
-                }
-            }
-            return result;
-        }
-        return null;
     }
 }

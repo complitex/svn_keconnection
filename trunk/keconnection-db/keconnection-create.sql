@@ -86,6 +86,22 @@ CREATE TABLE `heatmeater_period`(
   CONSTRAINT `fk_heatmeater_period__heatmeater_period_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeater_period_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
 
+-- ------------------------------
+-- Auxiliary tables for organization import
+-- ------------------------------
+
+DROP TABLE IF EXISTS `organization_import`;
+CREATE TABLE `organization_import` (
+  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
+  `organization_id` BIGINT(20) NOT NULL COMMENT 'ID организации',
+  `code` VARCHAR(100) NOT NULL COMMENT 'Код организации',
+  `short_name` VARCHAR(100) NOT NULL COMMENT 'Короткое название организации',
+  `full_name` VARCHAR(500) NOT NULL COMMENT 'Полное название организации',
+  `hlevel` BIGINT(20) COMMENT 'Ссылка на вышестоящую организацию',
+  PRIMARY KEY (`pk_id`),
+  KEY `key_organization_id` (`organization_id`),
+  KEY `key_hlevel` (`hlevel`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта организаций';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

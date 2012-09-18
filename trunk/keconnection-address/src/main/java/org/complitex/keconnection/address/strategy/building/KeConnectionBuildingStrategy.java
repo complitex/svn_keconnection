@@ -111,17 +111,21 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         building.removeAttribute(ORGANIZATION_ASSOCIATIONS);
 
         long i = 1;
-        for (BuildingOrganizationAssociation buildingOrganizationAssociation : building.getBuildingOrganizationAssociationList()) {
-            buildingOrganizationAssociation.setBuildingId(building.getId());
-            saveBuildingOrganizationAssociation(buildingOrganizationAssociation);
+        for (BuildingOrganizationAssociation association : building.getBuildingOrganizationAssociationList()) {
+            association.setBuildingId(building.getId());
+            saveBuildingOrganizationAssociation(association);
 
-            Attribute a = new Attribute();
-            a.setAttributeTypeId(ORGANIZATION_ASSOCIATIONS);
-            a.setValueId(buildingOrganizationAssociation.getId());
-            a.setValueTypeId(ORGANIZATION_ASSOCIATIONS);
-            a.setAttributeId(i++);
-            building.addAttribute(a);
+            building.addAttribute(newBuildingOrganizationAssociationAttribute(i++, association.getId()));
         }
+    }
+
+    private Attribute newBuildingOrganizationAssociationAttribute(long attributeId, long buildingAssociationId) {
+        Attribute a = new Attribute();
+        a.setAttributeTypeId(ORGANIZATION_ASSOCIATIONS);
+        a.setValueId(buildingAssociationId);
+        a.setValueTypeId(ORGANIZATION_ASSOCIATIONS);
+        a.setAttributeId(attributeId);
+        return a;
     }
 
     @Transactional
@@ -145,6 +149,19 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     @Transactional
     private void saveBuildingOrganizationAssociation(BuildingOrganizationAssociation buildingOrganizationAssociation) {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertBuildingOrganizationAssociation", buildingOrganizationAssociation);
+    }
+
+    @Transactional
+    public void addBuildingOrganizationAssociation(KeConnectionBuilding building, BuildingOrganizationAssociation association) {
+        association.setBuildingId(building.getId());
+
+        saveBuildingOrganizationAssociation(association);
+
+        int attributeId = building.getAttributes(ORGANIZATION_ASSOCIATIONS).size() + 1;
+        Attribute a = newBuildingOrganizationAssociationAttribute(attributeId, association.getId());
+        a.setObjectId(building.getId());
+        a.setStartDate(building.getStartDate());
+        insertAttribute(a);
     }
 
     private BuildingOrganizationAssociationList loadBuildingOrganizationAssociations(Building building) {
