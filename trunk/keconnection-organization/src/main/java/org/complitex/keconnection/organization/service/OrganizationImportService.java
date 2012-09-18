@@ -100,7 +100,11 @@ public class OrganizationImportService extends AbstractImportService {
         }
 
         if (rootOrgs.size() > 1) {
-            throw new MoreOneRootOrganizationException();
+            final String[] organizationNames = new String[rootOrgs.size()];
+            for (int i = 0, length = rootOrgs.size(); i < length; i++) {
+                organizationNames[i] = rootOrgs.get(i).getFullName();
+            }
+            throw new MoreOneRootOrganizationException(organizationNames);
         }
 
         final long rootOrgId = rootOrgs.get(0).getOrganizationId();
@@ -109,7 +113,7 @@ public class OrganizationImportService extends AbstractImportService {
         //TODO: comment as work around for multiple root organizations case
         /*
         for (OrganizationImport root : rootOrgs) {
-            workQueue.add(root.getOrganizationId());
+        workQueue.add(root.getOrganizationId());
         }*/
 
         while (!workQueue.isEmpty()) {
