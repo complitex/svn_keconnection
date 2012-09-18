@@ -74,10 +74,15 @@ public class HeatmeaterService {
                     }
 
                     //create heatmeater
-                    createHeatmeater(heatmeaterWrapper);
+                    try {
+                        createHeatmeater(heatmeaterWrapper);
 
-                    //processed
-                    listener.processed(heatmeaterWrapper);
+                        listener.processed(heatmeaterWrapper);
+                    } catch (BuildingNotFoundException e) {
+                        listener.error(heatmeaterWrapper, e);
+                    } catch (OrganizationNotFoundException e) {
+                        listener.error(heatmeaterWrapper, e);
+                    }
                 }
             }
 
@@ -97,7 +102,7 @@ public class HeatmeaterService {
     public void createHeatmeater(HeatmeaterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
             OrganizationNotFoundException {
         //find organization
-        Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getBuildingCode());
+        Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 
         if (organizationId == null){
             throw new OrganizationNotFoundException(heatmeaterWrapper);
