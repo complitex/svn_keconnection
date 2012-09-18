@@ -63,8 +63,6 @@ public class HeatmeaterList extends TemplatePage{
     @EJB
     private HeatmeaterService heatmeaterService;
 
-    private final String[] properties = {"ls", "type", "buildingCodeId"};
-
     private Dialog importDialog;
 
     public HeatmeaterList() {
@@ -116,7 +114,7 @@ public class HeatmeaterList extends TemplatePage{
         filterForm.add(filterFind);
 
         //Filter Fields
-        filterForm.add(newTextFields("object.", properties));
+        filterForm.add(newTextFields("object.", "ls", "type", "buildingCodeId"));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
@@ -156,19 +154,20 @@ public class HeatmeaterList extends TemplatePage{
         DataView dataView = new DataView<Heatmeater>("data_view", dataProvider) {
             @Override
             protected void populateItem(Item<Heatmeater> item) {
-                final Long id = item.getModelObject().getId();
+                final Heatmeater heatmeater = item.getModelObject();
 
-                item.add(newTextLabels(properties));
+                item.add(newTextLabels("ls", "buildingCodeId"));
+                item.add(new Label("type", getStringOrKey(heatmeater.getType())));
 
                 PageParameters pageParameters = new PageParameters();
-                pageParameters.add("id", id);
+                pageParameters.add("id", heatmeater.getId());
                 item.add(new BookmarkablePageLink<>("edit", HeatmeaterEdit.class, pageParameters));
 
                 item.add(new Link("delete") {
                     @Override
                     public void onClick() {
                         info(getString("info_deleted"));
-                        heatmeaterBean.delete(id);
+                        heatmeaterBean.delete(heatmeater.getId());
                     }
                 });
 
@@ -178,15 +177,17 @@ public class HeatmeaterList extends TemplatePage{
         dataContainer.add(dataView);
 
         //Paging Navigator
-        filterForm.add(new PagingNavigator("paging", dataView, HeatmeaterList.class.getName(), filterForm));
+        final PagingNavigator paging = new PagingNavigator("paging", dataView, HeatmeaterList.class.getName(), filterForm);
+        filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, properties));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "buildingCodeId"));
 
         //Import Dialog
         importDialog = new Dialog("import_dialog");
         importDialog.setTitle(getString("import_dialog_title"));
         importDialog.setWidth(420);
+        importDialog.setHeight(80);
         add(importDialog);
 
         Form uploadForm = new Form("upload_form");
@@ -219,6 +220,7 @@ public class HeatmeaterList extends TemplatePage{
                     IProcessListener<HeatmeaterWrapper> listener = new IProcessListener<HeatmeaterWrapper>() {
                         private int processedCount = 0;
                         private int skippedCount = 0;
+                        private int errorCount = 0;
                         private ThreadContext threadContext = ThreadContext.get(false);
 
                         @Override
@@ -237,12 +239,13 @@ public class HeatmeaterList extends TemplatePage{
                         public void error(HeatmeaterWrapper object, Exception e) {
                             ThreadContext.restore(threadContext);
                             getSession().error(getStringFormat("error_upload", e.getMessage()));
+                            errorCount++;
                         }
 
                         @Override
                         public void done() {
                             ThreadContext.restore(threadContext);
-                            getSession().info(getStringFormat("info_done", processedCount, skippedCount));
+                            getSession().info(getStringFormat("info_done", processedCount, skippedCount, errorCount));
                             stopTimer();
                         }
 
@@ -255,6 +258,7 @@ public class HeatmeaterList extends TemplatePage{
                         @Override
                         protected void onPostProcessTarget(AjaxRequestTarget target) {
                             target.add(messages);
+                            target.add(paging);
 
                             if (stopTimer.get()){
                                 stop();
