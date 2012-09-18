@@ -16,6 +16,10 @@ import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy {
 
     String KECONNECTION_ORGANIZATION_STRATEGY_NAME = "KeConnectionOrganizationStrategy";
+    /*
+     * Attribute type ids
+     */
+    long SHORT_NAME = 920;
 
     List<DomainObject> getAllServicingOrganizations(Locale locale);
 }

@@ -51,5 +51,7 @@
         <mapper resource="org/complitex/logging/service/LogListBean.xml"/>
 
         <mapper resource="org/complitex/organization/strategy/Organization.xml"/>
+        
+        <mapper resource="org/complitex/keconnection/organization/service/OrganizationImportBean.xml"/>
     </mappers>
 </configuration>
