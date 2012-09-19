@@ -1,4 +1,10 @@
 -- --------------------------------
+-- Sequence
+-- --------------------------------
+INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES
+('tarif_group',1), ('tarif_group_string_culture',1);
+
+-- --------------------------------
 -- Organization type
 -- --------------------------------
 
@@ -63,3 +69,28 @@ INSERT INTO `heatmeater_type`(`id`, `name`) VALUES (100, 'Отопление'), 
 -- ------------------------------
 
 INSERT INTO `heatmeater_period_type`(`id`, `name`) VALUES (100, 'Функционирование'), (200, 'Юстировка');
+
+-- ------------------------------
+-- Tarif group
+-- ------------------------------
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3200, 1, 'Группа тарифов'), (3200, 2, 'Группа тарифов');
+INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (3200, 'tarif_group', 3200, '');
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3201, 1, UPPER('Название')), (3201, 2, UPPER('Назва'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3200, 3200, 1, 3201, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3200, 3200, UPPER('string_culture'));
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3202, 1, UPPER('Код тарифной группы')), (3202, 2, UPPER('Код тарифной группы'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3201, 3200, 1, 3202, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3201, 3201, UPPER('integer'));
+
+-- ------------------------------
+-- Predefined tarif groups
+-- ------------------------------
+INSERT INTO `tarif_group`(`object_id`) VALUES (1),(2),(3);
+INSERT INTO `tarif_group_string_culture`(`id`, `locale_id`, `value`) VALUES 
+(1, 1, UPPER('население')), (1, 2,UPPER('население')), (2,(SELECT `id` FROM `locales` WHERE `system` = 1), UPPER('1')),
+(3, 1, UPPER('бюджетные организации')), (3, 2, UPPER('бюджетные организации')), (4,(SELECT `id` FROM `locales` WHERE `system` = 1), UPPER('2')),
+(5, 1, UPPER('прочие потребители')), (5, 2, UPPER('прочие потребители')), (6,(SELECT `id` FROM `locales` WHERE `system` = 1), UPPER('3'));
+INSERT INTO `tarif_group_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
+(1,1,3200,1,3200),(1,1,3201,2,3201),(1,2,3200,3,3200),(1,2,3201,4,3201),(1,3,3200,5,3200),(1,3,3201,6,3201);

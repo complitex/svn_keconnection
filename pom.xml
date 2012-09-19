@@ -30,6 +30,7 @@
         <module>keconnection-organization</module>
         <module>keconnection-address</module>
         <module>keconnection-import</module>
+        <module>keconnection-tarif</module>
   </modules>
 
     <properties>
@@ -119,6 +120,12 @@
             <dependency>
                 <groupId>org.complitex.keconnection</groupId>
                 <artifactId>keconnection-import</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.complitex.keconnection</groupId>
+                <artifactId>keconnection-tarif</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
