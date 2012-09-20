@@ -6,11 +6,16 @@
         <result property="ls" column="ls"/>
         <result property="type" column="type_id"/>
         <result property="buildingCodeId" column="building_code_id"/>
+        <result property="status"/>
+        <collection property="periods"
+                    select="org.complitex.keconnection.heatmeater.service.HeatmeaterPeriodBean.selectHeatmeaterPeriodsByHeatmeterId"
+                    column="id"/>
     </resultMap>
 
-    <insert id="insertHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
+    <insert id="insertHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater"
+            useGeneratedKeys="true" keyProperty="id">
         insert into `heatmeater` (`ls`, `type_id`, `building_code_id`)
-        values (#{ls}, #{type}, #{buildingCodeId})
+          values (#{ls}, #{type}, #{buildingCodeId})
     </insert>
 
     <update id="updateHeatmeater" parameterType="org.complitex.keconnection.heatmeater.entity.Heatmeater">
@@ -18,7 +23,9 @@
     </update>
 
     <select id="selectHeatmeater" parameterType="long" resultMap="heatmeaterResultMap">
-        select * from `heatmeater` where `id` = #{id}
+        select h.*, (select `type_id` from `heatmeater_period` where `end_date` is null
+          and `heatmeater_id` = h.`id` order by `begin_date` desc limit 1) as `status`
+        from `heatmeater` h where `id` = #{id}
     </select>
 
     <sql id="selectHeatmeatersWhere">
@@ -26,12 +33,15 @@
             <if test="object.ls != null">`ls` = #{object.ls}</if>
             <if test="object.type != null">and `type_id` = #{object.type}</if>
             <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
+            <if test="object.status != null">and `status` = #{status}</if>
         </where>
     </sql>
 
     <select id="selectHeatmeaters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeaterResultMap">
-        select * from `heatmeater` <include refid="selectHeatmeatersWhere"/>
+        select h.*, (select `type_id` from `heatmeater_period` where `end_date` is null
+          and `heatmeater_id` = h.`id` order by `begin_date` desc limit 1) as `status`
+        from `heatmeater` h <include refid="selectHeatmeatersWhere"/>
         order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 

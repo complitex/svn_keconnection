@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeater.service.HeatmeaterPeriodBean">
+    <resultMap id="heatmeaterPeriodResultMap" type="org.complitex.keconnection.heatmeater.entity.HeatmeaterPeriod">
+        <id property="id"/>
+        <result property="parentId"/>
+        <result property="heatmeaterId"/>
+        <result property="type" column="type_id"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="operatingMonth"/>
+    </resultMap>
+
+    <insert id="insertHeatmeaterPeriod" parameterType="org.complitex.keconnection.heatmeater.entity.HeatmeaterPeriod"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeater_period`
+          (`parent_id`, `heatmeater_id`, `type_id`, `begin_date`, `end_date`, `operating_month`)
+        values
+          (#{parentId}, #{heatmeaterId}, #{type}, #{beginDate}, #{endDate}, #{operatingMonth})
+    </insert>
+
+    <update id="updateHeatmeaterPeriod" parameterType="org.complitex.keconnection.heatmeater.entity.HeatmeaterPeriod">
+        update `heatmeater_period` set `parent_id` = #{parentId}, `heatmeater_id` = #{heatmeaterId}, `type_id` = #{type},
+          `begin_date` = #{beginDate}, `end_date` = #{endDate}, `operating_month` = #{operatingMonth}
+        where `id` = #{id}
+    </update>
+
+    <select id="selectHeatmeaterPeriod" parameterType="long" resultMap="heatmeaterPeriodResultMap">
+        select * from `heatmeater_period` where `id` = #{id}
+    </select>
+
+    <select id="selectHeatmeaterPeriodsByHeatmeterId" parameterType="long" resultMap="heatmeaterPeriodResultMap">
+        select * from `heatmeater_period` where `heatmeater_id` = #{heatmeaterId}
+    </select>
+
+    <update id="updateHeatmeaterPeriodParent" parameterType="map">
+        update `heatmeater_period` set `parent_id` = #{parentId} where `id` = #{id}
+    </update>
+</mapper>

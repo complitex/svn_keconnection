@@ -2,6 +2,8 @@ package org.complitex.keconnection.heatmeater.entity;
 
 import org.complitex.dictionary.entity.ILongId;
 
+import java.util.List;
+
 /**
  * @author  Anatoly A. Ivanov java@inheaven.ru
  * Date: 04.09.12 15:10
@@ -13,6 +15,9 @@ public class Heatmeater implements ILongId{
     private Integer ls; //Номер л/с счетчика
     private HeatmeterType type; //Тип счетчика
     private Long buildingCodeId; //Ссылка на код дома
+    private List<HeatmeaterPeriod> periods;
+
+    private HeatmeaterPeriodType status;
 
     public Long getId() {
         return id;
@@ -44,5 +49,21 @@ public class Heatmeater implements ILongId{
 
     public void setBuildingCodeId(Long buildingCodeId) {
         this.buildingCodeId = buildingCodeId;
+    }
+
+    public List<HeatmeaterPeriod> getPeriods() {
+        return periods;
+    }
+
+    public void setPeriods(List<HeatmeaterPeriod> periods) {
+        this.periods = periods;
+    }
+
+    public HeatmeaterPeriodType getStatus() {
+        return status;
+    }
+
+    public void setStatus(HeatmeaterPeriodType status) {
+        this.status = status;
     }
 }

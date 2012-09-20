@@ -70,18 +70,19 @@ CREATE TABLE `heatmeater_period_type`(
 
 DROP TABLE IF EXISTS `heatmeater_period`;
 CREATE TABLE `heatmeater_period`(
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
   `heatmeater_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
   `type_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип теплосчетчика',
   `begin_date` DATE COMMENT 'Дата начала периода',
   `end_date` DATE COMMENT 'Дата окончания периода',
   `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
-  PRIMARY KEY (`pk_id`),
-  KEY `key_object_id` (`object_id`),
+  PRIMARY KEY (`id`),
+  KEY `key_object_id` (`parent_id`),
   KEY `key_heatmeater_id` (`heatmeater_id`),
   KEY `key_type_id` (`type_id`),
   KEY `key_operating_month` (`operating_month`),
+  CONSTRAINT `fk_heatmeater_period__heatmeater_period` FOREIGN KEY (`parent_id`) REFERENCES `heatmeater_period` (`id`),
   CONSTRAINT `fk_heatmeater_period__heatmeater` FOREIGN KEY (`heatmeater_id`) REFERENCES `heatmeater` (`id`),
   CONSTRAINT `fk_heatmeater_period__heatmeater_period_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeater_period_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';

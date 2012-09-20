@@ -27,6 +27,7 @@
                 <th class="center" wicket:id="header.ls"><wicket:message key="ls"/></th>
                 <th class="center" wicket:id="header.type"><wicket:message key="type"/></th>
                 <th class="center" wicket:id="header.buildingCodeId"><wicket:message key="buildingCodeId"/></th>
+                <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
 
                 <th class="center">
                     <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
@@ -37,6 +38,7 @@
                 <th><input type="text" wicket:id="object.ls"/></th>
                 <th><input type="text" wicket:id="object.type"/></th>
                 <th><input type="text" wicket:id="object.buildingCodeId"/></th>
+                <th><input type="text" wicket:id="object.status"/></th>
 
                 <th class="center">
                     <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
@@ -49,6 +51,7 @@
                 <td wicket:id="ls"></td>
                 <td wicket:id="type"></td>
                 <td wicket:id="buildingCodeId"></td>
+                <td wicket:id="status"></td>
                 <td>
                     <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
                     <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">

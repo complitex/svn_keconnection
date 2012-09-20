@@ -2,10 +2,9 @@ package org.complitex.keconnection.heatmeater.service;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.complitex.dictionary.service.IProcessListener;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.heatmeater.entity.Heatmeater;
-import org.complitex.keconnection.heatmeater.entity.HeatmeaterWrapper;
-import org.complitex.keconnection.heatmeater.entity.HeatmeterType;
+import org.complitex.keconnection.heatmeater.entity.*;
 import org.complitex.keconnection.heatmeater.service.exception.BuildingNotFoundException;
 import org.complitex.keconnection.heatmeater.service.exception.OrganizationNotFoundException;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
@@ -18,6 +17,7 @@ import javax.ejb.Stateless;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -31,10 +31,15 @@ public class HeatmeaterService {
     private HeatmeaterBean heatmeaterBean;
 
     @EJB
+    private HeatmeaterPeriodBean heatmeaterPeriodBean;
+
+    @EJB
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
+
+    private final Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
 
     @Asynchronous
     public void uploadHeatmeaters(InputStream inputStream, IProcessListener<HeatmeaterWrapper> listener){
@@ -78,9 +83,7 @@ public class HeatmeaterService {
                         createHeatmeater(heatmeaterWrapper);
 
                         listener.processed(heatmeaterWrapper);
-                    } catch (BuildingNotFoundException e) {
-                        listener.error(heatmeaterWrapper, e);
-                    } catch (OrganizationNotFoundException e) {
+                    } catch (BuildingNotFoundException | OrganizationNotFoundException e) {
                         listener.error(heatmeaterWrapper, e);
                     }
                 }
@@ -121,5 +124,15 @@ public class HeatmeaterService {
         heatmeater.setType(HeatmeterType.HEATING_AND_WATER);
 
         heatmeaterBean.save(heatmeater);
+
+        //create period
+        HeatmeaterPeriod period = new HeatmeaterPeriod();
+        period.setHeatmeaterId(heatmeater.getId());
+        period.setType(HeatmeaterPeriodType.OPERATION);
+        period.setBeginDate(DEFAULT_BEGIN_DATE);
+        period.setOperatingMonth(DEFAULT_BEGIN_DATE);
+
+        heatmeaterPeriodBean.save(period);
+        heatmeaterPeriodBean.updateParent(period.getId(), period.getId());
     }
 }
