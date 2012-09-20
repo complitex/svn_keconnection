@@ -26,6 +26,7 @@ import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeater.entity.Heatmeater;
+import org.complitex.keconnection.heatmeater.entity.HeatmeaterPeriodType;
 import org.complitex.keconnection.heatmeater.entity.HeatmeaterWrapper;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterBean;
 import org.complitex.keconnection.heatmeater.service.HeatmeaterService;
@@ -114,7 +115,7 @@ public class HeatmeaterList extends TemplatePage{
         filterForm.add(filterFind);
 
         //Filter Fields
-        filterForm.add(newTextFields("object.", "ls", "type", "buildingCodeId"));
+        filterForm.add(newTextFields("object.", "ls", "type", "buildingCodeId", "status"));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
@@ -159,6 +160,9 @@ public class HeatmeaterList extends TemplatePage{
                 item.add(newTextLabels("ls", "buildingCodeId"));
                 item.add(new Label("type", getStringOrKey(heatmeater.getType())));
 
+                HeatmeaterPeriodType status = heatmeater.getStatus();
+                item.add(new Label("status", status != null ? getStringOrKey(status) : getString("OFF")));
+
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("id", heatmeater.getId());
                 item.add(new BookmarkablePageLink<>("edit", HeatmeaterEdit.class, pageParameters));
@@ -181,7 +185,7 @@ public class HeatmeaterList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "buildingCodeId"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "buildingCodeId", "status"));
 
         //Import Dialog
         importDialog = new Dialog("import_dialog");
