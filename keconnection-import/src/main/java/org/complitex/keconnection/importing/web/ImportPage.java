@@ -34,6 +34,7 @@ import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.keconnection.importing.service.ImportService;
 import org.complitex.keconnection.organization.enity.OrganizationImportFile;
+import org.complitex.template.web.component.LocalePicker;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
@@ -93,6 +94,7 @@ public final class ImportPage extends TemplatePage {
         form.add(new CheckBoxMultipleChoice<IImportFile>("addressData", addressDataModel, addressDataList, renderer));
 
         localeModel = new Model<Locale>(localeBean.getSystemLocale());
+        form.add(new LocalePicker("localePicker", localeModel, false));
 
         //Кнопка импортировать
         Button process = new Button("process") {

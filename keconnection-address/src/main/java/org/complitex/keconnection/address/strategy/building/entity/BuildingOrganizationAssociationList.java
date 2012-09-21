@@ -27,12 +27,21 @@ public final class BuildingOrganizationAssociationList extends ArrayList<Buildin
     }
 
     public boolean hasNulls() {
-        for (BuildingOrganizationAssociation buildingOrganizationAssociation : this) {
-            if (buildingOrganizationAssociation == null || buildingOrganizationAssociation.getOrganizationId() == null
-                    || Strings.isNullOrEmpty(buildingOrganizationAssociation.getBuildingCode())) {
+        for (BuildingOrganizationAssociation association : this) {
+            if (association == null || association.getOrganizationId() == null
+                    || Strings.isNullOrEmpty(association.getBuildingCode())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean allowAddNew(BuildingOrganizationAssociation association) {
+        for (BuildingOrganizationAssociation a : this) {
+            if (association.equals(a)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
