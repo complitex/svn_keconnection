@@ -54,6 +54,30 @@ public class TarifMenu extends ResourceTemplateMenu {
                     public String getTagId() {
                         return "tarif_group_item";
                     }
+                },
+                new ITemplateLink() {
+
+                    static final String TARIF_ENTITY = "tarif";
+
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getStrategy(TARIF_ENTITY).getPluralEntityLabel(locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return getStrategy(TARIF_ENTITY).getListPage();
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return getStrategy(TARIF_ENTITY).getListPageParams();
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "tarif_item";
+                    }
                 });
     }
 
