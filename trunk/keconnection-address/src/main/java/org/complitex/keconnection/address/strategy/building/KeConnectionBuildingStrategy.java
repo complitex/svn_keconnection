@@ -155,13 +155,15 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     public void addBuildingOrganizationAssociation(KeConnectionBuilding building, BuildingOrganizationAssociation association) {
         association.setBuildingId(building.getId());
 
-        saveBuildingOrganizationAssociation(association);
+        if (building.getBuildingOrganizationAssociationList().allowAddNew(association)) {
+            saveBuildingOrganizationAssociation(association);
 
-        int attributeId = building.getAttributes(ORGANIZATION_ASSOCIATIONS).size() + 1;
-        Attribute a = newBuildingOrganizationAssociationAttribute(attributeId, association.getId());
-        a.setObjectId(building.getId());
-        a.setStartDate(building.getStartDate());
-        insertAttribute(a);
+            int attributeId = building.getAttributes(ORGANIZATION_ASSOCIATIONS).size() + 1;
+            Attribute a = newBuildingOrganizationAssociationAttribute(attributeId, association.getId());
+            a.setObjectId(building.getId());
+            a.setStartDate(building.getStartDate());
+            insertAttribute(a);
+        }
     }
 
     private BuildingOrganizationAssociationList loadBuildingOrganizationAssociations(Building building) {
@@ -209,10 +211,13 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         return new KeConnectionBuildingValidator(localeBean.getSystemLocale());
     }
 
-    public Long getBuildingCodeId(final Long organizationId, final String buildingCode){
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeId", new HashMap<String, Object>(){{
-            put("organizationId", organizationId);
-            put("buildingCode", buildingCode);
-        }});
+    public Long getBuildingCodeId(final Long organizationId, final String buildingCode) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeId", new HashMap<String, Object>() {
+
+            {
+                put("organizationId", organizationId);
+                put("buildingCode", buildingCode);
+            }
+        });
     }
 }

@@ -7,7 +7,6 @@ package org.complitex.keconnection.address.service;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.service.StringCultureBean;
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.base.Strings;
 import java.io.IOException;
@@ -17,7 +16,7 @@ import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.service.AddressImportService;
 import org.complitex.address.strategy.building.BuildingStrategy;
 import org.complitex.address.strategy.building_address.BuildingAddressStrategy;
-import org.complitex.dictionary.entity.AbstractImportService;
+import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.IImportListener;
@@ -25,6 +24,7 @@ import org.complitex.dictionary.service.exception.ImportDuplicateException;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
+import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociation;
@@ -45,8 +45,6 @@ public class KeConnectionAddressImportService extends AbstractImportService {
     @EJB
     private AddressImportService addressImportService;
     @EJB
-    private StringCultureBean stringBean;
-    @EJB
     private LocaleBean localeBean;
     @EJB
     private DistrictStrategy districtStrategy;
@@ -57,32 +55,32 @@ public class KeConnectionAddressImportService extends AbstractImportService {
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
-    public void process(AddressImportFile addressFile, IImportListener listener)
+    public void process(AddressImportFile addressFile, IImportListener listener, long localeId)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException, ImportDuplicateException {
         switch (addressFile) {
             case COUNTRY:
-                addressImportService.importCountry(listener);
+                addressImportService.importCountry(listener, localeId);
                 break;
             case REGION:
-                addressImportService.importRegion(listener);
+                addressImportService.importRegion(listener, localeId);
                 break;
             case CITY_TYPE:
-                addressImportService.importCityType(listener);
+                addressImportService.importCityType(listener, localeId);
                 break;
             case CITY:
-                addressImportService.importCity(listener);
+                addressImportService.importCity(listener, localeId);
                 break;
             case DISTRICT:
-                addressImportService.importDistrict(listener);
+                addressImportService.importDistrict(listener, localeId);
                 break;
             case STREET_TYPE:
-                addressImportService.importStreetType(listener);
+                addressImportService.importStreetType(listener, localeId);
                 break;
             case STREET:
-                addressImportService.importStreet(listener);
+                addressImportService.importStreet(listener, localeId);
                 break;
             case BUILDING:
-                importBuilding(listener);
+                importBuilding(listener, localeId);
                 break;
         }
     }
@@ -90,12 +88,13 @@ public class KeConnectionAddressImportService extends AbstractImportService {
     /**
      * ID DISTR_ID STREET_ID NUM PART GEK CODE
      */
-    private void importBuilding(IImportListener listener) throws ImportFileNotFoundException, ImportFileReadException,
-            ImportObjectLinkException {
+    private void importBuilding(IImportListener listener, long localeId) throws ImportFileNotFoundException,
+            ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(BUILDING, getRecordCount(BUILDING));
 
         CSVReader reader = getCsvReader(BUILDING);
 
+        final long systemLocaleId = localeBean.getSystemLocaleObject().getId();
         int recordIndex = 0;
 
         try {
@@ -105,19 +104,20 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 recordIndex++;
 
                 final long streetExternalId = Long.parseLong(line[2].trim());
+
                 Long streetId = streetStrategy.getObjectId(streetExternalId);
                 if (streetId == null) {
                     throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, line[2]);
                 }
 
-                final String number = line[3].trim();
-                final String corp = Strings.isNullOrEmpty(line[4]) ? null : line[4].trim();
+                final String number = line[3].trim().toUpperCase();
+                final String corp = Strings.isNullOrEmpty(line[4]) ? null : line[4].trim().toUpperCase();
 
                 final Long existingBuildingId = buildingStrategy.checkForExistingAddress(null,
                         number, corp, null, BuildingAddressStrategy.PARENT_STREET_ENTITY_ID, streetId,
                         localeBean.getSystemLocale());
 
-                KeConnectionBuilding building;
+                KeConnectionBuilding building = null;
 
                 if (existingBuildingId != null) {
                     //дом уже существует
@@ -142,12 +142,18 @@ public class KeConnectionAddressImportService extends AbstractImportService {
 
                     //Номер дома
                     final Attribute numberAttribute = buildingAddress.getAttribute(BuildingAddressStrategy.NUMBER);
-                    stringBean.getSystemStringCulture(numberAttribute.getLocalizedValues()).setValue(number);
+                    AttributeUtil.setStringValue(numberAttribute, number, localeId);
+                    if (AttributeUtil.getSystemStringCultureValue(numberAttribute) == null) {
+                        AttributeUtil.setStringValue(numberAttribute, number, systemLocaleId);
+                    }
 
                     //Корпус
                     if (corp != null) {
                         final Attribute corpAttribute = buildingAddress.getAttribute(BuildingAddressStrategy.CORP);
-                        stringBean.getSystemStringCulture(corpAttribute.getLocalizedValues()).setValue(corp);
+                        AttributeUtil.setStringValue(corpAttribute, corp, localeId);
+                        if (AttributeUtil.getSystemStringCultureValue(corpAttribute) == null) {
+                            AttributeUtil.setStringValue(corpAttribute, corp, systemLocaleId);
+                        }
                     }
                 }
 
@@ -169,11 +175,11 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                     if (existingBuildingId == null) { // новый дом
                         building.getBuildingOrganizationAssociationList().add(association);
                         buildingStrategy.insert(building, DateUtil.getCurrentDate());
-                        listener.recordProcessed(BUILDING, recordIndex);
-                    } else { // существующий дом, но добавлен новый код дома
+                    } else { // существующий дом, но возможно добавлен новый код дома
                         buildingStrategy.addBuildingOrganizationAssociation(building, association);
                     }
                 }
+                listener.recordProcessed(BUILDING, recordIndex);
             }
 
             listener.completeImport(BUILDING, recordIndex);

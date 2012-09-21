@@ -158,7 +158,7 @@ public class ImportService {
                     //import organizations
                     organizationImportService.process(listener, localeId);
                 } else if (importFile instanceof AddressImportFile) {
-                    addressImportService.process((AddressImportFile) importFile, listener);
+                    addressImportService.process((AddressImportFile) importFile, listener, localeId);
                 }
 
                 userTransaction.commit();
