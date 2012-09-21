@@ -2,7 +2,8 @@
 -- Sequence
 -- --------------------------------
 INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES
-('tarif_group',1), ('tarif_group_string_culture',1);
+('tarif_group',1), ('tarif_group_string_culture',1),
+('tarif',1), ('tarif_string_culture',1);
 
 -- --------------------------------
 -- Organization type
@@ -94,3 +95,21 @@ INSERT INTO `tarif_group_string_culture`(`id`, `locale_id`, `value`) VALUES
 (5, 1, UPPER('прочие потребители')), (5, 2, UPPER('прочие потребители')), (6,(SELECT `id` FROM `locales` WHERE `system` = 1), UPPER('3'));
 INSERT INTO `tarif_group_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
 (1,1,3200,1,3200),(1,1,3201,2,3201),(1,2,3200,3,3200),(1,2,3201,4,3201),(1,3,3200,5,3200),(1,3,3201,6,3201);
+
+-- ------------------------------
+-- Tarif
+-- ------------------------------
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3300, 1, 'Тариф'), (3300, 2, 'Тариф');
+INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (3300, 'tarif', 3300, '');
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3301, 1, UPPER('Название')), (3301, 2, UPPER('Назва'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3300, 3300, 1, 3301, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3300, 3300, UPPER('string_culture'));
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3302, 1, UPPER('Код тарифа')), (3302, 2, UPPER('Код тарифа'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3301, 3300, 1, 3302, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3301, 3301, UPPER('integer'));
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3303, 1, UPPER('Тарифная группа')), (3303, 2, UPPER('Тарифная группа'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3302, 3300, 1, 3303, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3302, 3302, 'tarif_group');

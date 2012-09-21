@@ -34,28 +34,55 @@ public class TarifDescriptionMenu extends ResourceTemplateMenu {
 
     @Override
     public List<ITemplateLink> getTemplateLinks(final Locale locale) {
-        return ImmutableList.<ITemplateLink>of(new ITemplateLink() {
+        return ImmutableList.<ITemplateLink>of(
+                new ITemplateLink() {
 
-            @Override
-            public String getLabel(Locale locale) {
-                return getEntityName("tarif_group", locale);
-            }
+                    static final String TARIF_GROUP_ENTITY = "tarif_group";
 
-            @Override
-            public Class<? extends Page> getPage() {
-                return EntityDescription.class;
-            }
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getEntityName(TARIF_GROUP_ENTITY, locale);
+                    }
 
-            @Override
-            public PageParameters getParameters() {
-                return new PageParameters().set(EntityDescription.ENTITY, "tarif_group");
-            }
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return EntityDescription.class;
+                    }
 
-            @Override
-            public String getTagId() {
-                return "tarif_group_description_item";
-            }
-        });
+                    @Override
+                    public PageParameters getParameters() {
+                        return new PageParameters().set(EntityDescription.ENTITY, TARIF_GROUP_ENTITY);
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "tarif_group_description_item";
+                    }
+                },
+                new ITemplateLink() {
+
+                    static final String TARIF_ENTITY = "tarif";
+
+                    @Override
+                    public String getLabel(Locale locale) {
+                        return getEntityName(TARIF_ENTITY, locale);
+                    }
+
+                    @Override
+                    public Class<? extends Page> getPage() {
+                        return EntityDescription.class;
+                    }
+
+                    @Override
+                    public PageParameters getParameters() {
+                        return new PageParameters().set(EntityDescription.ENTITY, TARIF_ENTITY);
+                    }
+
+                    @Override
+                    public String getTagId() {
+                        return "tarif_description_item";
+                    }
+                });
     }
 
     @Override
