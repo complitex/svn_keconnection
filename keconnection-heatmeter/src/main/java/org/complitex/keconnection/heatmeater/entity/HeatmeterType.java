@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeater.entity;
 
 import org.complitex.dictionary.mybatis.IFixedIdType;
 import org.complitex.dictionary.mybatis.FixedIdTypeHandler;
+import org.complitex.keconnection.heatmeater.strategy.HeatmeterTypeStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -9,7 +10,7 @@ import org.complitex.dictionary.mybatis.FixedIdTypeHandler;
  */
 @FixedIdTypeHandler
 public enum HeatmeterType implements IFixedIdType {
-    HEATING(100L), HEATING_AND_WATER(200L);
+    HEATING(HeatmeterTypeStrategy.HEATING), HEATING_AND_WATER(HeatmeterTypeStrategy.HEATING_AND_WATER);
 
     private Long id;
 

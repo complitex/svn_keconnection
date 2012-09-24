@@ -1,5 +1,12 @@
 package org.complitex.keconnection.heatmeater.web;
 
+import java.util.Locale;
+import org.apache.wicket.Page;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.template.web.template.ITemplateLink;
 import org.complitex.template.web.template.ResourceTemplateMenu;
 
 /**
@@ -7,7 +14,66 @@ import org.complitex.template.web.template.ResourceTemplateMenu;
  *         Date: 07.09.12 14:39
  */
 public class HeatmeaterMenu extends ResourceTemplateMenu {
+
     public HeatmeaterMenu() {
         add("list", HeatmeaterList.class);
+
+        //heatemeter types
+        add(new ITemplateLink() {
+
+            private IStrategy getStrategy() {
+                StrategyFactory strategyFactory = EjbBeanLocator.getBean(StrategyFactory.class);
+                return strategyFactory.getStrategy("heatmeter_type");
+            }
+
+            @Override
+            public String getLabel(Locale locale) {
+                return getStrategy().getPluralEntityLabel(locale);
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return getStrategy().getListPage();
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return getStrategy().getListPageParams();
+            }
+
+            @Override
+            public String getTagId() {
+                return "heatmeter_type_item";
+            }
+        });
+
+        //heatemeter period types
+        add(new ITemplateLink() {
+
+            private IStrategy getStrategy() {
+                StrategyFactory strategyFactory = EjbBeanLocator.getBean(StrategyFactory.class);
+                return strategyFactory.getStrategy("heatmeter_period_type");
+            }
+
+            @Override
+            public String getLabel(Locale locale) {
+                return getStrategy().getPluralEntityLabel(locale);
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return getStrategy().getListPage();
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return getStrategy().getListPageParams();
+            }
+
+            @Override
+            public String getTagId() {
+                return "heatmeter_period_type_item";
+            }
+        });
     }
 }

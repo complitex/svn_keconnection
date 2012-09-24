@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.keconnection.tarif.strategy;
+package org.complitex.keconnection.heatmeater.strategy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -18,10 +18,8 @@ import org.complitex.dictionary.entity.example.AttributeExample;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.strategy.DeleteException;
-import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.ResourceUtil;
-import org.complitex.keconnection.tarif.strategy.web.edit.TarifGroupValidator;
 import org.complitex.template.strategy.TemplateStrategy;
 import org.complitex.template.web.security.SecurityRole;
 
@@ -30,33 +28,29 @@ import org.complitex.template.web.security.SecurityRole;
  * @author Artem
  */
 @Stateless
-public class TarifGroupStrategy extends TemplateStrategy {
+public class HeatmeterTypeStrategy extends TemplateStrategy {
 
-    private static final String RESOURCE_BUNDLE = TarifGroupStrategy.class.getName();
-    private static final String MAPPING_NAMESPACE = TarifGroupStrategy.class.getPackage().getName() + ".TarifGroup";
+    private static final String RESOURCE_BUNDLE = HeatmeterTypeStrategy.class.getName();
     /**
      * Attribute type ids
      */
-    public static final long NAME = 3200;
-    public static final long CODE = 3201;
+    public static final long NAME = 3400;
     /**
-     * Predefined tarif group ids
+     * Predefined heatmeter type ids
      */
-    public static final long PEOPLE_TARIF_GROUP_ID = 1;
-    public static final long ORGANIZATION_TARIF_GROUP_ID = 2;
-    public static final long OTHER_TARIF_GROUP_ID = 3;
-    /* Reserved tarif groups */
-    private static final Set<Long> RESERVED_TARIF_GROUP_IDS = ImmutableSet.of(PEOPLE_TARIF_GROUP_ID,
-            ORGANIZATION_TARIF_GROUP_ID, OTHER_TARIF_GROUP_ID);
+    public static final long HEATING = 1;
+    public static final long HEATING_AND_WATER = 2;
+    /* Reserved heatmeter types */
+    private static final Set<Long> RESERVED_HEATMETER_TYPE_IDS = ImmutableSet.of(HEATING, HEATING_AND_WATER);
 
     @Override
     public String getEntityTable() {
-        return "tarif_group";
+        return "heatmeter_type";
     }
 
     @Override
     protected List<Long> getListAttributeTypes() {
-        return Lists.newArrayList(NAME, CODE);
+        return Lists.newArrayList(NAME);
     }
 
     @Override
@@ -87,59 +81,13 @@ public class TarifGroupStrategy extends TemplateStrategy {
         return (List<DomainObject>) find(example);
     }
 
-    public DomainObject getObjectByCode(int code) {
-        DomainObjectExample example = new DomainObjectExample();
-        AttributeExample codeExample = new AttributeExample(CODE);
-        codeExample.setValue(String.valueOf(code));
-        example.addAttributeExample(codeExample);
-        configureExample(example, ImmutableMap.<String, Long>of(), null);
-        List<? extends DomainObject> results = find(example);
-        if (results == null || results.isEmpty()) {
-            return null;
-        } else if (results.size() > 1) {
-            throw new IllegalStateException("More one tarif groups have the same code.");
-        } else {
-            return results.get(0);
-        }
-    }
-
-    public Long getIdByCode(int code) {
-        DomainObject object = getObjectByCode(code);
-        return object != null ? object.getId() : null;
-    }
-
     @Transactional
     @Override
     protected void deleteChecks(long objectId, Locale locale) throws DeleteException {
-        if (RESERVED_TARIF_GROUP_IDS.contains(objectId)) {
+        if (RESERVED_HEATMETER_TYPE_IDS.contains(objectId)) {
             throw new DeleteException(ResourceUtil.getString(RESOURCE_BUNDLE, "delete_reserved_instance_error", locale));
         }
         super.deleteChecks(objectId, locale);
-    }
-
-    @Transactional
-    public Long validateCode(Long id, String code) {
-        Map<String, Object> params = ImmutableMap.<String, Object>of("codeAT", CODE, "code", code);
-        List<Long> results = sqlSession().selectList(MAPPING_NAMESPACE + ".validateCode", params);
-        for (Long result : results) {
-            if (!result.equals(id)) {
-                return result;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public IValidator getValidator() {
-        return new TarifGroupValidator();
-    }
-
-    @Override
-    protected void extendOrderBy(DomainObjectExample example) {
-        if (example.getOrderByAttributeTypeId() != null
-                && example.getOrderByAttributeTypeId().equals(CODE)) {
-            example.setOrderByNumber(true);
-        }
     }
 
     @Override
