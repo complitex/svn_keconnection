@@ -12,7 +12,7 @@
     </resultMap>
 
     <insert id="insertHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod"
-            useGeneratedKeys="true" keyProperty="id">
+        useGeneratedKeys="true" keyProperty="id">
         insert into `heatmeter_period`
           (`parent_id`, `heatmeter_id`, `type_id`, `begin_date`, `end_date`, `operating_month`)
         values

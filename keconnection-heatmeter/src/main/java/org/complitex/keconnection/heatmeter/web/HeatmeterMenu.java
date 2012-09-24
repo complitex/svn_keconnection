@@ -9,6 +9,7 @@ import org.complitex.template.web.template.ResourceTemplateMenu;
 public class HeatmeterMenu extends ResourceTemplateMenu {
 
     public HeatmeterMenu() {
-        add("list", HeatmeterList.class);
+        add("heatmeter_list", HeatmeterList.class);
+        add("payload_list", PayloadList.class);
     }
 }
