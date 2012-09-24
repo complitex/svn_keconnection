@@ -71,7 +71,13 @@ public class HeatmeterService {
                         continue;
                     }
 
-                    heatmeaterWrapper = new HeatmeterWrapper(lineNum, line[0], line[1], ls);
+                    String orgCode = line[0];
+                    //organization leading zero
+                    if (orgCode.length() < 4 && StringUtil.isNumeric(orgCode)){
+                        orgCode = String.format("%04d", StringUtil.parseInt(orgCode));
+                    }
+
+                    heatmeaterWrapper = new HeatmeterWrapper(lineNum, orgCode, line[1], ls);
 
                     //check duplicates
                     if (heatmeterBean.isExist(heatmeaterWrapper.getHeatmeter())){
@@ -105,15 +111,7 @@ public class HeatmeterService {
 
     public void createHeatmeter(HeatmeterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
             OrganizationNotFoundException {
-        //find organization
-        String orgCode = heatmeaterWrapper.getOrganizationCode();
-
-        //leading zero
-        if (orgCode.length() < 3 && StringUtil.isNumeric(orgCode)){
-            orgCode = String.format("%04d", StringUtil.parseInt(orgCode));
-        }
-
-        Long organizationId = organizationStrategy.getObjectId(orgCode);
+        Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 
         if (organizationId == null){
             throw new OrganizationNotFoundException(heatmeaterWrapper);

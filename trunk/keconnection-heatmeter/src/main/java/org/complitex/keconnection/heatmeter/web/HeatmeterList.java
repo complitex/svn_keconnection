@@ -20,6 +20,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.address.service.AddressRendererBean;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
@@ -31,6 +32,7 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterWrapper;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.component.toolbar.UploadButton;
@@ -64,6 +66,12 @@ public class HeatmeterList extends TemplatePage{
 
     @EJB
     private HeatmeterService heatmeterService;
+
+    @EJB
+    private AddressRendererBean addressRendererBean;
+
+    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
+    private IKeConnectionOrganizationStrategy organizationStrategy;
 
     private Dialog importDialog;
 
@@ -106,17 +114,18 @@ public class HeatmeterList extends TemplatePage{
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 target.add(filterForm);
+                target.add(messages);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //skip
+                target.add(messages);
             }
         };
         filterForm.add(filterFind);
 
         //Filter Fields
-        filterForm.add(newTextFields("object.", "ls", "type", "buildingCodeId"));
+        filterForm.add(newTextFields("object.", "ls", "type", "buildingId", "organizationId"));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class));
 
         //Selected Heatmeaters Id Map
@@ -159,7 +168,12 @@ public class HeatmeterList extends TemplatePage{
             protected void populateItem(Item<Heatmeter> item) {
                 final Heatmeter heatmeter = item.getModelObject();
 
-                item.add(newTextLabels("ls", "buildingCodeId"));
+                item.add(newTextLabels("ls"));
+
+                item.add(new Label("buildingId", addressRendererBean.displayBuildingSimple(heatmeter.getBuildingId(), getLocale())));
+
+                item.add(new Label("organizationId", organizationStrategy.displayShortName(heatmeter.getOrganizationId(), getLocale())));
+
                 item.add(new Label("type", getStringOrKey(heatmeter.getType())));
 
                 item.add(new Label("status", getStringOrKey(heatmeter.getStatus())));
@@ -186,7 +200,7 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "buildingCodeId", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "buildingId", "organizationId", "status"));
 
         //Import Dialog
         importDialog = new Dialog("import_dialog");

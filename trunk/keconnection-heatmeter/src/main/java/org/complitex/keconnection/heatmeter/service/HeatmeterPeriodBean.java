@@ -16,20 +16,20 @@ import java.util.HashMap;
 public class HeatmeterPeriodBean extends AbstractBean{
     public void save(HeatmeterPeriod heatmeterPeriod){
         if (heatmeterPeriod.getId() == null){
-            sqlSession().insert("insertHeatmeaterPeriod", heatmeterPeriod);
+            sqlSession().insert("insertHeatmeterPeriod", heatmeterPeriod);
         }else {
-            sqlSession().update("updateHeatmeaterPeriod", heatmeterPeriod);
+            sqlSession().update("updateHeatmeterPeriod", heatmeterPeriod);
         }
     }
 
     public void updateParent(final Long id, final Long parentId){
-        sqlSession().update("updateHeatmeaterPeriodParent", new HashMap<String, Long>(){{
+        sqlSession().update("updateHeatmeterPeriodParent", new HashMap<String, Long>(){{
             put("id", id);
             put("parentId", parentId);
         }});
     }
 
-    public HeatmeterPeriod getHeatmeaterPeriod(Long id){
-        return sqlSession().selectOne("selectHeatmeaterPeriod", id);
+    public HeatmeterPeriod getHeatmeterPeriod(Long id){
+        return sqlSession().selectOne("selectHeatmeterPeriod", id);
     }
 }

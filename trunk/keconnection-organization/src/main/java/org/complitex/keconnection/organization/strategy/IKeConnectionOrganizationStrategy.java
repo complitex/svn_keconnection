@@ -4,10 +4,11 @@
  */
 package org.complitex.keconnection.organization.strategy;
 
-import java.util.List;
-import java.util.Locale;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -22,4 +23,6 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
     long SHORT_NAME = 920;
 
     List<DomainObject> getAllServicingOrganizations(Locale locale);
+
+    String displayShortName(Long organizationId, Locale locale);
 }

@@ -6,16 +6,18 @@ package org.complitex.keconnection.organization.strategy;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
-import java.util.Locale;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.complitex.organization.strategy.OrganizationStrategy;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -65,6 +67,17 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
         }
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return (List<DomainObject>) find(example);
+    }
+
+    @Override
+    public String displayShortName(Long organizationId, Locale locale) {
+        DomainObject domainObject = findById(organizationId, true);
+
+        if (domainObject != null) {
+            return AttributeUtil.getStringCultureValue(domainObject, IKeConnectionOrganizationStrategy.SHORT_NAME, locale);
+        }
+
+        return "";
     }
 
     @Override
