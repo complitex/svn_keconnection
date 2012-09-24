@@ -3,7 +3,9 @@
 -- --------------------------------
 INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES
 ('tarif_group',1), ('tarif_group_string_culture',1),
-('tarif',1), ('tarif_string_culture',1);
+('tarif',1), ('tarif_string_culture',1),
+('heatmeter_type',1), ('heatmeter_type_string_culture',1),
+('heatmeter_period_type',1), ('heatmeter_period_type_string_culture',1);
 
 -- --------------------------------
 -- Organization type
@@ -60,18 +62,6 @@ INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_t
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (502, 502, 'building_organization_association');
 
 -- ------------------------------
--- Heatmeater Type
--- ------------------------------
-
-INSERT INTO `heatmeater_type`(`id`, `name`) VALUES (100, 'Отопление'), (200, 'Отопление и подогрев воды');
-
--- ------------------------------
--- Heatmeater Period Type
--- ------------------------------
-
-INSERT INTO `heatmeater_period_type`(`id`, `name`) VALUES (100, 'Функционирование'), (200, 'Юстировка');
-
--- ------------------------------
 -- Tarif group
 -- ------------------------------
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3200, 1, 'Группа тарифов'), (3200, 2, 'Группа тарифов');
@@ -113,3 +103,43 @@ INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3303, 1, UPPER('Тарифная группа')), (3303, 2, UPPER('Тарифная группа'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3302, 3300, 1, 3303, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3302, 3302, 'tarif_group');
+
+-- ------------------------------
+-- Heatmeater Type
+-- ------------------------------
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3400, 1, 'Тип теплосчетчика'), (3400, 2, 'Тип теплосчетчика');
+INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (3400, 'heatmeter_type', 3400, '');
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3401, 1, UPPER('Название')), (3401, 2, UPPER('Назва'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3400, 3400, 1, 3401, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3400, 3400, UPPER('string_culture'));
+
+-- ------------------------------
+-- Predefined heatmeter types
+-- ------------------------------
+INSERT INTO `heatmeter_type`(`object_id`) VALUES (1),(2);
+INSERT INTO `heatmeter_type_string_culture`(`id`, `locale_id`, `value`) VALUES 
+(1, 1, UPPER('отопление')), (1, 2,UPPER('отопление')),
+(2, 1, UPPER('отопление и подогрев воды')), (2, 2, UPPER('отопление и подогрев воды'));
+INSERT INTO `heatmeter_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
+(1,1,3400,1,3400),(1,2,3400,2,3400);
+
+-- ------------------------------
+-- Heatmeater Period Type
+-- ------------------------------
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3500, 1, 'Тип периода теплосчетчика'), (3500, 2, 'Тип периода теплосчетчика');
+INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (3500, 'heatmeter_period_type', 3500, '');
+
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (3501, 1, UPPER('Название')), (3501, 2, UPPER('Назва'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (3500, 3500, 1, 3501, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (3500, 3500, UPPER('string_culture'));
+
+-- ------------------------------
+-- Predefined heatmeter period types
+-- ------------------------------
+INSERT INTO `heatmeter_period_type`(`object_id`) VALUES (1),(2);
+INSERT INTO `heatmeter_period_type_string_culture`(`id`, `locale_id`, `value`) VALUES 
+(1, 1, UPPER('функционирование')), (1, 2,UPPER('функционирование')),
+(2, 1, UPPER('юстировка')), (2, 2, UPPER('юстировка'));
+INSERT INTO `heatmeter_period_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
+(1,1,3500,1,3500),(1,2,3500,2,3500);
