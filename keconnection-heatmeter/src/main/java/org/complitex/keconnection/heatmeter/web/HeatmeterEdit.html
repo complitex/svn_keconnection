@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head><title wicket:id="title"></title></wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h2><wicket:message key="title"/></h2>
+    <div id="messages" wicket:id="messages"></div>
+
+    <form wicket:id="form" action="#">
+        <div>
+            <table  border="0" cellspacing="0" cellpadding="0" class="tbForm">
+                <tbody>
+                <tr>
+                    <th><label for="ls"><wicket:message key="ls"/><b class="blue">*</b>:</label></th>
+                    <td><input id="ls" wicket:id="ls" type="text"/></td>
+                </tr>
+                <!--<tr>-->
+                    <!--<th><label for="dom"><wicket:message key="typeId"/><b class="blue">*</b>:</label></th>-->
+                    <!--<td><input id="dom" wicket:id="typeId" type="text"/></td>-->
+                <!--</tr>-->
+                <tr>
+                    <th><label for="buildingCodeId"><wicket:message key="buildingCodeId"/><b class="blue">*</b>:</label></th>
+                    <td><input id="buildingCodeId" wicket:id="buildingCodeId" type="text"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding-top: 20px">
+            <input type="submit" class="btnMiddle" wicket:message="value:save" wicket:id="save"/>
+            <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>

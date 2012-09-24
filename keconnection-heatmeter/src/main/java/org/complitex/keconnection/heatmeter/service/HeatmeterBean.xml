@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterBean">
+    <resultMap id="heatmeterResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="buildingCodeId" column="building_code_id"/>
+        <result property="status"/>
+        <collection property="periods"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
+                    column="id"/>
+    </resultMap>
+
+    <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter` (`ls`, `type_id`, `building_code_id`)
+          values (#{ls}, #{type}, #{buildingCodeId})
+    </insert>
+
+    <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        update `heatmeter` set `ls` = #{ls}, `type_id` = #{type}, `building_code_id` = #{buildingCodeId}
+    </update>
+
+    <sql id="selectHeatmetersWhere">
+        <where>
+            <if test="object.ls != null">`ls` = #{object.ls}</if>
+            <if test="object.type != null">and `type_id` = #{object.type}</if>
+            <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
+            <if test="object.status != null">and `status` = #{object.status}</if>
+        </where>
+    </sql>
+
+    <sql id="selectHeatmeterSelectFrom">
+        select h.*, IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
+          and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`
+        from `heatmeter` h
+    </sql>
+
+    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMap">
+        <include refid="selectHeatmeterSelectFrom"/> where `id` = #{id}
+    </select>
+
+    <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="heatmeterResultMap">
+        select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(*) from
+        (select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>) h3
+    </select>
+
+    <delete id="deleteHeatmeter" parameterType="long">
+        delete from `heatmeter` where `id` = #{id}
+    </delete>
+
+    <select id="isExistHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            resultType="boolean">
+        select count(*) > 0 from `heatmeter` where `ls` = #{ls}
+    </select>
+</mapper>
