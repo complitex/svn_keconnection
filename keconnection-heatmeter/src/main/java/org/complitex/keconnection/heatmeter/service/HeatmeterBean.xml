@@ -7,6 +7,8 @@
         <result property="type" column="type_id"/>
         <result property="buildingCodeId" column="building_code_id"/>
         <result property="status"/>
+        <result property="buildingId" column="building_id"/>
+        <result property="organizationId" column="organization_id"/>
         <collection property="periods"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
                     column="id"/>
@@ -32,9 +34,9 @@
     </sql>
 
     <sql id="selectHeatmeterSelectFrom">
-        select h.*, IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
+        select h.*, bc.`building_id`, bc.`organization_id`, IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
           and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`
-        from `heatmeter` h
+        from `heatmeter` h left join `building_code` bc on bc.`id` = h.`building_code_id`
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMap">

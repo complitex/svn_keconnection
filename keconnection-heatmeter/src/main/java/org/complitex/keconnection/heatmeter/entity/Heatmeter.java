@@ -19,6 +19,9 @@ public class Heatmeter implements ILongId{
 
     private HeatmeterPeriodType status;
 
+    private Long organizationId;
+    private Long buildingId;
+
     public Long getId() {
         return id;
     }
@@ -65,5 +68,21 @@ public class Heatmeter implements ILongId{
 
     public void setStatus(HeatmeterPeriodType status) {
         this.status = status;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Long getBuildingId() {
+        return buildingId;
+    }
+
+    public void setBuildingId(Long buildingId) {
+        this.buildingId = buildingId;
     }
 }
