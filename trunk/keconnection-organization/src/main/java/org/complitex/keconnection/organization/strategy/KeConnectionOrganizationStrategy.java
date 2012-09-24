@@ -28,6 +28,11 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     private LocaleBean localeBean;
 
     @Override
+    protected List<Long> getListAttributeTypes() {
+        return ImmutableList.of(NAME, CODE, SHORT_NAME);
+    }
+
+    @Override
     public PageParameters getEditPageParams(Long objectId, Long parentId, String parentEntity) {
         PageParameters pageParameters = super.getEditPageParams(objectId, parentId, parentEntity);
         pageParameters.set(STRATEGY, KECONNECTION_ORGANIZATION_STRATEGY_NAME);
@@ -60,5 +65,14 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
         }
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return (List<DomainObject>) find(example);
+    }
+
+    @Override
+    protected void extendOrderBy(DomainObjectExample example) {
+        super.extendOrderBy(example);
+        if (example.getOrderByAttributeTypeId() != null
+                && example.getOrderByAttributeTypeId().equals(CODE)) {
+            example.setOrderByNumber(true);
+        }
     }
 }
