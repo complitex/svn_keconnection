@@ -25,6 +25,7 @@ import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
 import org.complitex.dictionary.util.AttributeUtil;
+import org.complitex.dictionary.util.BuildingNumberConverter;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociation;
@@ -33,6 +34,7 @@ import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizatio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.complitex.address.entity.AddressImportFile.*;
+import static org.complitex.dictionary.util.StringUtil.*;
 
 /**
  *
@@ -85,6 +87,20 @@ public class KeConnectionAddressImportService extends AbstractImportService {
         }
     }
 
+    private String prepareBuildingNumber(long rowNumber, String importNumber) {
+        if (importNumber == null) {
+            throw new NullPointerException("Imported number is null. Row: " + rowNumber);
+        }
+        return BuildingNumberConverter.convert(importNumber.trim()).toUpperCase();
+    }
+
+    private String prepareBuildingCorp(String importCorp) {
+        if (Strings.isNullOrEmpty(importCorp)) {
+            return null;
+        }
+        return removeWhiteSpaces(toCyrillic(importCorp.trim())).toUpperCase();
+    }
+
     /**
      * ID DISTR_ID STREET_ID NUM PART GEK CODE
      */
@@ -110,8 +126,8 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                     throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, line[2]);
                 }
 
-                final String number = line[3].trim().toUpperCase();
-                final String corp = Strings.isNullOrEmpty(line[4]) ? null : line[4].trim().toUpperCase();
+                final String number = prepareBuildingNumber(recordIndex, line[3]);
+                final String corp = prepareBuildingCorp(line[4]);
 
                 final Long existingBuildingId = buildingStrategy.checkForExistingAddress(null,
                         number, corp, null, BuildingAddressStrategy.PARENT_STREET_ENTITY_ID, streetId,
