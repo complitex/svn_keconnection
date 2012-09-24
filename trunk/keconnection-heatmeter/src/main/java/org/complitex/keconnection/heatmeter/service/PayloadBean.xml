@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.PayloadBean">
+    <resultMap id="payloadResultMap" type="org.complitex.keconnection.heatmeter.entity.Payload">
+        <id property="id"/>
+        <result property="parentId"/>
+        <result property="heatmeterId"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="operatingMonth"/>
+        <result property="payload1"/>
+        <result property="payload2"/>
+        <result property="payload3"/>
+    </resultMap>
+
+    <insert id="insertPayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into `payload` (`parent_id`, `heatmeter_id`, `begin_date`, `end_date`, `operating_month`,
+          `payload1`, `payload2`, `payload2`)
+        values (#{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{operatingMonth},
+          #{payload1}, #{payload2}, #{payload3})
+    </insert>
+
+    <update id="updatePayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload">
+        update `payload` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `begin_date` = #{beginDate},
+          `end_date` = #{endDate}, `operating_month` = #{operatingMonth}, `payload1` = #{payload1},
+            `payload2` = #{payload2}, `payload3` = #{payload3}
+        where `id` = #{id}
+    </update>
+
+    <update id="updatePayloadParent" parameterType="map">
+        update `payload` set `parent_id` = #{parentId} where `id` = #{id}
+    </update>
+
+    <select id="selectPayload" parameterType="long" resultMap="payloadResultMap">
+        select * from `payload` where `id` = #{id}
+    </select>
+
+    <sql id="selectPayloadWhere">
+
+    </sql>
+
+    <select id="selectPayloads" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultMap="payloadResultMap">
+        select * from `payload` <include refid="selectPayloadWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectPayloadsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `payload` <include refid="selectPayloadWhere"/>
+    </select>
+</mapper>

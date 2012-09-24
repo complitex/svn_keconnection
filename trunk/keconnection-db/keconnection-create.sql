@@ -59,7 +59,7 @@ CREATE TABLE `tarif_group` (
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`),
-  KEY `key_object_id` (`object_id`),  
+  KEY `key_object_id` (`object_id`),
   KEY `key_parent_id` (`parent_id`),
   KEY `key_parent_entity_id` (`parent_entity_id`),
   KEY `key_start_date` (`start_date`),
@@ -93,9 +93,9 @@ CREATE TABLE `tarif_group_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_tarif_group_attribute__tarif_group` FOREIGN KEY (`object_id`) REFERENCES `tarif_group`(`object_id`),
   CONSTRAINT `fk_tarif_group_attribute__entity_attribute_type` FOREIGN KEY (`attribute_type_id`)
-    REFERENCES `entity_attribute_type` (`id`),
+  REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_tarif_group_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
-    REFERENCES `entity_attribute_value_type` (`id`)
+  REFERENCES `entity_attribute_value_type` (`id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта тарифная группа';
 
 DROP TABLE IF EXISTS `tarif_group_string_culture`;
@@ -130,7 +130,7 @@ CREATE TABLE `tarif` (
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`),
-  KEY `key_object_id` (`object_id`),  
+  KEY `key_object_id` (`object_id`),
   KEY `key_parent_id` (`parent_id`),
   KEY `key_parent_entity_id` (`parent_entity_id`),
   KEY `key_start_date` (`start_date`),
@@ -164,9 +164,9 @@ CREATE TABLE `tarif_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_tarif_attribute__tarif` FOREIGN KEY (`object_id`) REFERENCES `tarif`(`object_id`),
   CONSTRAINT `fk_tarif_attribute__entity_attribute_type` FOREIGN KEY (`attribute_type_id`)
-    REFERENCES `entity_attribute_type` (`id`),
+  REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_tarif_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
-    REFERENCES `entity_attribute_value_type` (`id`)
+  REFERENCES `entity_attribute_value_type` (`id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта тариф';
 
 DROP TABLE IF EXISTS `tarif_string_culture`;
@@ -201,7 +201,7 @@ CREATE TABLE `heatmeter_type` (
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`),
-  KEY `key_object_id` (`object_id`),  
+  KEY `key_object_id` (`object_id`),
   KEY `key_parent_id` (`parent_id`),
   KEY `key_parent_entity_id` (`parent_entity_id`),
   KEY `key_start_date` (`start_date`),
@@ -235,9 +235,9 @@ CREATE TABLE `heatmeter_type_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_heatmeter_type_attribute__heatmeter_type` FOREIGN KEY (`object_id`) REFERENCES `heatmeter_type`(`object_id`),
   CONSTRAINT `fk_heatmeter_type_attribute__entity_attribute_type` FOREIGN KEY (`attribute_type_id`)
-    REFERENCES `entity_attribute_type` (`id`),
+  REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_heatmeter_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
-    REFERENCES `entity_attribute_value_type` (`id`)
+  REFERENCES `entity_attribute_value_type` (`id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты типа теплосчетчика';
 
 DROP TABLE IF EXISTS `heatmeter_type_string_culture`;
@@ -272,7 +272,7 @@ CREATE TABLE `heatmeter_period_type` (
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   UNIQUE KEY `unique_external_id` (`external_id`),
-  KEY `key_object_id` (`object_id`),  
+  KEY `key_object_id` (`object_id`),
   KEY `key_parent_id` (`parent_id`),
   KEY `key_parent_entity_id` (`parent_entity_id`),
   KEY `key_start_date` (`start_date`),
@@ -306,9 +306,9 @@ CREATE TABLE `heatmeter_period_type_attribute` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_heatmeter_period_type_attribute__heatmeter_period_type` FOREIGN KEY (`object_id`) REFERENCES `heatmeter_period_type`(`object_id`),
   CONSTRAINT `fk_heatmeter_period_type_attribute__entity_attribute_type` FOREIGN KEY (`attribute_type_id`)
-    REFERENCES `entity_attribute_type` (`id`),
+  REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_heatmeter_period_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
-    REFERENCES `entity_attribute_value_type` (`id`)
+  REFERENCES `entity_attribute_value_type` (`id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты типа периода теплосчетчика';
 
 DROP TABLE IF EXISTS `heatmeter_period_type_string_culture`;
@@ -337,10 +337,10 @@ CREATE TABLE `heatmeter`(
   `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
   PRIMARY KEY (`id`),
   UNIQUE KEY `heatmeter_unique_id` (`ls`, `building_code_id`),
-  KEY `key_ls` (`ls`),
-  KEY `key_building_code_id` (`building_code_id`),
-  CONSTRAINT `fk_heatmeter__heatmeter_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeter_type` (`object_id`)
-  --  todo CONSTRAINT `fk_heatmeter__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
+  KEY `key_heatmeter_ls` (`ls`),
+  KEY `key_heatmeter_building_code_id` (`building_code_id`),
+  CONSTRAINT `fk_heatmeter__heatmeter_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeter_type` (`object_id`),
+  CONSTRAINT `fk_heatmeter__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Теплосчетчик';
 
 -- ------------------------------
@@ -365,6 +365,25 @@ CREATE TABLE `heatmeter_period`(
   CONSTRAINT `fk_heatmeter_period__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
   CONSTRAINT `fk_heatmeter_period__heatmeter_period_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeter_period_type` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
+
+
+DROP TABLE IF EXISTS `payload`;
+CREATE TABLE `payload`(
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
+  `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
+  `begin_date` DATE COMMENT 'Дата начала периода',
+  `end_date` DATE COMMENT 'Дата окончания периода',
+  `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
+  `payload_1` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 1',
+  `payload_2` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 2',
+  `payload_3` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 3',
+  PRIMARY KEY (`id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_heatmeter_id` (`heatmeter_id`),
+  KEY `key_operating_month` (`operating_month`),
+  CONSTRAINT `fk_payload__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
