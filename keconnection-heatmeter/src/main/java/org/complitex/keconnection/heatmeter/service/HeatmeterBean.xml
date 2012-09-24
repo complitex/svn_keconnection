@@ -30,17 +30,20 @@
             <if test="object.type != null">and `type_id` = #{object.type}</if>
             <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
+            <if test="object.buildingId != null">and `building_id` = #{object.buildingId}</if>
+            <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
         </where>
     </sql>
 
     <sql id="selectHeatmeterSelectFrom">
-        select h.*, bc.`building_id`, bc.`organization_id`, IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
-          and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`
+        select h.*, bc.`building_id` as building_id, bc.`organization_id` as organization_id,
+          IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
+            and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`
         from `heatmeter` h left join `building_code` bc on bc.`id` = h.`building_code_id`
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMap">
-        <include refid="selectHeatmeterSelectFrom"/> where `id` = #{id}
+        <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
 
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"

@@ -4,22 +4,19 @@
  */
 package org.complitex.keconnection.address.service;
 
-import org.complitex.address.strategy.district.DistrictStrategy;
-import org.complitex.address.strategy.street.StreetStrategy;
-import org.complitex.dictionary.service.LocaleBean;
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.base.Strings;
-import java.io.IOException;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.service.AddressImportService;
 import org.complitex.address.strategy.building.BuildingStrategy;
 import org.complitex.address.strategy.building_address.BuildingAddressStrategy;
-import org.complitex.dictionary.service.AbstractImportService;
+import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.IImportListener;
+import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.exception.ImportDuplicateException;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
@@ -33,8 +30,14 @@ import org.complitex.keconnection.address.strategy.building.entity.KeConnectionB
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.complitex.address.entity.AddressImportFile.*;
-import static org.complitex.dictionary.util.StringUtil.*;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.io.IOException;
+
+import static org.complitex.address.entity.AddressImportFile.BUILDING;
+import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
+import static org.complitex.dictionary.util.StringUtil.toCyrillic;
 
 /**
  *
