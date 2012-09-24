@@ -4,11 +4,13 @@
           xsi:schemaLocation="http://www.complitex.org/web/template http://www.complitex.org/web/template/complitex-template.xsd">
     <sidebar>
         <menu class="org.complitex.keconnection.web.admin.AdminMenu"/>
-        <menu class="org.complitex.keconnection.heatmeater.web.HeatmeaterMenu"/>
+        <menu class="org.complitex.keconnection.heatmeter.web.HeatmeterMenu"/>
         <menu class="org.complitex.keconnection.address.menu.KeConnectionAddressMenu"/>
         <menu class="org.complitex.keconnection.organization.menu.KeConnectionOrganizationMenu"/>
         
         <menu class="org.complitex.keconnection.tarif.menu.TarifMenu"/>
+
+        <menu class="org.complitex.keconnection.heatmeter.web.HeatmeterTypeMenu"/>
         <menu class="org.complitex.keconnection.organization_type.menu.KeConnectionOrganizationTypeMenu"/>
 
 <!--        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>-->

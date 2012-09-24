@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.keconnection.heatmeater.strategy;
+package org.complitex.keconnection.heatmeter.strategy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -28,24 +28,24 @@ import org.complitex.template.web.security.SecurityRole;
  * @author Artem
  */
 @Stateless
-public class HeatmeterPeriodTypeStrategy extends TemplateStrategy {
+public class HeatmeterTypeStrategy extends TemplateStrategy {
 
-    private static final String RESOURCE_BUNDLE = HeatmeterPeriodTypeStrategy.class.getName();
+    private static final String RESOURCE_BUNDLE = HeatmeterTypeStrategy.class.getName();
     /**
      * Attribute type ids
      */
-    public static final long NAME = 3500;
+    public static final long NAME = 3400;
     /**
-     * Predefined heatmeter period type ids
+     * Predefined heatmeter type ids
      */
-    public static final long OPERATION = 1;
-    public static final long ADJUSTMENT = 2;
-    /* Reserved heatmeter period types */
-    private static final Set<Long> RESERVED_HEATMETER_PERIOD_TYPE_IDS = ImmutableSet.of(OPERATION, ADJUSTMENT);
+    public static final long HEATING = 1;
+    public static final long HEATING_AND_WATER = 2;
+    /* Reserved heatmeter types */
+    private static final Set<Long> RESERVED_HEATMETER_TYPE_IDS = ImmutableSet.of(HEATING, HEATING_AND_WATER);
 
     @Override
     public String getEntityTable() {
-        return "heatmeter_period_type";
+        return "heatmeter_type";
     }
 
     @Override
@@ -84,7 +84,7 @@ public class HeatmeterPeriodTypeStrategy extends TemplateStrategy {
     @Transactional
     @Override
     protected void deleteChecks(long objectId, Locale locale) throws DeleteException {
-        if (RESERVED_HEATMETER_PERIOD_TYPE_IDS.contains(objectId)) {
+        if (RESERVED_HEATMETER_TYPE_IDS.contains(objectId)) {
             throw new DeleteException(ResourceUtil.getString(RESOURCE_BUNDLE, "delete_reserved_instance_error", locale));
         }
         super.deleteChecks(objectId, locale);
