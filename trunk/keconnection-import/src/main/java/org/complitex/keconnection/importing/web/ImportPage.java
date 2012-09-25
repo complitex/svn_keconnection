@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -21,6 +22,8 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -52,6 +55,7 @@ public final class ImportPage extends TemplatePage {
     private final IModel<List<IImportFile>> addressDataModel;
     private final IModel<List<IImportFile>> organizationDataModel;
     private final IModel<Locale> localeModel;
+    private final IModel<List<String>> warningsModel;
 
     public ImportPage() {
         add(new Label("title", new ResourceModel("title")));
@@ -64,6 +68,16 @@ public final class ImportPage extends TemplatePage {
         addressDataModel = new ListModel<IImportFile>();
 
         container.add(new FeedbackPanel("messages"));
+
+        warningsModel = new ListModel<String>(new LinkedList<String>());
+        container.add(new ListView<String>("warnings", warningsModel) {
+
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                final String warning = item.getModelObject();
+                item.add(new Label("warning", warning));
+            }
+        }.setReuseItems(true));
 
         Form<Void> form = new Form<Void>("form");
         container.add(form);
@@ -102,6 +116,8 @@ public final class ImportPage extends TemplatePage {
             @Override
             public void onSubmit() {
                 if (!importService.isProcessing()) {
+                    warningsModel.getObject().clear();
+
                     final Set<IImportFile> allImportFiles = ImmutableSet.<IImportFile>builder().
                             addAll(organizationDataModel.getObject()).addAll(addressDataModel.getObject()).build();
                     importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId());
@@ -139,11 +155,14 @@ public final class ImportPage extends TemplatePage {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
-                if (!importService.isProcessing()) {
+                String warning = null;
+                while ((warning = importService.getNextWarning()) != null) {
+                    warningsModel.getObject().add(warning);
+                }
 
+                if (!importService.isProcessing()) {
                     addressDataModel.setObject(null);
                     organizationDataModel.setObject(null);
-
                     stopTimer++;
                 }
 

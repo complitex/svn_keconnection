@@ -4,13 +4,16 @@
  */
 package org.complitex.keconnection.importing.service;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.ConcurrencyManagement;
@@ -63,6 +66,7 @@ public class ImportService {
     private volatile String errorMessage;
     private final Map<IImportFile, ImportMessage> messageMap =
             Collections.synchronizedMap(new LinkedHashMap<IImportFile, ImportMessage>());
+    private final Queue<String> warnings = new ConcurrentLinkedQueue<String>();
 
     private class ImportListener implements IImportListener {
 
@@ -89,6 +93,25 @@ public class ImportService {
                     "Имя файла: {0}, количество записей: {1}, Идентификатор локали: {2}",
                     importFile.getFileName(), recordCount, localeId);
         }
+
+        @Override
+        public void warn(IImportFile importFile, String message) {
+            //update warnings in UI
+            warnings.add(message);
+
+            //update warnings in logs
+            if (importFile == AddressImportFile.STREET) {
+                String warning = MessageFormat.format("Предупреждение при импорте файла улиц {0}: {1}",
+                        AddressImportFile.STREET.getFileName(), message);
+                log.warn(warning);
+                logBean.warn(Module.NAME, ImportService.class, AddressImportFile.class, null, Log.EVENT.CREATE, warning);
+            } else if (importFile == AddressImportFile.BUILDING) {
+                String warning = MessageFormat.format("Предупреждение при импорте файла домов {0}: {1}",
+                        AddressImportFile.BUILDING.getFileName(), message);
+                log.warn(warning);
+                logBean.warn(Module.NAME, ImportService.class, AddressImportFile.class, null, Log.EVENT.CREATE, warning);
+            }
+        }
     };
 
     private static class ImportFileComparator implements Comparator<IImportFile> {
@@ -105,6 +128,10 @@ public class ImportService {
                 return ord1 < ord2 ? -1 : (ord1 > ord2 ? 1 : 0);
             }
         }
+    }
+
+    public String getNextWarning() {
+        return warnings.poll();
     }
 
     public boolean isProcessing() {
@@ -129,6 +156,7 @@ public class ImportService {
 
     private void init() {
         messageMap.clear();
+        warnings.clear();
         processing = true;
         error = false;
         success = false;
@@ -158,6 +186,7 @@ public class ImportService {
                     //import organizations
                     organizationImportService.process(listener, localeId);
                 } else if (importFile instanceof AddressImportFile) {
+                    //import addresses
                     addressImportService.process((AddressImportFile) importFile, listener, localeId);
                 }
 
@@ -173,6 +202,7 @@ public class ImportService {
                 log.error("Couldn't rollback transaction.", e1);
             }
 
+            success = false;
             error = true;
             errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
 
