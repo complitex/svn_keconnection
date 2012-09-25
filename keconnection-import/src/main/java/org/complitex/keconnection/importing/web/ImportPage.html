@@ -15,13 +15,24 @@
 
                 <div wicket:id="container">
                     <div wicket:id="messages"></div>
-                    <ul>
-                        <li wicket:id="error" class="feedbackPanelERROR"></li>
-                    </ul>
+                    
+                    <div>
+                        <ul>
+                            <li wicket:id="error" class="feedbackPanelERROR"></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <ul type="disc">
+                            <li wicket:id="warnings" type="disc" class="feedbackPanelWARNING">
+                                <span wicket:id="warning"></span>
+                            </li>
+                        </ul>
+                    </div>
 
                     <form action="#" wicket:id="form">
                         <div wicket:id="localePicker"></div>
-                        
+
                         <h2 style="margin-top: 5px;">
                             <wicket:message key="organizationData"/>
                         </h2>
