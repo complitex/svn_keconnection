@@ -35,7 +35,7 @@ import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.service.exception.ImportCriticalException;
 import org.complitex.keconnection.address.service.KeConnectionAddressImportService;
 import org.complitex.keconnection.importing.Module;
-import org.complitex.keconnection.organization.enity.OrganizationImportFile;
+import org.complitex.keconnection.organization.entity.OrganizationImportFile;
 import org.complitex.keconnection.organization.service.OrganizationImportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

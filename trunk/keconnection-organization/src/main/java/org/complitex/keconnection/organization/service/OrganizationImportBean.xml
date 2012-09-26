@@ -3,7 +3,7 @@
 
 <mapper namespace="org.complitex.keconnection.organization.service.OrganizationImportBean">
     
-    <resultMap id="organizationImport" type="org.complitex.keconnection.organization.enity.OrganizationImport">
+    <resultMap id="organizationImport" type="org.complitex.keconnection.organization.entity.OrganizationImport">
         <id column="pk_id" property="pkId"/>
         <result column="organizationId" property="organization_id"/>
         <result column="code" property="code"/>
@@ -30,7 +30,7 @@
         SELECT * FROM `organization_import` WHERE `organization_id` = #{id}
     </select>
     
-    <insert id="insert" parameterType="org.complitex.keconnection.organization.enity.OrganizationImport">
+    <insert id="insert" parameterType="org.complitex.keconnection.organization.entity.OrganizationImport">
         INSERT INTO `organization_import` (`organization_id`, `code`, `short_name`, `full_name`, `hlevel`) 
             VALUES (#{organizationId}, #{code}, #{shortName}, #{fullName}, #{hlevel})
     </insert>

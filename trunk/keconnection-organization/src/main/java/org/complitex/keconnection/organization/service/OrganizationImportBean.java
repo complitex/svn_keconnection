@@ -10,7 +10,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.keconnection.organization.enity.OrganizationImport;
+import org.complitex.keconnection.organization.entity.OrganizationImport;
 
 /**
  *

@@ -22,13 +22,13 @@ import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.CloneUtil;
-import org.complitex.keconnection.organization.enity.OrganizationImport;
+import org.complitex.keconnection.organization.entity.OrganizationImport;
 import org.complitex.keconnection.organization.service.exception.RootOrganizationNotFound;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.complitex.keconnection.organization.enity.OrganizationImportFile.*;
+import static org.complitex.keconnection.organization.entity.OrganizationImportFile.*;
 
 /**
  *
