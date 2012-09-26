@@ -151,21 +151,6 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertBuildingOrganizationAssociation", buildingOrganizationAssociation);
     }
 
-    @Transactional
-    public void addBuildingOrganizationAssociation(KeConnectionBuilding building, BuildingOrganizationAssociation association) {
-        association.setBuildingId(building.getId());
-
-        if (building.getBuildingOrganizationAssociationList().allowAddNew(association)) {
-            saveBuildingOrganizationAssociation(association);
-
-            int attributeId = building.getAttributes(ORGANIZATION_ASSOCIATIONS).size() + 1;
-            Attribute a = newBuildingOrganizationAssociationAttribute(attributeId, association.getId());
-            a.setObjectId(building.getId());
-            a.setStartDate(building.getStartDate());
-            insertAttribute(a);
-        }
-    }
-
     private BuildingOrganizationAssociationList loadBuildingOrganizationAssociations(Building building) {
         List<Attribute> buildingOrganizationAssociationAttributes = building.getAttributes(ORGANIZATION_ASSOCIATIONS);
         Set<Long> buildingOrganizationAssociationIds = Sets.newHashSet();

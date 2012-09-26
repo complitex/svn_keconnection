@@ -42,6 +42,33 @@ CREATE TABLE `organization_import` (
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта организаций';
 
 -- ------------------------------
+-- Auxiliary tables for building import
+-- ------------------------------
+
+DROP TABLE IF EXISTS `building_import`;
+CREATE TABLE `building_import` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
+  `distr_id` BIGINT(20) NOT NULL COMMENT 'ID района',
+  `street_id` BIGINT(20) NOT NULL COMMENT 'ID улицы',
+  `num` VARCHAR(10) COMMENT 'Номер дома',
+  `processed` TINYINT(1) NOT NULL default 0 COMMENT 'Индикатор импорта',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_building_import` (`street_id`, `num`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта домов';
+
+DROP TABLE IF EXISTS `building_part_import`;
+CREATE TABLE `building_part_import` (
+  `id` BIGINT(20) NOT NULL COMMENT 'ID части дома',
+  `part` VARCHAR(10) COMMENT 'Номер части дома',
+  `gek` BIGINT(20) COMMENT 'ID организации',
+  `code` VARCHAR(10) COMMENT 'Код дома',
+  `building_import_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на building_import запись',
+  PRIMARY KEY (`id`),
+  KEY `key_building_import_id` (`building_import_id`),
+  CONSTRAINT `fk_building_part_import__building_import` FOREIGN KEY (`building_import_id`) REFERENCES `building_import` (`id`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта домов';
+
+-- ------------------------------
 -- Tarif group
 -- ------------------------------
 DROP TABLE IF EXISTS `tarif_group`;

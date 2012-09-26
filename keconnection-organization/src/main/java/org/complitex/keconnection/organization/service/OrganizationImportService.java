@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Queue;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.IImportListener;
@@ -162,8 +163,7 @@ public class OrganizationImportService extends AbstractImportService {
             }
 
             //type
-            newObject.getAttribute(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE).
-                    setValueId(KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION);
+            addOrganizationTypes(newObject);
 
             if (oldObject == null) {
                 organizationStrategy.insert(newObject, DateUtil.getCurrentDate());
@@ -175,5 +175,20 @@ public class OrganizationImportService extends AbstractImportService {
         }
 
         listener.completeImport(ORGANIZATION, recordIndex);
+    }
+
+    private void addOrganizationTypes(DomainObject organization) {
+        organization.removeAttribute(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
+        organization.addAttribute(newOrganizationTypeAttribute(1L, KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION));
+        organization.addAttribute(newOrganizationTypeAttribute(2L, KeConnectionOrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
+    }
+
+    private Attribute newOrganizationTypeAttribute(long attributeId, long organizationTypeId) {
+        Attribute a = new Attribute();
+        a.setAttributeId(attributeId);
+        a.setAttributeTypeId(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
+        a.setValueTypeId(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
+        a.setValueId(organizationTypeId);
+        return a;
     }
 }
