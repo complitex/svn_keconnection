@@ -36,7 +36,7 @@ import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.keconnection.importing.service.ImportService;
-import org.complitex.keconnection.organization.enity.OrganizationImportFile;
+import org.complitex.keconnection.organization.entity.OrganizationImportFile;
 import org.complitex.template.web.component.LocalePicker;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
