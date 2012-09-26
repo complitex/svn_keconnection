@@ -53,6 +53,7 @@
         <mapper resource="org/complitex/organization/strategy/Organization.xml"/>
         
         <mapper resource="org/complitex/keconnection/organization/service/OrganizationImportBean.xml"/>
+        <mapper resource="org/complitex/keconnection/address/service/KeConnectionBuildingImportBean.xml"/>
         
         <mapper resource="org/complitex/keconnection/tarif/strategy/TarifGroup.xml"/>
         <mapper resource="org/complitex/keconnection/tarif/strategy/Tarif.xml"/>
