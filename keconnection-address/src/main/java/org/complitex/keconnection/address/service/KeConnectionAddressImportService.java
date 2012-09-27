@@ -219,6 +219,8 @@ public class KeConnectionAddressImportService extends AbstractImportService {
             }
             buildingImportBean.markProcessed(imports);
         }
+        
+        listener.completeImport(BUILDING, recordIndex);
     }
 
     /**
