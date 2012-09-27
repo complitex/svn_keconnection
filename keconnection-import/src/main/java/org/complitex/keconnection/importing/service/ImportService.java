@@ -15,7 +15,9 @@ import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.service.exception.ImportCriticalException;
 import org.complitex.keconnection.address.service.KeConnectionAddressImportService;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.PayloadImportService;
 import org.complitex.keconnection.importing.Module;
 import org.complitex.keconnection.organization.entity.OrganizationImportFile;
@@ -50,6 +52,10 @@ public class ImportService {
     private OrganizationImportService organizationImportService;
     @EJB
     private KeConnectionAddressImportService addressImportService;
+
+    @EJB
+    private HeatmeterImportService heatmeterImportService;
+
     @EJB
     private PayloadImportService payloadImportService;
 
@@ -177,14 +183,13 @@ public class ImportService {
             for (T importFile : sortedImportFiles) {
                 userTransaction.begin();
 
-                if (importFile instanceof OrganizationImportFile) {
-                    //import organizations
+                if (importFile instanceof OrganizationImportFile) { //import organizations
                     organizationImportService.process(listener, localeId);
-                } else if (importFile instanceof AddressImportFile) {
-                    //import addresses
+                } else if (importFile instanceof AddressImportFile) { //import addresses
                     addressImportService.process((AddressImportFile) importFile, listener, localeId);
-                } else if (importFile instanceof PayloadImportFile){
-                    //import payload
+                } else if (importFile instanceof HeatmeterImportFile){ //import heatmeter
+                    heatmeterImportService.process(importFile, listener);
+                } else if (importFile instanceof PayloadImportFile){ //import payload
                     payloadImportService.process(importFile, listener);
                 }
 

@@ -31,7 +31,7 @@ import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterWrapper;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
-import org.complitex.keconnection.heatmeter.service.HeatmeterService;
+import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -65,7 +65,7 @@ public class HeatmeterList extends TemplatePage{
     private HeatmeterBean heatmeterBean;
 
     @EJB
-    private HeatmeterService heatmeterService;
+    private HeatmeterImportService heatmeterImportService;
 
     @EJB
     private AddressRendererBean addressRendererBean;
@@ -286,7 +286,7 @@ public class HeatmeterList extends TemplatePage{
                     });
                     target.add(dataContainer);
 
-                    heatmeterService.uploadHeatmeters(inputStream, listener);
+                    heatmeterImportService.asyncUploadHeatmeters(inputStream, listener);
                 } catch (IOException e) {
                     log.error("Ошибка чтения файла", e);
                 }
