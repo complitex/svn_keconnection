@@ -4,25 +4,6 @@
  */
 package org.complitex.keconnection.importing.service;
 
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.annotation.Resource;
-import javax.ejb.Asynchronous;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.transaction.UserTransaction;
 import org.complitex.address.entity.AddressImportFile;
 import org.complitex.dictionary.entity.DictionaryConfig;
 import org.complitex.dictionary.entity.IImportFile;
@@ -34,11 +15,20 @@ import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.service.exception.ImportCriticalException;
 import org.complitex.keconnection.address.service.KeConnectionAddressImportService;
+import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.service.PayloadImportService;
 import org.complitex.keconnection.importing.Module;
 import org.complitex.keconnection.organization.entity.OrganizationImportFile;
 import org.complitex.keconnection.organization.service.OrganizationImportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.transaction.UserTransaction;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -60,6 +50,9 @@ public class ImportService {
     private OrganizationImportService organizationImportService;
     @EJB
     private KeConnectionAddressImportService addressImportService;
+    @EJB
+    private PayloadImportService payloadImportService;
+
     private volatile boolean processing;
     private volatile boolean error;
     private volatile boolean success;
@@ -122,11 +115,13 @@ public class ImportService {
                 return -1;
             } else if (o2 instanceof OrganizationImportFile) {
                 return 1;
-            } else {
+            } else if (o1 instanceof Enum && o2 instanceof Enum){
                 final int ord1 = ((Enum) o1).ordinal();
                 final int ord2 = ((Enum) o2).ordinal();
                 return ord1 < ord2 ? -1 : (ord1 > ord2 ? 1 : 0);
             }
+
+            return 0;
         }
     }
 
@@ -188,6 +183,9 @@ public class ImportService {
                 } else if (importFile instanceof AddressImportFile) {
                     //import addresses
                     addressImportService.process((AddressImportFile) importFile, listener, localeId);
+                } else if (importFile instanceof PayloadImportFile){
+                    //import payload
+                    payloadImportService.process(importFile, listener);
                 }
 
                 userTransaction.commit();

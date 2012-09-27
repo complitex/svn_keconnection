@@ -66,4 +66,8 @@
             resultType="boolean">
         select count(*) > 0 from `heatmeter` where `ls` = #{ls}
     </select>
+
+    <select id="selectIdByLs" parameterType="int" resultType="long">
+        select `id` from `heatmeter` where `ls` = #{ls}
+    </select>
 </mapper>

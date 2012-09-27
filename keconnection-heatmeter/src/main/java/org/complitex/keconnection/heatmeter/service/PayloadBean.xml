@@ -8,23 +8,23 @@
         <result property="beginDate"/>
         <result property="endDate"/>
         <result property="operatingMonth"/>
-        <result property="payload1"/>
-        <result property="payload2"/>
-        <result property="payload3"/>
+        <result property="payload1" column="payload_1"/>
+        <result property="payload2" column="payload_2"/>
+        <result property="payload3" column="payload_3"/>
     </resultMap>
 
     <insert id="insertPayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload"
         useGeneratedKeys="true" keyProperty="id">
         insert into `payload` (`parent_id`, `heatmeter_id`, `begin_date`, `end_date`, `operating_month`,
-          `payload1`, `payload2`, `payload2`)
+          `payload_1`, `payload_2`, `payload_3`)
         values (#{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{operatingMonth},
           #{payload1}, #{payload2}, #{payload3})
     </insert>
 
     <update id="updatePayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload">
         update `payload` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `begin_date` = #{beginDate},
-          `end_date` = #{endDate}, `operating_month` = #{operatingMonth}, `payload1` = #{payload1},
-            `payload2` = #{payload2}, `payload3` = #{payload3}
+          `end_date` = #{endDate}, `operating_month` = #{operatingMonth}, `payload_1` = #{payload1},
+            `payload_2` = #{payload_2}, `payload_3` = #{payload3}
         where `id` = #{id}
     </update>
 

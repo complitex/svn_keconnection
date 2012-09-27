@@ -42,4 +42,8 @@ public class HeatmeterBean extends AbstractBean{
     public boolean isExist(Heatmeter heatmeter){
         return sqlSession().selectOne("isExistHeatmeter", heatmeter);
     }
+
+    public Long getIdByLs(Integer ls){
+        return sqlSession().selectOne("selectIdByLs", ls);
+    }
 }
