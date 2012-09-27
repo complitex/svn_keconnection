@@ -6,13 +6,6 @@ package org.complitex.keconnection.importing.web;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -24,7 +17,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -35,11 +27,17 @@ import org.complitex.address.entity.AddressImportFile;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.service.PayloadImportService;
 import org.complitex.keconnection.importing.service.ImportService;
 import org.complitex.keconnection.organization.entity.OrganizationImportFile;
 import org.complitex.template.web.component.LocalePicker;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
+
+import javax.ejb.EJB;
+import java.util.*;
 
 /**
  *
@@ -50,10 +48,15 @@ public final class ImportPage extends TemplatePage {
 
     @EJB
     private ImportService importService;
+
+    @EJB
+    private PayloadImportService payloadImportService;
+
     @EJB
     private LocaleBean localeBean;
     private final IModel<List<IImportFile>> addressDataModel;
     private final IModel<List<IImportFile>> organizationDataModel;
+    private final IModel<List<IImportFile>> payloadDataModel;
     private final IModel<Locale> localeModel;
     private final IModel<List<String>> warningsModel;
 
@@ -64,12 +67,13 @@ public final class ImportPage extends TemplatePage {
         container.setOutputMarkupPlaceholderTag(true);
         add(container);
 
-        organizationDataModel = new ListModel<IImportFile>();
-        addressDataModel = new ListModel<IImportFile>();
+        organizationDataModel = new ListModel<>();
+        addressDataModel = new ListModel<>();
+        payloadDataModel = new ListModel<>();
 
-        container.add(new FeedbackPanel("messages"));
+        container.add(new AjaxFeedbackPanel("messages"));
 
-        warningsModel = new ListModel<String>(new LinkedList<String>());
+        warningsModel = new ListModel<>(new LinkedList<String>());
         container.add(new ListView<String>("warnings", warningsModel) {
 
             @Override
@@ -79,7 +83,7 @@ public final class ImportPage extends TemplatePage {
             }
         }.setReuseItems(true));
 
-        Form<Void> form = new Form<Void>("form");
+        Form<Void> form = new Form<>("form");
         container.add(form);
 
         //Организации
@@ -89,6 +93,10 @@ public final class ImportPage extends TemplatePage {
         //Адреса
         final List<IImportFile> addressDataList = new ArrayList<>();
         Collections.addAll(addressDataList, AddressImportFile.values());
+
+        //Табуляграммы
+        final List<PayloadImportFile> payloadDataList = new ArrayList<>(payloadImportService.getPayloadImportFiles());
+
 
         final IChoiceRenderer<IImportFile> renderer = new IChoiceRenderer<IImportFile>() {
 
@@ -103,11 +111,13 @@ public final class ImportPage extends TemplatePage {
             }
         };
 
-        form.add(new CheckBoxMultipleChoice<IImportFile>("organizationData", organizationDataModel, organizationDataList, renderer));
+        form.add(new CheckBoxMultipleChoice<>("organizationData", organizationDataModel, organizationDataList, renderer));
 
-        form.add(new CheckBoxMultipleChoice<IImportFile>("addressData", addressDataModel, addressDataList, renderer));
+        form.add(new CheckBoxMultipleChoice<>("addressData", addressDataModel, addressDataList, renderer));
 
-        localeModel = new Model<Locale>(localeBean.getSystemLocale());
+        form.add(new CheckBoxMultipleChoice<>("payloadData", payloadDataModel, payloadDataList, renderer));
+
+        localeModel = new Model<>(localeBean.getSystemLocale());
         form.add(new LocalePicker("localePicker", localeModel, false));
 
         //Кнопка импортировать
@@ -118,8 +128,11 @@ public final class ImportPage extends TemplatePage {
                 if (!importService.isProcessing()) {
                     warningsModel.getObject().clear();
 
-                    final Set<IImportFile> allImportFiles = ImmutableSet.<IImportFile>builder().
-                            addAll(organizationDataModel.getObject()).addAll(addressDataModel.getObject()).build();
+                    final Set<IImportFile> allImportFiles = ImmutableSet.<IImportFile>builder()
+                            .addAll(organizationDataModel.getObject())
+                            .addAll(addressDataModel.getObject())
+                            .addAll(payloadDataModel.getObject())
+                            .build();
                     importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId());
                     container.add(newTimer());
                 }
@@ -155,14 +168,16 @@ public final class ImportPage extends TemplatePage {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
-                String warning = null;
+                String warning;
                 while ((warning = importService.getNextWarning()) != null) {
-                    warningsModel.getObject().add(warning);
+                    //warningsModel.getObject().add(warning);
+                    error(warning);
                 }
 
                 if (!importService.isProcessing()) {
                     addressDataModel.setObject(null);
                     organizationDataModel.setObject(null);
+                    payloadDataModel.setObject(null);
                     stopTimer++;
                 }
 

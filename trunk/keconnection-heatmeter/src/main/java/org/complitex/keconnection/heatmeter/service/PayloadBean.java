@@ -22,4 +22,12 @@ public class PayloadBean extends AbstractBean {
     public int getPayloadsCount(FilterWrapper<Payload> filterWrapper){
         return sqlSession().selectOne("selectPayloadsCount", filterWrapper);
     }
+
+    public void save(Payload payload){
+        if (payload.getId() == null){
+            sqlSession().insert("insertPayload", payload);
+        }else {
+            sqlSession().update("updatePayload", payload);
+        }
+    }
 }
