@@ -48,4 +48,8 @@
     <select id="selectPayloadsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
         select count(*) from `payload` <include refid="selectPayloadWhere"/>
     </select>
+
+    <select id="isExistPayload" parameterType="long" resultType="boolean">
+        select count(*) > 0 from `payload` where `heatmeter_id` = #{heatmeterId}
+    </select>
 </mapper>
