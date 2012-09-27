@@ -11,6 +11,7 @@
         <result property="payload1" column="payload_1"/>
         <result property="payload2" column="payload_2"/>
         <result property="payload3" column="payload_3"/>
+        <result property="heatmeterLs"/>
     </resultMap>
 
     <insert id="insertPayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload"
@@ -24,7 +25,7 @@
     <update id="updatePayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload">
         update `payload` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `begin_date` = #{beginDate},
           `end_date` = #{endDate}, `operating_month` = #{operatingMonth}, `payload_1` = #{payload1},
-            `payload_2` = #{payload_2}, `payload_3` = #{payload3}
+            `payload_2` = #{payload2}, `payload_3` = #{payload3}
         where `id` = #{id}
     </update>
 
@@ -36,17 +37,26 @@
         select * from `payload` where `id` = #{id}
     </select>
 
-    <sql id="selectPayloadWhere">
-
+    <sql id="selectPayloadFromWhere">
+        from `payload` p left join `heatmeter` h on p.`heatmeter_id` = h.`id`
+        <where>
+            <if test="object.heatmeterLs != null">and h.`ls` = #{object.heatmeterLs}</if>
+            <if test="object.beginDate != null">and p.`begin_date` = #{object.beginDate}</if>
+            <if test="object.endDate != null">and p.`end_date` = #{object.endDate}</if>
+            <if test="object.operatingMonth != null">and p.`operating_month` = #{object.operatingMonth}</if>
+            <if test="object.payload1 != null">and p.`payload_1` = #{object.payload1}</if>
+            <if test="object.payload2 != null">and p.`payload_2` = #{object.payload2}</if>
+            <if test="object.payload3 != null">and p.`payload_3` = #{object.payload3}</if>
+        </where>
     </sql>
 
     <select id="selectPayloads" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultMap="payloadResultMap">
-        select * from `payload` <include refid="selectPayloadWhere"/>
+        select p.*, h.`ls` as heatmeter_ls <include refid="selectPayloadFromWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 
     <select id="selectPayloadsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
-        select count(*) from `payload` <include refid="selectPayloadWhere"/>
+        select count(*) <include refid="selectPayloadFromWhere"/>
     </select>
 
     <select id="isExistPayload" parameterType="long" resultType="boolean">

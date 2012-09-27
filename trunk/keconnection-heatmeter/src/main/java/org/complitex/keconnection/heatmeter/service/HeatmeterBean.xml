@@ -30,8 +30,8 @@
             <if test="object.type != null">and `type_id` = #{object.type}</if>
             <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
-            <if test="object.buildingId != null">and `building_id` = #{object.buildingId}</if>
-            <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
+            <if test="object.buildingId != null">and bc.`building_id` = #{object.buildingId}</if>
+            <if test="object.organizationId != null">and bc.`organization_id` = #{object.organizationId}</if>
         </where>
     </sql>
 

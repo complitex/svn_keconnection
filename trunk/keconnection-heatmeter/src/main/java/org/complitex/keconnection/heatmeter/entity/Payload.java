@@ -20,6 +20,8 @@ public class Payload implements ILongId {
     private BigDecimal payload2;
     private BigDecimal payload3;
 
+    private String heatmeterLs;
+
     public Long getId() {
         return id;
     }
@@ -90,5 +92,13 @@ public class Payload implements ILongId {
 
     public void setPayload3(BigDecimal payload3) {
         this.payload3 = payload3;
+    }
+
+    public String getHeatmeterLs() {
+        return heatmeterLs;
+    }
+
+    public void setHeatmeterLs(String heatmeterLs) {
+        this.heatmeterLs = heatmeterLs;
     }
 }

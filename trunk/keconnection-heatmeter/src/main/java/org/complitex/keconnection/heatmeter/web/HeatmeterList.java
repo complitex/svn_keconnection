@@ -200,7 +200,7 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "buildingId", "organizationId", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "building_id", "organization_id", "status"));
 
         //Import Dialog
         importDialog = new Dialog("import_dialog");
