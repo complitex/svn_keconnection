@@ -70,4 +70,8 @@
     <select id="selectIdByLs" parameterType="int" resultType="long">
         select `id` from `heatmeter` where `ls` = #{ls}
     </select>
+
+    <update id="updateHeatmeterType" parameterType="map">
+        update `heatmeter` set `type_id` = #{type} where `id` = #{id}
+    </update>
 </mapper>

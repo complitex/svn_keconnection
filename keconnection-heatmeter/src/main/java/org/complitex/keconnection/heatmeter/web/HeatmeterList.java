@@ -29,6 +29,7 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterWrapper;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
@@ -125,7 +126,8 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(filterFind);
 
         //Filter Fields
-        filterForm.add(newTextFields("object.", "ls", "type", "buildingId", "organizationId"));
+        filterForm.add(newTextFields("object.", "ls", "buildingId", "organizationId"));
+        filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class));
 
         //Selected Heatmeaters Id Map
@@ -200,7 +202,7 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type", "building_id", "organization_id", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "building_id", "organization_id", "status"));
 
         //Import Dialog
         importDialog = new Dialog("import_dialog");

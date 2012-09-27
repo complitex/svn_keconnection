@@ -9,9 +9,7 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConfig;
-import org.complitex.keconnection.heatmeter.entity.Payload;
-import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +59,7 @@ public class PayloadImportService extends AbstractImportService{
             Payload payload = new Payload();
 
             Integer ls = (Integer) record.getNumberValue("L_S");
+
             Long heatmeterId = heatmeterBean.getIdByLs(ls);
 
             if (heatmeterId == null){
@@ -81,7 +80,11 @@ public class PayloadImportService extends AbstractImportService{
             payload.setOperatingMonth(DEFAULT_BEGIN_DATE);
             payload.setBeginDate(DEFAULT_BEGIN_DATE);
 
+            //save payload
             payloadBean.save(payload);
+
+            //update heatmeter type
+            heatmeterBean.updateHeatmeterType(heatmeterId, HeatmeterType.HEATING);
 
             processed++;
 
