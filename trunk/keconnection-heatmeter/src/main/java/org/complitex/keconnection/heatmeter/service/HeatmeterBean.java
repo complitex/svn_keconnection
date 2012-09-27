@@ -4,8 +4,10 @@ import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
 
 import javax.ejb.Stateless;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,5 +47,12 @@ public class HeatmeterBean extends AbstractBean{
 
     public Long getIdByLs(Integer ls){
         return sqlSession().selectOne("selectIdByLs", ls);
+    }
+
+    public void updateHeatmeterType(final Long id, final HeatmeterType type){
+        sqlSession().update("updateHeatmeterType", new HashMap<String, Object>(){{
+            put("id", id);
+            put("type", type);
+        }});
     }
 }
