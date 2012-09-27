@@ -5,7 +5,6 @@
 package org.complitex.keconnection.importing.web;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -28,7 +27,7 @@ import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
-import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.PayloadImportService;
 import org.complitex.keconnection.importing.service.ImportService;
 import org.complitex.keconnection.organization.entity.OrganizationImportFile;
@@ -53,9 +52,13 @@ public final class ImportPage extends TemplatePage {
     private PayloadImportService payloadImportService;
 
     @EJB
+    private HeatmeterImportService heatmeterImportService;
+
+    @EJB
     private LocaleBean localeBean;
     private final IModel<List<IImportFile>> addressDataModel;
     private final IModel<List<IImportFile>> organizationDataModel;
+    private final IModel<List<IImportFile>> heatmeterDataModel;
     private final IModel<List<IImportFile>> payloadDataModel;
     private final IModel<Locale> localeModel;
     private final IModel<List<String>> warningsModel;
@@ -70,6 +73,7 @@ public final class ImportPage extends TemplatePage {
         organizationDataModel = new ListModel<>();
         addressDataModel = new ListModel<>();
         payloadDataModel = new ListModel<>();
+        heatmeterDataModel = new ListModel<>();
 
         container.add(new AjaxFeedbackPanel("messages"));
 
@@ -86,18 +90,6 @@ public final class ImportPage extends TemplatePage {
         Form<Void> form = new Form<>("form");
         container.add(form);
 
-        //Организации
-        final List<IImportFile> organizationDataList = Lists.newArrayList();
-        Collections.addAll(organizationDataList, OrganizationImportFile.values());
-
-        //Адреса
-        final List<IImportFile> addressDataList = new ArrayList<>();
-        Collections.addAll(addressDataList, AddressImportFile.values());
-
-        //Табуляграммы
-        final List<PayloadImportFile> payloadDataList = new ArrayList<>(payloadImportService.getPayloadImportFiles());
-
-
         final IChoiceRenderer<IImportFile> renderer = new IChoiceRenderer<IImportFile>() {
 
             @Override
@@ -111,11 +103,25 @@ public final class ImportPage extends TemplatePage {
             }
         };
 
-        form.add(new CheckBoxMultipleChoice<>("organizationData", organizationDataModel, organizationDataList, renderer));
+        form.add(new CheckBoxMultipleChoice<>("organizationData",
+                organizationDataModel,
+                Arrays.asList(OrganizationImportFile.values()),
+                renderer));
 
-        form.add(new CheckBoxMultipleChoice<>("addressData", addressDataModel, addressDataList, renderer));
+        form.add(new CheckBoxMultipleChoice<>("addressData",
+                addressDataModel,
+                Arrays.asList(AddressImportFile.values()),
+                renderer));
 
-        form.add(new CheckBoxMultipleChoice<>("payloadData", payloadDataModel, payloadDataList, renderer));
+        form.add(new CheckBoxMultipleChoice<>("heatmeterData",
+                heatmeterDataModel,
+                heatmeterImportService.getHeatmeterImportFiles(),
+                renderer));
+
+        form.add(new CheckBoxMultipleChoice<>("payloadData",
+                payloadDataModel,
+                payloadImportService.getPayloadImportFiles(),
+                renderer));
 
         localeModel = new Model<>(localeBean.getSystemLocale());
         form.add(new LocalePicker("localePicker", localeModel, false));
@@ -132,6 +138,7 @@ public final class ImportPage extends TemplatePage {
                             .addAll(organizationDataModel.getObject())
                             .addAll(addressDataModel.getObject())
                             .addAll(payloadDataModel.getObject())
+                            .addAll(heatmeterDataModel.getObject())
                             .build();
                     importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId());
                     container.add(newTimer());
@@ -177,6 +184,7 @@ public final class ImportPage extends TemplatePage {
                 if (!importService.isProcessing()) {
                     addressDataModel.setObject(null);
                     organizationDataModel.setObject(null);
+                    heatmeterDataModel.setObject(null);
                     payloadDataModel.setObject(null);
                     stopTimer++;
                 }

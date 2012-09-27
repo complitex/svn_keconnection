@@ -42,8 +42,8 @@ public class PayloadImportService extends AbstractImportService{
     @EJB
     private PayloadBean payloadBean;
 
-    public void process(IImportFile importFile, IImportListener listener)
-            throws ImportFileNotFoundException, ImportFileReadException {
+    public void process(IImportFile importFile, IImportListener listener) throws ImportFileNotFoundException,
+            ImportFileReadException {
         Table table = getDbfTable(importFile);
 
         //begin
@@ -92,8 +92,10 @@ public class PayloadImportService extends AbstractImportService{
 
         String[] names = getFileList(getDir(), "dbf");
 
-        for (String name : names){
-            payloadImportFiles.add(new PayloadImportFile(name));
+        if (names != null) {
+            for (String name : names){
+                payloadImportFiles.add(new PayloadImportFile(name));
+            }
         }
 
         return payloadImportFiles;
