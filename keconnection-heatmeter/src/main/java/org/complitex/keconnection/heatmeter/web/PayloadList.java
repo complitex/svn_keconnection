@@ -90,7 +90,7 @@ public class PayloadList extends TemplatePage{
         filterForm.add(filterFind);
 
         //Filter Fields
-        filterForm.add(newTextFields("object.", "heatmeterId", "beginDate", "endDate", "operatingMonth", "payload1",
+        filterForm.add(newTextFields("object.", "heatmeterLs", "beginDate", "endDate", "operatingMonth", "payload1",
                 "payload2", "payload3"));
 
         //Selected Heatmeaters Id Map
@@ -133,7 +133,7 @@ public class PayloadList extends TemplatePage{
             protected void populateItem(Item<Payload> item) {
                 final Payload heatmeter = item.getModelObject();
 
-                item.add(newTextLabels("heatmeterId", "beginDate", "endDate", "operatingMonth", "payload1",
+                item.add(newTextLabels("heatmeterLs", "beginDate", "endDate", "operatingMonth", "payload1",
                         "payload2", "payload3"));
 
 
@@ -159,7 +159,7 @@ public class PayloadList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "heatmeterId", "beginDate", "endDate",
-                "operatingMonth", "payload1", "payload2", "payload3"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "heatmeter_ls", "begin_date", "end_date",
+                "operating_month", "payload_1", "payload_2", "payload_3"));
     }
 }
