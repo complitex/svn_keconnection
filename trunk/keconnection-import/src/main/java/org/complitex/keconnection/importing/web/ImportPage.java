@@ -4,6 +4,7 @@
  */
 package org.complitex.keconnection.importing.web;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -134,11 +135,11 @@ public final class ImportPage extends TemplatePage {
                 if (!importService.isProcessing()) {
                     warningsModel.getObject().clear();
 
-                    final Set<IImportFile> allImportFiles = ImmutableSet.<IImportFile>builder()
+                    final List<IImportFile> allImportFiles = ImmutableList.<IImportFile>builder()
                             .addAll(organizationDataModel.getObject())
                             .addAll(addressDataModel.getObject())
-                            .addAll(payloadDataModel.getObject())
                             .addAll(heatmeterDataModel.getObject())
+                            .addAll(payloadDataModel.getObject())
                             .build();
                     importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId());
                     container.add(newTimer());
@@ -204,7 +205,7 @@ public final class ImportPage extends TemplatePage {
             if (!im.isCompleted() && !importService.isProcessing()) {
                 return " - " + getStringOrKey("error");
             } else if (im.isCompleted()) {
-                return " - " + getStringFormat("complete", im.getIndex());
+                return " - " + getStringFormat("complete", im.getProcessed());
             } else {
                 return " - " + getStringFormat("processing", im.getIndex(), im.getCount());
             }

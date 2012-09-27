@@ -68,6 +68,10 @@ public class PayloadImportService extends AbstractImportService{
                 continue;
             }
 
+            if (payloadBean.isExist(heatmeterId)){
+                continue;
+            }
+
             payload.setHeatmeterId(heatmeterId);
 
             payload.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));

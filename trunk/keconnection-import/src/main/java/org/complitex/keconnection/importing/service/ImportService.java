@@ -83,6 +83,7 @@ public class ImportService {
         @Override
         public void recordProcessed(IImportFile importFile, int recordIndex) {
             messageMap.get(importFile).setIndex(recordIndex);
+            messageMap.get(importFile).incProcessed();
         }
 
         @Override
@@ -165,7 +166,7 @@ public class ImportService {
     }
 
     @Asynchronous
-    public <T extends IImportFile> void process(Set<T> importFiles, long localeId) {
+    public <T extends IImportFile> void process(List<T> importFiles, long localeId) {
         if (processing) {
             return;
         }
@@ -176,11 +177,11 @@ public class ImportService {
         final ImportListener listener = new ImportListener(localeId);
 
         //sort import files in right order
-        SortedSet<T> sortedImportFiles = new TreeSet<>(new ImportFileComparator());
-        sortedImportFiles.addAll(importFiles);
+//        SortedSet<T> sortedImportFiles = new TreeSet<>(new ImportFileComparator());
+//        sortedImportFiles.addAll(importFiles);
 
         try {
-            for (T importFile : sortedImportFiles) {
+            for (T importFile : importFiles) {
                 userTransaction.begin();
 
                 if (importFile instanceof OrganizationImportFile) { //import organizations
