@@ -19,13 +19,17 @@
                     <th><label for="ls"><wicket:message key="ls"/><b class="blue">*</b>:</label></th>
                     <td><input id="ls" wicket:id="ls" type="text"/></td>
                 </tr>
-                <!--<tr>-->
-                    <!--<th><label for="dom"><wicket:message key="typeId"/><b class="blue">*</b>:</label></th>-->
-                    <!--<td><input id="dom" wicket:id="typeId" type="text"/></td>-->
-                <!--</tr>-->
                 <tr>
-                    <th><label for="buildingCodeId"><wicket:message key="buildingCodeId"/><b class="blue">*</b>:</label></th>
-                    <td><input id="buildingCodeId" wicket:id="buildingCodeId" type="text"/></td>
+                    <th><wicket:message key="type"/><b class="blue">*</b>:</th>
+                    <td><select wicket:id="type" type="text"></select></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="building"/><b class="blue">*</b>:</th>
+                    <td><div wicket:id="building" type="text"></div></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="organization"/><b class="blue">*</b>:</th>
+                    <td><select wicket:id="organization"></select></td>
                 </tr>
                 </tbody>
             </table>

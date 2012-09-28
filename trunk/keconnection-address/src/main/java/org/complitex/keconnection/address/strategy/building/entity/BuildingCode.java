@@ -11,7 +11,7 @@ import java.util.Objects;
  *
  * @author Artem
  */
-public class BuildingOrganizationAssociation implements Serializable {
+public class BuildingCode implements Serializable {
 
     private Long id;
     private Long organizationId;
@@ -57,7 +57,7 @@ public class BuildingOrganizationAssociation implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BuildingOrganizationAssociation other = (BuildingOrganizationAssociation) obj;
+        final BuildingCode other = (BuildingCode) obj;
         if (!Objects.equals(this.organizationId, other.organizationId)) {
             return false;
         }

@@ -51,7 +51,7 @@ public class HeatmeterImportService extends AbstractImportService{
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
 
-    private final Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
+    public final static Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
 
     @Asynchronous
     public void asyncUploadHeatmeters(InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){

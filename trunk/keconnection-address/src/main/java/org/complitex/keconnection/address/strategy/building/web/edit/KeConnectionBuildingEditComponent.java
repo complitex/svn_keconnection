@@ -4,8 +4,6 @@
  */
 package org.complitex.keconnection.address.strategy.building.web.edit;
 
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -24,10 +22,13 @@ import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.list.AjaxRemovableListView;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociation;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociationList;
+import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
+import org.complitex.keconnection.address.strategy.building.entity.BuildingCodeList;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+
+import javax.ejb.EJB;
+import java.util.List;
 
 /**
  *
@@ -63,8 +64,8 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
 
         final KeConnectionBuilding building = getDomainObject();
 
-        final BuildingOrganizationAssociationList associationList =
-                building.getBuildingOrganizationAssociationList();
+        final BuildingCodeList associationList =
+                building.getBuildingCodeList();
         if (building.getId() == null) { // new building
             associationList.addNew();
         }
@@ -87,16 +88,16 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
         associationsUpdateContainer.setOutputMarkupId(true);
         buildingOrganizationAssociationsContainer.add(associationsUpdateContainer);
 
-        ListView<BuildingOrganizationAssociation> associations =
-                new AjaxRemovableListView<BuildingOrganizationAssociation>("associations",
+        ListView<BuildingCode> associations =
+                new AjaxRemovableListView<BuildingCode>("associations",
                 associationList) {
 
                     @Override
-                    protected void populateItem(ListItem<BuildingOrganizationAssociation> item) {
+                    protected void populateItem(ListItem<BuildingCode> item) {
                         final WebMarkupContainer fakeContainer = new WebMarkupContainer("fakeContainer");
                         item.add(fakeContainer);
 
-                        final BuildingOrganizationAssociation association = item.getModelObject();
+                        final BuildingCode association = item.getModelObject();
 
                         //organization
                         IModel<DomainObject> organizationModel = new Model<DomainObject>() {
@@ -161,7 +162,7 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
                     }
 
                     @Override
-                    protected boolean approveRemoval(ListItem<BuildingOrganizationAssociation> item) {
+                    protected boolean approveRemoval(ListItem<BuildingCode> item) {
                         return associationList.size() > 1;
                     }
                 };
@@ -179,10 +180,10 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
     }
 
     public boolean isBuildingOrganizationAssociationListEmpty() {
-        return getDomainObject().getBuildingOrganizationAssociationList().isEmpty();
+        return getDomainObject().getBuildingCodeList().isEmpty();
     }
 
     public boolean isBuildingOrganizationAssociationListHasNulls() {
-        return getDomainObject().getBuildingOrganizationAssociationList().hasNulls();
+        return getDomainObject().getBuildingCodeList().hasNulls();
     }
 }
