@@ -161,7 +161,6 @@ public class HeatmeterEdit extends FormTemplatePage{
             public void onSubmit() {
                 try {
                     Heatmeter heatmeter = model.getObject();
-                    heatmeter.setType(HeatmeterType.HEATING);
 
                     Building building = (Building) searchComponentState.get("building");
                     if (building == null){
@@ -187,6 +186,8 @@ public class HeatmeterEdit extends FormTemplatePage{
                     heatmeterBean.save(heatmeter);
 
                     if (heatmeter.getId() == null){
+                        heatmeter.setType(HeatmeterType.HEATING);
+
                         //create period
                         HeatmeterPeriod period = new HeatmeterPeriod();
                         period.setHeatmeterId(heatmeter.getId());
@@ -198,7 +199,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                         heatmeterPeriodBean.updateParent(period.getId(), period.getId());
                     }
 
-                    getSession().info(getString("info_saved"));
+                    getSession().info(getStringFormat("info_saved", heatmeter.getLs()));
                 } catch (Exception e) {
                     log.error("Ошибка сохранения теплосчетчика", e);
                     getSession().error("Ошибка сохранения теплосчетчика: " + e.getMessage());
