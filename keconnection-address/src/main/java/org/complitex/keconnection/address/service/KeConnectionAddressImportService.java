@@ -28,7 +28,7 @@ import org.complitex.dictionary.util.BuildingNumberConverter;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociation;
+import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
@@ -206,10 +206,10 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                             throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, String.valueOf(gekId));
                         }
 
-                        BuildingOrganizationAssociation association = new BuildingOrganizationAssociation();
+                        BuildingCode association = new BuildingCode();
                         association.setOrganizationId(organizationId);
                         association.setBuildingCode(buildingCode);
-                        building.getBuildingOrganizationAssociationList().add(association);
+                        building.getBuildingCodeList().add(association);
                         subjectIds.add(organizationId);
                     }
                     building.setSubjectIds(subjectIds);

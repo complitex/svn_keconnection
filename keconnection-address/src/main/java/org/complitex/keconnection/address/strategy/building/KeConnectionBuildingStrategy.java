@@ -17,8 +17,8 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.DeleteException;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.strategy.web.validate.IValidator;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociation;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingOrganizationAssociationList;
+import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
+import org.complitex.keconnection.address.strategy.building.entity.BuildingCodeList;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
 import org.complitex.keconnection.address.strategy.building.web.edit.KeConnectionBuildingEditComponent;
 import org.complitex.keconnection.address.strategy.building.web.edit.KeConnectionBuildingValidator;
@@ -40,7 +40,7 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     /**
      * Attribute ids
      */
-    private static final long ORGANIZATION_ASSOCIATIONS = 502;
+    private static final long BUILDING_CODE = 502;
     @EJB
     private LocaleBean localeBean;
 
@@ -74,8 +74,8 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         if (building == null) {
             return null;
         }
-        BuildingOrganizationAssociationList associationList = loadBuildingOrganizationAssociations(building);
-        return new KeConnectionBuilding(building, associationList);
+        BuildingCodeList buildingCodes = loadBuildingCodes(building);
+        return new KeConnectionBuilding(building, buildingCodes);
     }
 
     @Transactional
@@ -85,13 +85,13 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         if (building == null) {
             return null;
         }
-        BuildingOrganizationAssociationList associationList = loadBuildingOrganizationAssociations(building);
+        BuildingCodeList associationList = loadBuildingCodes(building);
         return new KeConnectionBuilding(building, associationList);
     }
 
     @Override
     public KeConnectionBuilding newInstance() {
-        return new KeConnectionBuilding(super.newInstance(), new BuildingOrganizationAssociationList());
+        return new KeConnectionBuilding(super.newInstance(), new BuildingCodeList());
     }
 
     @Transactional
@@ -100,30 +100,30 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         super.insertDomainObject(object, insertDate);
 
         KeConnectionBuilding building = (KeConnectionBuilding) object;
-        if (!building.getBuildingOrganizationAssociationList().isEmpty()
-                && !building.getBuildingOrganizationAssociationList().hasNulls()) {
-            addBuildingOrganizationAssociationAttributes(building);
+        if (!building.getBuildingCodeList().isEmpty()
+                && !building.getBuildingCodeList().hasNulls()) {
+            addBuildingCode(building);
         }
     }
 
     @Transactional
-    private void addBuildingOrganizationAssociationAttributes(KeConnectionBuilding building) {
-        building.removeAttribute(ORGANIZATION_ASSOCIATIONS);
+    private void addBuildingCode(KeConnectionBuilding building) {
+        building.removeAttribute(BUILDING_CODE);
 
         long i = 1;
-        for (BuildingOrganizationAssociation association : building.getBuildingOrganizationAssociationList()) {
+        for (BuildingCode association : building.getBuildingCodeList()) {
             association.setBuildingId(building.getId());
-            saveBuildingOrganizationAssociation(association);
+            saveBuildingCode(association);
 
-            building.addAttribute(newBuildingOrganizationAssociationAttribute(i++, association.getId()));
+            building.addAttribute(newBuildingCodeAttribute(i++, association.getId()));
         }
     }
 
-    private Attribute newBuildingOrganizationAssociationAttribute(long attributeId, long buildingAssociationId) {
+    private Attribute newBuildingCodeAttribute(long attributeId, long buildingAssociationId) {
         Attribute a = new Attribute();
-        a.setAttributeTypeId(ORGANIZATION_ASSOCIATIONS);
+        a.setAttributeTypeId(BUILDING_CODE);
         a.setValueId(buildingAssociationId);
-        a.setValueTypeId(ORGANIZATION_ASSOCIATIONS);
+        a.setValueTypeId(BUILDING_CODE);
         a.setAttributeId(attributeId);
         return a;
     }
@@ -134,43 +134,43 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
         KeConnectionBuilding newBuilding = (KeConnectionBuilding) newObject;
         KeConnectionBuilding oldBuilding = (KeConnectionBuilding) oldObject;
 
-        if (!newBuilding.getBuildingOrganizationAssociationList().isEmpty()
-                && !newBuilding.getBuildingOrganizationAssociationList().hasNulls()) {
-            if (!newBuilding.getBuildingOrganizationAssociationList().equals(oldBuilding.getBuildingOrganizationAssociationList())) {
-                addBuildingOrganizationAssociationAttributes(newBuilding);
+        if (!newBuilding.getBuildingCodeList().isEmpty()
+                && !newBuilding.getBuildingCodeList().hasNulls()) {
+            if (!newBuilding.getBuildingCodeList().equals(oldBuilding.getBuildingCodeList())) {
+                addBuildingCode(newBuilding);
             }
         } else {
-            newBuilding.removeAttribute(ORGANIZATION_ASSOCIATIONS);
+            newBuilding.removeAttribute(BUILDING_CODE);
         }
 
         super.update(oldObject, newObject, updateDate);
     }
 
     @Transactional
-    private void saveBuildingOrganizationAssociation(BuildingOrganizationAssociation buildingOrganizationAssociation) {
-        sqlSession().insert(MAPPING_NAMESPACE + ".insertBuildingOrganizationAssociation", buildingOrganizationAssociation);
+    private void saveBuildingCode(BuildingCode buildingCode) {
+        sqlSession().insert(MAPPING_NAMESPACE + ".insertBuildingCode", buildingCode);
     }
 
-    private BuildingOrganizationAssociationList loadBuildingOrganizationAssociations(Building building) {
-        List<Attribute> buildingOrganizationAssociationAttributes = building.getAttributes(ORGANIZATION_ASSOCIATIONS);
-        Set<Long> buildingOrganizationAssociationIds = Sets.newHashSet();
-        for (Attribute associationAttribute : buildingOrganizationAssociationAttributes) {
-            buildingOrganizationAssociationIds.add(associationAttribute.getValueId());
+    private BuildingCodeList loadBuildingCodes(Building building) {
+        List<Attribute> buildingCodeAttributes = building.getAttributes(BUILDING_CODE);
+        Set<Long> buildingCodeIds = Sets.newHashSet();
+        for (Attribute associationAttribute : buildingCodeAttributes) {
+            buildingCodeIds.add(associationAttribute.getValueId());
         }
 
-        List<BuildingOrganizationAssociation> buildingOrganizationAssociations = new ArrayList<>();
-        if (!buildingOrganizationAssociationIds.isEmpty()) {
-            buildingOrganizationAssociations = sqlSession().selectList(MAPPING_NAMESPACE
-                    + ".getBuildingOrganizationAssociations", ImmutableMap.of("ids", buildingOrganizationAssociationIds));
-            Collections.sort(buildingOrganizationAssociations, new Comparator<BuildingOrganizationAssociation>() {
+        List<BuildingCode> buildingCodes = new ArrayList<>();
+        if (!buildingCodeIds.isEmpty()) {
+            buildingCodes = sqlSession().selectList(MAPPING_NAMESPACE
+                    + ".getBuildingCodes", ImmutableMap.of("ids", buildingCodeIds));
+            Collections.sort(buildingCodes, new Comparator<BuildingCode>() {
 
                 @Override
-                public int compare(BuildingOrganizationAssociation o1, BuildingOrganizationAssociation o2) {
+                public int compare(BuildingCode o1, BuildingCode o2) {
                     return o1.getId().compareTo(o2.getId());
                 }
             });
         }
-        return new BuildingOrganizationAssociationList(buildingOrganizationAssociations);
+        return new BuildingCodeList(buildingCodes);
     }
 
     @Transactional
@@ -178,8 +178,8 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     public void delete(long objectId, Locale locale) throws DeleteException {
         deleteChecks(objectId, locale);
 
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteBuildingOrganizationAssociations",
-                ImmutableMap.of("objectId", objectId, "buildingOrganizationAssociationsAT", ORGANIZATION_ASSOCIATIONS));
+        sqlSession().delete(MAPPING_NAMESPACE + ".deleteBuildingCodes",
+                ImmutableMap.of("objectId", objectId, "buildingCodesAT", BUILDING_CODE));
 
         deleteStrings(objectId);
         deleteAttribute(objectId);
@@ -197,12 +197,12 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     }
 
     public Long getBuildingCodeId(final Long organizationId, final String buildingCode) {
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeId", new HashMap<String, Object>() {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeIdByCode",
+                ImmutableMap.of("organizationId", organizationId, "buildingCode", buildingCode));
+    }
 
-            {
-                put("organizationId", organizationId);
-                put("buildingCode", buildingCode);
-            }
-        });
+    public Long getBuildingCodeId(final Long organizationId, final Long buildingId) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeIdByBuilding",
+                ImmutableMap.of("organizationId", organizationId, "buildingId", buildingId));
     }
 }

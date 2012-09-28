@@ -22,6 +22,7 @@
 
     <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
         update `heatmeter` set `ls` = #{ls}, `type_id` = #{type}, `building_code_id` = #{buildingCodeId}
+          where `id` = #{id}
     </update>
 
     <sql id="selectHeatmetersWhere">
