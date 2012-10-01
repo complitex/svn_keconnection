@@ -13,7 +13,6 @@ import java.io.Serializable;
 public class BuildingPartImport implements Serializable {
 
     private long id;
-    private String part;
     private Long gek;
     private String code;
     private long buildingImportId;
@@ -21,9 +20,8 @@ public class BuildingPartImport implements Serializable {
     public BuildingPartImport() {
     }
 
-    public BuildingPartImport(long id, String part, long gekId, String code, long buildingImportId) {
+    public BuildingPartImport(long id, long gekId, String code, long buildingImportId) {
         this.id = id;
-        this.part = part;
         this.gek = gekId;
         this.code = code;
         this.buildingImportId = buildingImportId;
@@ -59,13 +57,5 @@ public class BuildingPartImport implements Serializable {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getPart() {
-        return part;
-    }
-
-    public void setPart(String part) {
-        this.part = part;
     }
 }

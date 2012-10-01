@@ -25,30 +25,34 @@ public class KeConnectionBuildingImportBean extends AbstractBean {
 
     @Transactional
     public void insert(long buildingPartId, long distrId, long streetId, String num, String part, long gekId, String code) {
-        BuildingImport b = new BuildingImport(distrId, streetId, num);
+        BuildingImport b = new BuildingImport(distrId, streetId, num, part);
         sqlSession().insert(MAPPING_NAMESPACE + ".insert", b);
-        addPart(buildingPartId, part, gekId, code, b.getId());
+        addPart(buildingPartId, gekId, code, b.getId());
     }
 
-    public Long findId(long streetId, String num) {
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findId", ImmutableMap.of("streetId", streetId, "num", num));
+    public Long findId(long streetId, String num, String part) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findId",
+                ImmutableMap.of("streetId", streetId, "num", num, "part", part));
     }
 
     @Transactional
     public void saveOrUpdate(long buildingPartId, long distrId, long streetId, String num, String part,
             long gekId, String code) {
-        Long id = findId(streetId, num);
+        if (part == null) {
+            part = "";
+        }
+        Long id = findId(streetId, num, part);
         if (id == null) {
             insert(buildingPartId, distrId, streetId, num, part, gekId, code);
         } else {
-            addPart(buildingPartId, part, gekId, code, id);
+            addPart(buildingPartId, gekId, code, id);
         }
     }
 
     @Transactional
-    public void addPart(long buildingPartId, String part, long gekId, String code, long buildingImportId) {
+    public void addPart(long buildingPartId, long gekId, String code, long buildingImportId) {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertPart",
-                new BuildingPartImport(buildingPartId, part, gekId, code, buildingImportId));
+                new BuildingPartImport(buildingPartId, gekId, code, buildingImportId));
     }
 
     @Transactional
