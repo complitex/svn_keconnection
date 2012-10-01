@@ -13,7 +13,7 @@ import org.complitex.dictionary.util.StringUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.exception.BuildingNotFoundException;
-import org.complitex.keconnection.heatmeter.service.exception.CriticalException;
+import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeaterImportException;
 import org.complitex.keconnection.heatmeter.service.exception.DuplicateException;
 import org.complitex.keconnection.heatmeter.service.exception.OrganizationNotFoundException;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
@@ -158,7 +158,7 @@ public class HeatmeterImportService extends AbstractImportService{
             //done
             listener.done();
         } catch (Exception e) {
-            listener.error(heatmeaterWrapper, new CriticalException(e));
+            listener.error(heatmeaterWrapper, new CriticalHeatmeaterImportException(e, heatmeaterWrapper));
             listener.done();
 
             log.error("Ошибка импорта счетчика {} ", heatmeaterWrapper, e);
