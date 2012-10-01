@@ -413,6 +413,19 @@ CREATE TABLE `payload`(
   CONSTRAINT `fk_payload__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
 
+DROP TABLE IF EXISTS `operating_month`;
+CREATE TABLE `operating_month`(
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на организацию',
+    `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
+    `operating_month_end` DATE NOT NULL COMMENT  'Конец операционного месяца',
+    `updated` TIMESTAMP NULL COMMENT  'Время изменения опер. месяца',
+    PRIMARY KEY (`id`),
+    KEY `key_organization_id` (`organization_id`),
+    CONSTRAINT `fk_operating_month__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Журнал операционных месяцев';
+
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
