@@ -11,14 +11,10 @@ public class HeatmeterWrapper {
     private String ls;
     private Heatmeter heatmeter;
 
-    public HeatmeterWrapper(int row, String organizationCode, String buildingCode, String ls) {
-        this.row = row;
-        this.organizationCode = organizationCode;
-        this.buildingCode = buildingCode;
-        this.ls = ls;
+    private String address;
 
-        heatmeter = new Heatmeter();
-        heatmeter.setLs(Integer.parseInt(ls));
+    public HeatmeterWrapper(int row) {
+        this.row = row;
     }
 
     @Override
@@ -67,5 +63,13 @@ public class HeatmeterWrapper {
 
     public void setHeatmeter(Heatmeter heatmeter) {
         this.heatmeter = heatmeter;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

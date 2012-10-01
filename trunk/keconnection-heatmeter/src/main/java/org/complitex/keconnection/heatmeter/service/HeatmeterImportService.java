@@ -13,6 +13,8 @@ import org.complitex.dictionary.util.StringUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.exception.BuildingNotFoundException;
+import org.complitex.keconnection.heatmeter.service.exception.CriticalException;
+import org.complitex.keconnection.heatmeter.service.exception.DuplicateException;
 import org.complitex.keconnection.heatmeter.service.exception.OrganizationNotFoundException;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
@@ -127,13 +129,15 @@ public class HeatmeterImportService extends AbstractImportService{
                         orgCode = String.format("%04d", StringUtil.parseInt(orgCode));
                     }
 
-                    heatmeaterWrapper = new HeatmeterWrapper(lineNum, orgCode, line[1], ls);
+                    heatmeaterWrapper = new HeatmeterWrapper(lineNum);
 
-                    //check duplicates
-                    if (heatmeterBean.isExist(heatmeaterWrapper.getHeatmeter())){
-                        listener.skip(heatmeaterWrapper);
-                        continue;
-                    }
+                    heatmeaterWrapper.setOrganizationCode(orgCode);
+                    heatmeaterWrapper.setBuildingCode(line[1]);
+                    heatmeaterWrapper.setLs(ls);
+                    heatmeaterWrapper.setHeatmeter(new Heatmeter());
+                    heatmeaterWrapper.getHeatmeter().setLs(Integer.parseInt(ls));
+
+                    heatmeaterWrapper.setAddress(line[2] + " " + line[3]);
 
                     //create heatmeter
                     try {
@@ -142,6 +146,8 @@ public class HeatmeterImportService extends AbstractImportService{
                         listener.processed(heatmeaterWrapper);
                     } catch (BuildingNotFoundException | OrganizationNotFoundException e) {
                         listener.error(heatmeaterWrapper, e);
+                    }catch (DuplicateException e){
+                        listener.skip(heatmeaterWrapper);
                     }
                 }
             }
@@ -152,7 +158,7 @@ public class HeatmeterImportService extends AbstractImportService{
             //done
             listener.done();
         } catch (Exception e) {
-            listener.error(heatmeaterWrapper, e);
+            listener.error(heatmeaterWrapper, new CriticalException(e));
             listener.done();
 
             log.error("Ошибка импорта счетчика {} ", heatmeaterWrapper, e);
@@ -160,7 +166,7 @@ public class HeatmeterImportService extends AbstractImportService{
     }
 
     public void createHeatmeter(HeatmeterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
-            OrganizationNotFoundException {
+            OrganizationNotFoundException, DuplicateException {
         Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 
         if (organizationId == null){
@@ -178,6 +184,11 @@ public class HeatmeterImportService extends AbstractImportService{
         Heatmeter heatmeter = heatmeaterWrapper.getHeatmeter();
         heatmeter.setBuildingCodeId(buildingCodeId);
         heatmeter.setType(HeatmeterType.HEATING_AND_WATER);
+
+        //check duplicates
+        if (heatmeterBean.isExist(heatmeter)){
+            throw new DuplicateException();
+        }
 
         heatmeterBean.save(heatmeter);
 

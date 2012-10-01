@@ -1,5 +1,6 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import com.google.common.io.ByteStreams;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -205,21 +207,20 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "building_id", "organization_id", "status"));
 
         //Import Dialog
+        final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");
+        importDialogContainer.setOutputMarkupId(true);
+        add(importDialogContainer);
+
         importDialog = new Dialog("import_dialog");
         importDialog.setTitle(getString("import_dialog_title"));
         importDialog.setWidth(420);
         importDialog.setHeight(80);
-        add(importDialog);
+        importDialogContainer.add(importDialog);
 
         Form uploadForm = new Form("upload_form");
         importDialog.add(uploadForm);
 
-        final FileUploadField fileUploadField = new FileUploadField("file_upload_field"){
-            @Override
-            protected boolean forceCloseStreamsOnDetach() {
-                return false;
-            }
-        };
+        final FileUploadField fileUploadField = new FileUploadField("file_upload_field");
         uploadForm.add(fileUploadField);
 
         uploadForm.add(new AjaxButton("upload") {
@@ -236,7 +237,8 @@ public class HeatmeterList extends TemplatePage{
                 final AtomicBoolean stopTimer = new AtomicBoolean(false);
 
                 try {
-                    InputStream inputStream = fileUpload.getInputStream();
+                    InputStream is = fileUpload.getInputStream();
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(ByteStreams.toByteArray(is));
 
                     IProcessListener<HeatmeterWrapper> listener = new IProcessListener<HeatmeterWrapper>() {
                         private int processedCount = 0;
@@ -252,14 +254,15 @@ public class HeatmeterList extends TemplatePage{
                         @Override
                         public void skip(HeatmeterWrapper object) {
                             ThreadContext.restore(threadContext);
-                            getSession().info(getStringFormat("info_skipped", object.getLs()));
+                            getSession().info(getStringFormat("info_skipped", object.getLs(), object.getAddress()));
                             skippedCount++;
                         }
 
                         @Override
                         public void error(HeatmeterWrapper object, Exception e) {
                             ThreadContext.restore(threadContext);
-                            getSession().error(getStringFormat("error_upload", e.getMessage()));
+                            String s = object != null ? object.toString() : "";
+                            getSession().error(getStringFormat("error_upload", e.getMessage() + " " + s));
                             errorCount++;
                         }
 
