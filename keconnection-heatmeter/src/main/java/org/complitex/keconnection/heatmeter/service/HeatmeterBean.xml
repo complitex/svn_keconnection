@@ -65,11 +65,11 @@
 
     <select id="isExistHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
             resultType="boolean">
-        select count(*) > 0 from `heatmeter` where `ls` = #{ls}
+        select count(*) > 0 from `heatmeter` where `ls` = #{ls} and `building_code_id` = #{buildingCodeId}
     </select>
 
     <select id="selectIdByLs" parameterType="int" resultType="long">
-        select `id` from `heatmeter` where `ls` = #{ls}
+        select `id` from `heatmeter` where `ls` = #{ls} and ``
     </select>
 
     <update id="updateHeatmeterType" parameterType="map">

@@ -12,11 +12,13 @@
     <h1><wicket:message key="title"/></h1>
     <div wicket:id="messages"></div>
 
-    <div wicket:id="import_dialog">
-        <form action="#" wicket:id="upload_form">
-            <input type="file" wicket:id="file_upload_field"/>
-            <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
-        </form>
+    <div wicket:id="import_dialog_container">
+        <div wicket:id="import_dialog">
+            <form action="#" wicket:id="upload_form">
+                <input type="file" wicket:id="file_upload_field"/>
+                <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
+            </form>
+        </div>
     </div>
 
     <form action="#" wicket:id="filter_form">
