@@ -4,7 +4,9 @@
  */
 package org.complitex.keconnection.address.service;
 
+import com.google.common.base.Strings;
 import org.complitex.dictionary.util.CloneUtil;
+import static org.complitex.dictionary.util.StringUtil.*;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
 import au.com.bytecode.opencsv.CSVReader;
@@ -110,6 +112,13 @@ public class KeConnectionAddressImportService extends AbstractImportService {
         return BuildingNumberConverter.convert(importNumber.trim()).toUpperCase();
     }
 
+    private String prepareBuildingCorp(String importCorp) {
+        if (Strings.isNullOrEmpty(importCorp)) {
+            return null;
+        }
+        return removeWhiteSpaces(toCyrillic(importCorp.trim())).toUpperCase();
+    }
+
     /**
      * ID DISTR_ID STREET_ID NUM PART GEK CODE
      */
@@ -193,6 +202,16 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                     AttributeUtil.setStringValue(numberAttribute, number, systemLocaleId);
                 }
 
+                //Корпус дома
+                final String corp = prepareBuildingCorp(b.getPart());
+                if (corp != null) {
+                    final Attribute corpAttribute = buildingAddress.getAttribute(BuildingAddressStrategy.CORP);
+                    AttributeUtil.setStringValue(corpAttribute, corp, localeId);
+                    if (AttributeUtil.getSystemStringCultureValue(corpAttribute) == null) {
+                        AttributeUtil.setStringValue(corpAttribute, corp, systemLocaleId);
+                    }
+                }
+
                 //Обработка пар обсл. организация - код дома
                 {
                     Set<Long> subjectIds = new HashSet<>();
@@ -219,7 +238,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
             }
             buildingImportBean.markProcessed(imports);
         }
-        
+
         listener.completeImport(BUILDING, recordIndex);
     }
 

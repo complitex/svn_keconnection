@@ -17,22 +17,24 @@ public class BuildingImport implements Serializable {
     private Long distrId;
     private Long streetId;
     private String num;
+    private String part;
     private boolean processed;
     private List<BuildingPartImport> buildingParts;
 
     public BuildingImport() {
     }
 
-    public BuildingImport(long distrId, long streetId, String num) {
+    public BuildingImport(long distrId, long streetId, String num, String part) {
         this.distrId = distrId;
         this.streetId = streetId;
         this.num = num;
+        this.part = part;
     }
 
     public long getBuildingPartId() {
         if (buildingParts == null || buildingParts.isEmpty()) {
             throw new IllegalStateException("Building has no parts. Building: distrId = " + distrId
-                    + ", streetId = " + streetId + ", num = " + num);
+                    + ", streetId = " + streetId + ", num = " + num + ", part = " + part);
         }
         return buildingParts.get(0).getId();
     }
@@ -83,5 +85,13 @@ public class BuildingImport implements Serializable {
 
     public void setProcessed(boolean processed) {
         this.processed = processed;
+    }
+
+    public String getPart() {
+        return part;
+    }
+
+    public void setPart(String part) {
+        this.part = part;
     }
 }
