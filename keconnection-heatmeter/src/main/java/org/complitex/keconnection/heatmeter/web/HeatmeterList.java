@@ -261,8 +261,7 @@ public class HeatmeterList extends TemplatePage{
                         @Override
                         public void error(HeatmeterWrapper object, Exception e) {
                             ThreadContext.restore(threadContext);
-                            String s = object != null ? object.toString() : "";
-                            getSession().error(getStringFormat("error_upload", e.getMessage() + " " + s));
+                            getSession().error(getStringFormat("error_upload", e.getMessage()));
                             errorCount++;
                         }
 
