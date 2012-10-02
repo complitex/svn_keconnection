@@ -18,6 +18,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
+import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
+import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
 
 /**
  *
@@ -87,5 +89,30 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
                 && example.getOrderByAttributeTypeId().equals(CODE)) {
             example.setOrderByNumber(true);
         }
+    }
+
+    @Override
+    public DomainObject getItselfOrganization() {
+        return findById(ITSELF_ORGANIZATION_OBJECT_ID, true);
+    }
+
+    @Override
+    public List<DomainObject> getAllOuterOrganizations(Locale locale) {
+        DomainObjectExample example = new DomainObjectExample();
+        if (locale != null) {
+            example.setOrderByAttributeTypeId(NAME);
+            example.setLocaleId(localeBean.convert(locale).getId());
+            example.setAsc(true);
+        }
+        example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
+                ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICE_PROVIDER,
+                KeConnectionOrganizationTypeStrategy.CALCULATION_MODULE));
+        configureExample(example, ImmutableMap.<String, Long>of(), null);
+        return (List<DomainObject>) find(example);
+    }
+
+    @Override
+    public Class<? extends AbstractComplexAttributesPanel> getComplexAttributesPanelAfterClass() {
+        return KeConnectionOrganizationEditComponent.class;
     }
 }

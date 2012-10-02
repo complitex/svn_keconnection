@@ -4,6 +4,7 @@
  */
 package org.complitex.keconnection.organization.strategy.web.edit;
 
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
 
 /**
@@ -14,5 +15,12 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
     public KeConnectionOrganizationEditComponent(String id, boolean disabled) {
         super(id, disabled);
+    }
+
+    @Override
+    protected boolean isOrganizationTypeEnabled() {
+        Long organizationId = getDomainObject().getId();
+        return !(organizationId != null && (organizationId == IKeConnectionOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID))
+                && super.isOrganizationTypeEnabled();
     }
 }

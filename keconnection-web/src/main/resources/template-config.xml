@@ -6,6 +6,7 @@
         <menu class="org.complitex.keconnection.web.admin.AdminMenu"/>
         <menu class="org.complitex.keconnection.heatmeter.web.HeatmeterMenu"/>
         <menu class="org.complitex.keconnection.address.menu.KeConnectionAddressMenu"/>
+        <menu class="org.complitex.keconnection.heatmeter.web.correction.CorrectionMenu"/>
         <menu class="org.complitex.keconnection.organization.menu.KeConnectionOrganizationMenu"/>
         
         <menu class="org.complitex.keconnection.tarif.menu.TarifMenu"/>

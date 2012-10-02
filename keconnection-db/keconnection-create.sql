@@ -413,6 +413,165 @@ CREATE TABLE `payload`(
   CONSTRAINT `fk_payload__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
 
+-- ------------------------------
+-- Corrections
+-- ------------------------------
+DROP TABLE IF EXISTS `city_correction`;
+
+CREATE TABLE `city_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `parent_id` BIGINT(20) COMMENT 'Не используется',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта населенного пункта',
+    `correction` VARCHAR(100) NOT NULL COMMENT 'Название населенного пункта',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
+    `organization_code` VARCHAR(100) COMMENT 'Код',
+    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
+    `user_organization_id` BIGINT(20),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_city_correction` (`object_id`, `correction`, `organization_id`, `user_organization_id`, `internal_organization_id`),
+    KEY `key_object_id` (`object_id`),
+    KEY `key_correction` (`correction`),
+    KEY `key_organization_id` (`organization_id`),
+    KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_user_organization_id` (`user_organization_id`),
+    CONSTRAINT `fk_city_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_city_correction__city` FOREIGN KEY (`object_id`) REFERENCES `city` (`object_id`),
+    CONSTRAINT `fk_city_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_city_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция населенного пункта';
+
+DROP TABLE IF EXISTS `city_type_correction`;
+
+CREATE TABLE `city_type_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `parent_id` BIGINT(20) COMMENT 'Не используется',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа населенного пункта',
+    `correction` VARCHAR(100) NOT NULL COMMENT 'Название типа населенного пункта',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
+    `organization_code` VARCHAR(100) COMMENT 'Код',
+    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
+    `user_organization_id` BIGINT(20),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_city_type_correction` (`object_id`, `correction`, `organization_id`, `user_organization_id`, `internal_organization_id`),
+    KEY `key_object_id` (`object_id`),
+    KEY `key_correction` (`correction`),
+    KEY `key_organization_id` (`organization_id`),
+    KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_user_organization_id` (`user_organization_id`),
+    CONSTRAINT `fk_city_type__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_city_type_correction__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type` (`object_id`),
+    CONSTRAINT `fk_city_type_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_city_type_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция типа населенного пункта';
+
+DROP TABLE IF EXISTS `district_correction`;
+
+CREATE TABLE `district_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `parent_id` BIGINT(20) COMMENT 'Идентификатор населенного пункта',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта района',
+    `correction` VARCHAR(100) NOT NULL COMMENT 'Название района',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
+    `organization_code` VARCHAR(100) COMMENT 'Код',
+    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
+    `user_organization_id` BIGINT(20),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_district_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `user_organization_id`, `internal_organization_id`),
+    KEY `key_object_id` (`object_id`),
+    KEY `key_parent_id` (`parent_id`),
+    KEY `key_correction` (`correction`),
+    KEY `key_organization_id` (`organization_id`),
+    KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_user_organization_id` (`user_organization_id`),
+    CONSTRAINT `fk_district_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_district_correction__district` FOREIGN KEY (`object_id`) REFERENCES `district` (`object_id`),
+    CONSTRAINT `fk_district_correction__city_correction` FOREIGN KEY (`parent_id`) REFERENCES `city_correction` (`id`),
+    CONSTRAINT `fk_district_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_district_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция района';
+
+DROP TABLE IF EXISTS `street_correction`;
+
+CREATE TABLE `street_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `parent_id` BIGINT(20) COMMENT 'Идентификатор населенного пункта',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта улицы',
+    `correction` VARCHAR(100) NOT NULL COMMENT 'Название улицы',
+    `street_type_correction_id` BIGINT(20) NULL COMMENT 'Идентификатор коррекции типа улицы',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
+    `organization_code` VARCHAR(100) COMMENT 'Код',
+    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
+    `user_organization_id` BIGINT(20),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_street_correction` (`parent_id`, `correction`, `organization_id`, `user_organization_id`, `internal_organization_id`,
+            `street_type_correction_id`, `object_id`, `organization_code`),
+    KEY `key_object_id` (`object_id`),
+    KEY `key_parent_id` (`parent_id`),
+    KEY `key_correction` (`correction`),
+    KEY `key_organization_id` (`organization_id`),
+    KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_street_type_correction_id` (`street_type_correction_id`),
+    KEY `key_user_organization_id` (`user_organization_id`),
+    CONSTRAINT `fk_street_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_street_correction__street` FOREIGN KEY (`object_id`) REFERENCES `street` (`object_id`),
+    CONSTRAINT `fk_street_correction__city_correction` FOREIGN KEY (`parent_id`) REFERENCES `city_correction` (`id`),
+    CONSTRAINT `fk_street_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_street_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_street_correction__street_type_correctionn` FOREIGN KEY (`street_type_correction_id`) REFERENCES `street_type_correction` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция улицы';
+
+DROP TABLE IF EXISTS `street_type_correction`;
+
+CREATE TABLE `street_type_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `parent_id` BIGINT(20) COMMENT 'Не используется',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа улицы',
+    `correction` VARCHAR(100) NOT NULL COMMENT 'Название типа улицы',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
+    `organization_code` VARCHAR(100) COMMENT 'Код',
+    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
+    `user_organization_id` BIGINT(20),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_street_type_correction` (`object_id`, `correction`, `organization_id`, `user_organization_id`, `internal_organization_id`),
+    KEY `key_object_id` (`object_id`),
+    KEY `key_correction` (`correction`),
+    KEY `key_organization_id` (`organization_id`),
+    KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_user_organization_id` (`user_organization_id`),
+    CONSTRAINT `fk_street_type__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_street_type_correction__street_type` FOREIGN KEY (`object_id`) REFERENCES `street_type` (`object_id`),
+    CONSTRAINT `fk_street_type_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_street_type_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Коррекция типа улицы';
+
+DROP TABLE IF EXISTS `building_correction`;
+
+CREATE TABLE `building_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `parent_id` BIGINT(20) COMMENT 'Идентификатор коррекции улицы',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта дома',
+    `correction` VARCHAR(20) NOT NULL COMMENT 'Номер дома',
+    `correction_corp` VARCHAR(20) NOT NULL DEFAULT '' COMMENT 'Корпус дома',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
+    `organization_code` VARCHAR(100) COMMENT 'Код',
+    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
+    `user_organization_id` BIGINT(20),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_building_correction` (`parent_id`, `object_id`, `correction`, `correction_corp`, `organization_id`, 
+                `user_organization_id`, `internal_organization_id`),
+    KEY `key_object_id` (`object_id`),
+    KEY `key_parent_id` (`parent_id`),
+    KEY `key_correction` (`correction`),
+    KEY `key_organization_id` (`organization_id`),
+    KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_user_organization_id` (`user_organization_id`),
+    CONSTRAINT `fk_building_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_building_correction__building` FOREIGN KEY (`object_id`) REFERENCES `building` (`object_id`),
+    CONSTRAINT `fk_building_correction__street_correction` FOREIGN KEY (`parent_id`) REFERENCES `street_correction` (`id`),
+    CONSTRAINT `fk_building_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_building_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция дома';
+
 DROP TABLE IF EXISTS `operating_month`;
 CREATE TABLE `operating_month`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
@@ -424,7 +583,6 @@ CREATE TABLE `operating_month`(
     KEY `key_organization_id` (`organization_id`),
     CONSTRAINT `fk_operating_month__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Журнал операционных месяцев';
-
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

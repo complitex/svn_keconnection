@@ -21,8 +21,21 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
      * Attribute type ids
      */
     long SHORT_NAME = 920;
+    /**
+     * Itself organization instance id.
+     */
+    long ITSELF_ORGANIZATION_OBJECT_ID = 0;
 
     List<DomainObject> getAllServicingOrganizations(Locale locale);
 
     String displayShortName(Long organizationId, Locale locale);
+
+    /**
+     * Returns organization that represents keconnection program module, i.e. "itself".
+     * 
+     * @return "Itself" organization.
+     */
+    DomainObject getItselfOrganization();
+
+    List<DomainObject> getAllOuterOrganizations(Locale locale);
 }
