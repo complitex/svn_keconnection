@@ -53,6 +53,17 @@ INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (921, 1, UPPER('
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (921, 900, 1, 921, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (921, 921, 'boolean');
 
+-- ------------------------------
+-- Predefined organizations
+-- ------------------------------
+
+-- Itself organization
+INSERT INTO `organization`(`object_id`) VALUES (0);
+INSERT INTO `organization_string_culture`(`id`, `locale_id`, `value`) VALUES
+(1, 1, UPPER('Модуль №1')), (1,2,UPPER('Модуль №1')), (2, (SELECT `id` FROM `locales` WHERE `system` = 1), UPPER('0'));
+INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
+(1,0,900,1,900), (1,0,901,2,901);
+
 -- --------------------------------
 -- Building
 -- --------------------------------

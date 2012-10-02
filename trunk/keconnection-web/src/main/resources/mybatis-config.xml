@@ -57,5 +57,8 @@
         
         <mapper resource="org/complitex/keconnection/tarif/strategy/TarifGroup.xml"/>
         <mapper resource="org/complitex/keconnection/tarif/strategy/Tarif.xml"/>
+        
+        <mapper resource="org/complitex/keconnection/heatmeter/service/CorrectionBean.xml"/>
+        <mapper resource="org/complitex/keconnection/heatmeter/service/AddressCorrectionBean.xml"/>
     </mappers>
 </configuration>
