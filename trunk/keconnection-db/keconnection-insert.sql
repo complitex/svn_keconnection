@@ -64,6 +64,14 @@ INSERT INTO `organization_string_culture`(`id`, `locale_id`, `value`) VALUES
 INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
 (1,0,900,1,900), (1,0,901,2,901);
 
+-- КИЕВЭНЕРГО
+INSERT INTO `organization`(`object_id`) VALUES (1);
+INSERT INTO `organization_string_culture`(`id`, `locale_id`, `value`) VALUES
+(3, 1, UPPER('КИЕВЭНЕРГО')), (3,2,UPPER('КИЕВЭНЕРГО')),
+(4, (SELECT `id` FROM `locales` WHERE `system` = 1), UPPER('1'));
+INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
+(1,1,900,3,900), (1,1,901,4,901), (1,1,904,5,904);
+
 -- --------------------------------
 -- Building
 -- --------------------------------

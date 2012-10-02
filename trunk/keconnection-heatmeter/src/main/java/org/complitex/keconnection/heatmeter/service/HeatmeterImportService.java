@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.09.12 17:53
@@ -43,6 +45,9 @@ public class HeatmeterImportService extends AbstractImportService{
 
     @EJB
     private HeatmeterBean heatmeterBean;
+
+    @EJB
+    private HeatmeterCodeBean heatmeterCodeBean;
 
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
@@ -134,9 +139,6 @@ public class HeatmeterImportService extends AbstractImportService{
                     heatmeaterWrapper.setOrganizationCode(orgCode);
                     heatmeaterWrapper.setBuildingCode(line[1]);
                     heatmeaterWrapper.setLs(ls);
-                    heatmeaterWrapper.setHeatmeter(new Heatmeter());
-                    heatmeaterWrapper.getHeatmeter().setLs(Integer.parseInt(ls));
-
                     heatmeaterWrapper.setAddress(line[2] + " " + line[3]);
 
                     //create heatmeter
@@ -167,6 +169,7 @@ public class HeatmeterImportService extends AbstractImportService{
 
     public void createHeatmeter(HeatmeterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
             OrganizationNotFoundException, DuplicateException {
+        //find organization by code
         Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 
         if (organizationId == null){
@@ -180,27 +183,47 @@ public class HeatmeterImportService extends AbstractImportService{
             throw new BuildingNotFoundException(heatmeaterWrapper);
         }
 
-        //save
-        Heatmeter heatmeter = heatmeaterWrapper.getHeatmeter();
-        heatmeter.setBuildingCodeId(buildingCodeId);
-        heatmeter.setType(HeatmeterType.HEATING_AND_WATER);
+        //ls
+        Integer ls = Integer.parseInt(heatmeaterWrapper.getLs());
 
         //check duplicates
-        if (heatmeterBean.isExist(heatmeter)){
+        if (heatmeterBean.isExist(ls, buildingCodeId, organizationId)){
             throw new DuplicateException();
         }
 
-        heatmeterBean.save(heatmeter);
+        //heatmeter
+        Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(ls, KE_ORGANIZATION_OBJECT_ID);
 
-        //create period
-        HeatmeterPeriod period = new HeatmeterPeriod();
-        period.setHeatmeterId(heatmeter.getId());
-        period.setType(HeatmeterPeriodType.OPERATION);
-        period.setBeginDate(DEFAULT_BEGIN_DATE);
-        period.setOperatingMonth(DEFAULT_BEGIN_DATE);
+        if (heatmeter == null){
+            heatmeter = new Heatmeter();
+            heatmeter.setLs(ls);
 
-        heatmeterPeriodBean.save(period);
-        heatmeterPeriodBean.updateParent(period.getId(), period.getId());
+            //default type
+            heatmeter.setType(HeatmeterType.HEATING_AND_WATER);
+
+            //default organization
+            heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);
+
+            //save
+            heatmeterBean.save(heatmeter);
+
+            //create period
+            HeatmeterPeriod period = new HeatmeterPeriod();
+            period.setHeatmeterId(heatmeter.getId());
+            period.setType(HeatmeterPeriodType.OPERATION);
+            period.setBeginDate(DEFAULT_BEGIN_DATE);
+            period.setOperatingMonth(DEFAULT_BEGIN_DATE);
+
+            heatmeterPeriodBean.save(period);
+            heatmeterPeriodBean.updateParent(period.getId(), period.getId());
+        }
+
+        //create heatmeter code
+        HeatmeterCode heatmeterCode = new HeatmeterCode();
+        heatmeterCode.setHeatmeterId(heatmeter.getId());
+        heatmeterCode.setBuildingCodeId(buildingCodeId);
+        heatmeterCode.setBeginDate(DEFAULT_BEGIN_DATE);
+        heatmeterCodeBean.save(heatmeterCode);
     }
 
     public List<HeatmeterImportFile> getHeatmeterImportFiles(){

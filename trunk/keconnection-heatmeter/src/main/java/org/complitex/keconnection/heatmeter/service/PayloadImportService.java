@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 26.09.12 15:17
@@ -60,18 +62,18 @@ public class PayloadImportService extends AbstractImportService{
 
             Integer ls = (Integer) record.getNumberValue("L_S");
 
-            Long heatmeterId = heatmeterBean.getIdByLs(ls);
+            Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(ls, KE_ORGANIZATION_OBJECT_ID);
 
-            if (heatmeterId == null){
+            if (heatmeter == null){
                 listener.warn(importFile, "Счетчик не найден по л/с " + ls);
                 continue;
             }
 
-            if (payloadBean.isExist(heatmeterId)){
+            if (payloadBean.isExist(heatmeter.getId())){
                 continue;
             }
 
-            payload.setHeatmeterId(heatmeterId);
+            payload.setHeatmeterId(heatmeter.getId());
 
             payload.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
             payload.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
@@ -84,7 +86,7 @@ public class PayloadImportService extends AbstractImportService{
             payloadBean.save(payload);
 
             //update heatmeter type
-            heatmeterBean.updateHeatmeterType(heatmeterId, HeatmeterType.HEATING);
+            heatmeterBean.updateHeatmeterType(heatmeter.getId(), HeatmeterType.HEATING);
 
             processed++;
 

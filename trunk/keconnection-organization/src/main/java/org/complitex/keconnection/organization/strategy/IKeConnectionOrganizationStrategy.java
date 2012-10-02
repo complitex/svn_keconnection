@@ -26,6 +26,11 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
      */
     long ITSELF_ORGANIZATION_OBJECT_ID = 0;
 
+    /**
+     * КИЕВЭНЕРГО
+     */
+    long KE_ORGANIZATION_OBJECT_ID = 1;
+
     List<DomainObject> getAllServicingOrganizations(Locale locale);
 
     String displayShortName(Long organizationId, Locale locale);

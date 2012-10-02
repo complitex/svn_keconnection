@@ -98,7 +98,7 @@ public class HeatmeterEdit extends FormTemplatePage{
         //SearchComponentState
         final SearchComponentState searchComponentState = new SearchComponentState();
         if (heatmeter.getId() != null){
-            Building building = buildingStrategy.findById(heatmeter.getBuildingId(), true);
+            Building building = buildingStrategy.findById(0, true); //todo
             searchComponentState.put("building", building);
 
             DomainObject street = streetStrategy.findById(building.getPrimaryStreetId(), true);
@@ -109,9 +109,10 @@ public class HeatmeterEdit extends FormTemplatePage{
         }
 
         //Organization
-        final IModel<DomainObject> organizationModel = Model.of(heatmeter.getOrganizationId() != null
-                ? organizationStrategy.findById(heatmeter.getOrganizationId(), true)
-                : new DomainObject());
+//        final IModel<DomainObject> organizationModel = Model.of(heatmeter.getOrganizationId() != null
+//                ? organizationStrategy.findById(heatmeter.getOrganizationId(), true)
+//                : new DomainObject());                                             todo
+        final IModel<DomainObject> organizationModel = Model.of(new DomainObject());
 
         final DisableAwareDropDownChoice<DomainObject> organizations = new DisableAwareDropDownChoice<>("organization",
                 organizationModel,
@@ -180,7 +181,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                         return;
                     }
 
-                    heatmeter.setBuildingCodeId(buildingCodeId);
+                    //heatmeter.setBuildingCodeId(buildingCodeId); todo
 
                     //save
                     heatmeterBean.save(heatmeter);
