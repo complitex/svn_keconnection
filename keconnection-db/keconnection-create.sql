@@ -353,25 +353,43 @@ CREATE TABLE `heatmeter_period_type_string_culture` (
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута типа периода теплосчетчика';
 
 -- ------------------------------
--- heatmeter
+-- Heatmeter
 -- ------------------------------
 
 DROP TABLE IF EXISTS `heatmeter`;
 CREATE TABLE `heatmeter`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `ls` INT(7) NOT NULL COMMENT 'Номер л/с теплосчетчика',
+  `organization_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на ПУ',
   `type_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип счетчика',
-  `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `heatmeter_unique_id` (`ls`, `building_code_id`),
-  KEY `key_heatmeter_ls` (`ls`),
-  KEY `key_heatmeter_building_code_id` (`building_code_id`),
+  UNIQUE KEY `heatmeter_unique_id` (`ls`, `organization_id`),
+  KEY `key_type_id` (`type_id`),
+  KEY `key_organization_id` (`organization_id`),
   CONSTRAINT `fk_heatmeter__heatmeter_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeter_type` (`object_id`),
-  CONSTRAINT `fk_heatmeter__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
+  CONSTRAINT `fk_heatmeter__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Теплосчетчик';
 
 -- ------------------------------
--- heatmeter Period
+-- Heatmeter code
+-- ------------------------------
+
+DROP TABLE IF EXISTS `heatmeter_code`;
+CREATE TABLE `heatmeter_code`(
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Теплосчетчик',
+  `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
+  `begin_date` DATE COMMENT 'Дата подключения счетчика',
+  `end_date` DATE COMMENT 'Дата отключения счетчика',
+  PRIMARY KEY (`id`),
+  KEY `key_heatmeater_id` (`heatmeter_id`),
+  KEY `key_heatmeter_building_code_id` (`building_code_id`),
+  CONSTRAINT `fk_heatmeter_code__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
+  CONSTRAINT `fk_heatmeter_code__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коды домов теплосчетчика';
+
+-- ------------------------------
+-- Heatmeter Period
 -- ------------------------------
 
 DROP TABLE IF EXISTS `heatmeter_period`;
@@ -557,7 +575,7 @@ CREATE TABLE `building_correction` (
     `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
     `user_organization_id` BIGINT(20),
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_building_correction` (`parent_id`, `object_id`, `correction`, `correction_corp`, `organization_id`, 
+    UNIQUE KEY `uk_building_correction` (`parent_id`, `object_id`, `correction`, `correction_corp`, `organization_id`,
                 `user_organization_id`, `internal_organization_id`),
     KEY `key_object_id` (`object_id`),
     KEY `key_parent_id` (`parent_id`),

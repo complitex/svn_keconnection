@@ -13,14 +13,12 @@ import java.util.List;
 public class Heatmeter implements ILongId{
     private Long id; //Идентификатор
     private Integer ls; //Номер л/с счетчика
+    private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
-    private Long buildingCodeId; //Ссылка на код дома
-    private List<HeatmeterPeriod> periods;
+    private List<HeatmeterCode> heatmeterCodes; //Список кодов домов
+    private List<HeatmeterPeriod> periods; //Список периодов
 
     private HeatmeterPeriodType status;
-
-    private Long organizationId;
-    private Long buildingId;
 
     public Long getId() {
         return id;
@@ -38,6 +36,14 @@ public class Heatmeter implements ILongId{
         this.ls = ls;
     }
 
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
     public HeatmeterType getType() {
         return type;
     }
@@ -46,12 +52,12 @@ public class Heatmeter implements ILongId{
         this.type = type;
     }
 
-    public Long getBuildingCodeId() {
-        return buildingCodeId;
+    public List<HeatmeterCode> getHeatmeterCodes() {
+        return heatmeterCodes;
     }
 
-    public void setBuildingCodeId(Long buildingCodeId) {
-        this.buildingCodeId = buildingCodeId;
+    public void setHeatmeterCodes(List<HeatmeterCode> heatmeterCodes) {
+        this.heatmeterCodes = heatmeterCodes;
     }
 
     public List<HeatmeterPeriod> getPeriods() {
@@ -68,21 +74,5 @@ public class Heatmeter implements ILongId{
 
     public void setStatus(HeatmeterPeriodType status) {
         this.status = status;
-    }
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public Long getBuildingId() {
-        return buildingId;
-    }
-
-    public void setBuildingId(Long buildingId) {
-        this.buildingId = buildingId;
     }
 }

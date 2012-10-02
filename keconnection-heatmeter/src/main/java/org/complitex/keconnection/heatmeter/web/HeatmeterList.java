@@ -1,5 +1,6 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import com.google.common.base.Joiner;
 import com.google.common.io.ByteStreams;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,10 +29,7 @@ import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterWrapper;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
@@ -48,10 +46,7 @@ import javax.ejb.EJB;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.complitex.dictionary.util.PageUtil.*;
@@ -128,7 +123,7 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(filterFind);
 
         //Filter Fields
-        filterForm.add(newTextFields("object.", "ls", "buildingId", "organizationId"));
+        filterForm.add(newTextFields("object.", "ls"));
         filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class));
 
@@ -174,9 +169,19 @@ public class HeatmeterList extends TemplatePage{
 
                 item.add(newTextLabels("ls"));
 
-                item.add(new Label("buildingId", addressRendererBean.displayBuildingSimple(heatmeter.getBuildingId(), getLocale())));
+                //building
+                List<String> building = new ArrayList<>();
+                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()){
+                    building.add(addressRendererBean.displayBuildingSimple(hc.getBuildingId(), getLocale()));
+                }
+                item.add(new Label("buildingId", Joiner.on("; ").join(building)));
 
-                item.add(new Label("organizationId", organizationStrategy.displayShortName(heatmeter.getOrganizationId(), getLocale())));
+                //organization
+                List<String> organization = new ArrayList<>();
+                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()){
+                    organization.add(organizationStrategy.displayShortName(hc.getOrganizationId(), getLocale()));
+                }
+                item.add(new Label("organizationId", Joiner.on("; ").join(organization)));
 
                 item.add(new Label("type", getStringOrKey(heatmeter.getType())));
 
@@ -204,7 +209,7 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "building_id", "organization_id", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id",  "status"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");

@@ -9,7 +9,6 @@ public class HeatmeterWrapper {
     private String organizationCode;
     private String buildingCode;
     private String ls;
-    private Heatmeter heatmeter;
 
     private String address;
 
@@ -55,14 +54,6 @@ public class HeatmeterWrapper {
 
     public void setLs(String ls) {
         this.ls = ls;
-    }
-
-    public Heatmeter getHeatmeter() {
-        return heatmeter;
-    }
-
-    public void setHeatmeter(Heatmeter heatmeter) {
-        this.heatmeter = heatmeter;
     }
 
     public String getAddress() {

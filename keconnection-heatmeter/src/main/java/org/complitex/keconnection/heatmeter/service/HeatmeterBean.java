@@ -1,5 +1,6 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
@@ -41,12 +42,13 @@ public class HeatmeterBean extends AbstractBean{
         sqlSession().delete("deleteHeatmeter", id);
     }
 
-    public boolean isExist(Heatmeter heatmeter){
-        return sqlSession().selectOne("isExistHeatmeter", heatmeter);
+    public boolean isExist(Integer ls, Long buildingCodeId, Long organizationId){
+        return sqlSession().selectOne("isExistHeatmeter", ImmutableMap.of("ls", ls, "buildingCodeId", buildingCodeId,
+                "organizationId", organizationId));
     }
 
-    public Long getIdByLs(Integer ls){
-        return sqlSession().selectOne("selectIdByLs", ls);
+    public Heatmeter getHeatmeterByLs(Integer ls, Long organizationId){
+        return sqlSession().selectOne("selectHeatmeterByLs", ImmutableMap.of("ls", ls, "organizationId", organizationId));
     }
 
     public void updateHeatmeterType(final Long id, final HeatmeterType type){

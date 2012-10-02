@@ -5,10 +5,11 @@
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
         <result property="type" column="type_id"/>
-        <result property="buildingCodeId" column="building_code_id"/>
-        <result property="status"/>
-        <result property="buildingId" column="building_id"/>
         <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <collection property="heatmeterCodes"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterCodeBean.selectHeatmeterCodesByHeatmeterId"
+                    column="id"/>
         <collection property="periods"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
                     column="id"/>
@@ -16,12 +17,11 @@
 
     <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
             useGeneratedKeys="true" keyProperty="id">
-        insert into `heatmeter` (`ls`, `type_id`, `building_code_id`)
-          values (#{ls}, #{type}, #{buildingCodeId})
+        insert into `heatmeter` (`ls`, `organization_id`, `type_id`) values (#{ls}, #{organizationId}, #{type})
     </insert>
 
     <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
-        update `heatmeter` set `ls` = #{ls}, `type_id` = #{type}, `building_code_id` = #{buildingCodeId}
+        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type_id` = #{type}
           where `id` = #{id}
     </update>
 
@@ -29,18 +29,15 @@
         <where>
             <if test="object.ls != null">`ls` = #{object.ls}</if>
             <if test="object.type != null">and `type_id` = #{object.type}</if>
-            <if test="object.buildingCodeId != null">and `building_code_id` = #{object.buildingCodeId}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
-            <if test="object.buildingId != null">and bc.`building_id` = #{object.buildingId}</if>
-            <if test="object.organizationId != null">and bc.`organization_id` = #{object.organizationId}</if>
         </where>
     </sql>
 
     <sql id="selectHeatmeterSelectFrom">
-        select h.*, bc.`building_id` as building_id, bc.`organization_id` as organization_id,
+        select h.*,
           IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
             and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`
-        from `heatmeter` h left join `building_code` bc on bc.`id` = h.`building_code_id`
+        from `heatmeter` h
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMap">
@@ -63,13 +60,15 @@
         delete from `heatmeter` where `id` = #{id}
     </delete>
 
-    <select id="isExistHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
-            resultType="boolean">
-        select count(*) > 0 from `heatmeter` where `ls` = #{ls} and `building_code_id` = #{buildingCodeId}
+    <select id="isExistHeatmeter" parameterType="map" resultType="boolean">
+        select count(*) > 0 from `heatmeter` h
+          left join `heatmeter_code` hc on hc.`heatmeter_id` = h.`id`
+          left join `building_code` bc on bc.`id` = hc.`building_code_id`
+        where h.`ls` = #{ls} and hc.`building_code_id` = #{buildingCodeId} and bc.`organization_id` = #{organizationId}
     </select>
 
-    <select id="selectIdByLs" parameterType="int" resultType="long">
-        select `id` from `heatmeter` where `ls` = #{ls} and ``
+    <select id="selectHeatmeterByLs" parameterType="map" resultMap="heatmeterResultMap">
+        select * from `heatmeter` where `ls` = #{ls} and `organization_id` = #{organizationId}
     </select>
 
     <update id="updateHeatmeterType" parameterType="map">
