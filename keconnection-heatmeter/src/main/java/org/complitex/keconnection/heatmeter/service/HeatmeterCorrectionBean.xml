@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean">
+    <resultMap id="heatmeterCorrection" type="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection">
+        <id property="id" column="id"/>
+        <result property="systemHeatmeterId" column="system_heatmeter_id"/>
+        <result property="externalHeatmeterId" column="external_heatmeter_id"/>
+        <result property="heatmeterNumber" column="heatmeter_number"/>
+        <result property="bindingDate" column="binding_date"/>
+        <result property="bindingStatus" column="binding_status"/>
+        <result property="history" column="history"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `heatmeter_correction` (`system_heatmeter_id`, `external_heatmeter_id`, `heatmeter_number`, 
+                `binding_date`, `binding_status`, `history`)
+          VALUES (#{systemHeatmeterId}, #{externalHeatmeterId}, #{heatmeterNumber}, #{bindingDate}, #{bindingStatus},
+                #{history})
+    </insert>
+
+    <update id="updateBindingStatus" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection">
+        UPDATE `heatmeter_correction` SET `binding_status` = #{bindingStatus}, `binding_date` = #{bindingDate}
+          WHERE `system_heatmeter_id` = #{systemHeatmeterId} AND `history` = 0
+    </update>
+    
+    <update id="makeHistory" parameterType="long">
+        UPDATE `heatmeter_correction` SET `history` = 1 WHERE `system_heatmeter_id` = #{value} AND `history` = 0
+    </update>
+    
+    <select id="findById" parameterType="long" 
+            resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrection">
+        SELECT * FROM `heatmeter_correction` WHERE `system_heatmeter_id` = #{systemHeatmeterId} AND `history` = 0
+    </select>
+
+</mapper>

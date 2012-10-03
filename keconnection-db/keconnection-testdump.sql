@@ -2,13 +2,13 @@
 SELECT (@system_locale_id := `id`) FROM `locales` WHERE `system` = 1;
 
 -- Servicing organizations
-insert into organization(object_id) values (1),(2);
+insert into organization(object_id) values (10),(11);
 insert into organization_string_culture(id, locale_id, `value`) values 
-(3,1,UPPER('Обсл. организация №1')), (3,2,UPPER('Обсл. организация №1')), (4,@system_locale_id, UPPER('1')),
-(5,1,UPPER('Обсл. организация №2')), (5,2,UPPER('Обсл. организация №2')), (6,@system_locale_id, UPPER('2'));
+(10,1,UPPER('Обсл. организация №1')), (10,2,UPPER('Обсл. организация №1')), (11,@system_locale_id, UPPER('10')),
+(12,1,UPPER('Обсл. организация №2')), (12,2,UPPER('Обсл. организация №2')), (13,@system_locale_id, UPPER('11'));
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
-(1,1,900,3,900), (1,1,901,4,901), (1,1,904,4,904),
-(1,2,900,5,900), (1,2,901,6,901), (1,2,904,4,904);
+(1,10,900,10,900), (1,10,901,11,901), (1,10,904,4,904),
+(1,11,900,12,900), (1,11,901,13,901), (1,11,904,4,904);
 
 -- Service provider and calculation module organizations
 insert into organization(object_id) values (20),(21);

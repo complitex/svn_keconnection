@@ -31,6 +31,7 @@
                 <th class="center"><wicket:message key="buildingId"/></th>
                 <th class="center"><wicket:message key="organizationId"/></th>
                 <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
+                <th class="center"><wicket:message key="bindingStatus"/></th>
 
                 <th class="center">
                     <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
@@ -43,6 +44,7 @@
                 <th><input type="text"/></th>
                 <th><input type="text"/></th>
                 <th><select wicket:id="object.status"></select></th>
+                <th><select wicket:id="object.bindingStatus"></select></th>
 
                 <th class="center">
                     <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
@@ -57,6 +59,7 @@
                 <td wicket:id="buildingId"></td>
                 <td wicket:id="organizationId"></td>
                 <td wicket:id="status"></td>
+                <td wicket:id="bindingStatus"></td>
                 <td>
                     <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
                     <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
@@ -68,6 +71,12 @@
         </table>
 
         <div wicket:id="paging"></div>
+        
+        <div style="margin-top: 20px;">
+            <div align="left">
+                <input type="button" wicket:id="bindAll" class="btnMiddle" wicket:message="value:bindAll"/>
+            </div>
+        </div>
     </form>
 </wicket:extend>
 </body>
