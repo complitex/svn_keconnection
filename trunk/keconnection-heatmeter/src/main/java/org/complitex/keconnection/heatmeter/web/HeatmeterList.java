@@ -49,6 +49,11 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
+import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRenderer;
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -56,21 +61,21 @@ import static org.complitex.dictionary.util.PageUtil.*;
  *         Date: 04.09.12 15:25
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public class HeatmeterList extends TemplatePage{
-    private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
+public class HeatmeterList extends TemplatePage {
 
+    private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
+    private static final int IMPORT_AJAX_TIMER = 5;
+    private static final int BIND_ALL_AJAX_TIMER = 10;
     @EJB
     private HeatmeterBean heatmeterBean;
-
     @EJB
     private HeatmeterImportService heatmeterImportService;
-
     @EJB
     private AddressRendererBean addressRendererBean;
-
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
-
+    @EJB
+    private HeatmeterBindingStatusRenderer heatmeterBindingStatusRenderer;
     private Dialog importDialog;
 
     public HeatmeterList() {
@@ -93,6 +98,7 @@ public class HeatmeterList extends TemplatePage{
 
         //Filter Reset Button
         AjaxButton filterReset = new AjaxButton("filter_reset") {
+
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 filterModel.setObject(FilterWrapper.of(new Heatmeter()));
@@ -109,6 +115,7 @@ public class HeatmeterList extends TemplatePage{
 
         //Filter Find
         AjaxButton filterFind = new AjaxButton("filter_find") {
+
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 target.add(filterForm);
@@ -126,12 +133,26 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(newTextFields("object.", "ls"));
         filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class));
+        filterForm.add(new DropDownChoice<>("object.bindingStatus",
+                Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()), new IChoiceRenderer<HeatmeterBindingStatus>() {
+
+            @Override
+            public String getDisplayValue(HeatmeterBindingStatus status) {
+                return heatmeterBindingStatusRenderer.render(status, getLocale());
+            }
+
+            @Override
+            public String getIdValue(HeatmeterBindingStatus object, int index) {
+                return String.valueOf(object.ordinal());
+            }
+        }).setNullValid(true));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
 
         //Data Provider
         DataProvider<Heatmeter> dataProvider = new DataProvider<Heatmeter>() {
+
             @Override
             protected Iterable<Heatmeter> getData(int first, int count) {
                 FilterWrapper<Heatmeter> filterWrapper = filterModel.getObject();
@@ -163,6 +184,7 @@ public class HeatmeterList extends TemplatePage{
 
         //Data View
         DataView dataView = new DataView<Heatmeter>("data_view", dataProvider) {
+
             @Override
             protected void populateItem(Item<Heatmeter> item) {
                 final Heatmeter heatmeter = item.getModelObject();
@@ -171,14 +193,14 @@ public class HeatmeterList extends TemplatePage{
 
                 //building
                 List<String> building = new ArrayList<>();
-                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()){
+                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()) {
                     building.add(addressRendererBean.displayBuildingSimple(hc.getBuildingId(), getLocale()));
                 }
                 item.add(new Label("buildingId", Joiner.on("; ").join(building)));
 
                 //organization
                 List<String> organization = new ArrayList<>();
-                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()){
+                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()) {
                     organization.add(organizationStrategy.displayShortName(hc.getOrganizationId(), getLocale()));
                 }
                 item.add(new Label("organizationId", Joiner.on("; ").join(organization)));
@@ -187,11 +209,14 @@ public class HeatmeterList extends TemplatePage{
 
                 item.add(new Label("status", getStringOrKey(heatmeter.getStatus())));
 
+                item.add(new Label("bindingStatus", heatmeterBindingStatusRenderer.render(heatmeter.getBindingStatus(), getLocale())));
+
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("id", heatmeter.getId());
                 item.add(new BookmarkablePageLink<>("edit", HeatmeterEdit.class, pageParameters));
 
                 item.add(new Link("delete") {
+
                     @Override
                     public void onClick() {
                         info(getString("info_deleted"));
@@ -209,7 +234,7 @@ public class HeatmeterList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id",  "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "status"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");
@@ -229,11 +254,12 @@ public class HeatmeterList extends TemplatePage{
         uploadForm.add(fileUploadField);
 
         uploadForm.add(new AjaxButton("upload") {
+
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
                 FileUpload fileUpload = fileUploadField.getFileUpload();
 
-                if (fileUpload == null || fileUpload.getClientFileName() == null){
+                if (fileUpload == null || fileUpload.getClientFileName() == null) {
                     return;
                 }
 
@@ -246,6 +272,7 @@ public class HeatmeterList extends TemplatePage{
                     ByteArrayInputStream inputStream = new ByteArrayInputStream(ByteStreams.toByteArray(is));
 
                     IProcessListener<HeatmeterWrapper> listener = new IProcessListener<HeatmeterWrapper>() {
+
                         private int processedCount = 0;
                         private int skippedCount = 0;
                         private int errorCount = 0;
@@ -277,18 +304,19 @@ public class HeatmeterList extends TemplatePage{
                             stopTimer();
                         }
 
-                        private void stopTimer(){
+                        private void stopTimer() {
                             stopTimer.set(true);
                         }
                     };
 
-                    dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.ONE_SECOND){
+                    dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(IMPORT_AJAX_TIMER)) {
+
                         @Override
                         protected void onPostProcessTarget(AjaxRequestTarget target) {
                             target.add(messages);
                             target.add(paging);
 
-                            if (stopTimer.get()){
+                            if (stopTimer.get()) {
                                 stop();
                             }
                         }
@@ -306,21 +334,59 @@ public class HeatmeterList extends TemplatePage{
                 //no errors
             }
         });
+
+        //Bind all section
+        {
+            class BindAllTimerBehavior extends AjaxSelfUpdatingTimerBehavior {
+
+                final AtomicBoolean stopCondition;
+
+                BindAllTimerBehavior(AtomicBoolean stopCondition) {
+                    super(Duration.seconds(BIND_ALL_AJAX_TIMER));
+                    this.stopCondition = stopCondition;
+                }
+
+                @Override
+                protected void onPostProcessTarget(AjaxRequestTarget target) {
+                    target.add(messages);
+                    target.add(paging);
+
+                    if (stopCondition.get()) {
+                        stop();
+                        getComponent().remove(this);
+                    }
+                }
+            }
+            filterForm.add(new AjaxLink<Void>("bindAll") {
+
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    AtomicBoolean stopCondition = new AtomicBoolean();
+
+                    //TODO: add invoke of bind all process
+
+                    dataContainer.add(new BindAllTimerBehavior(stopCondition));
+                }
+            });
+        }
     }
 
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
-        return Arrays.asList(new AddItemButton(id) {
-            @Override
-            protected void onClick() {
-                setResponsePage(HeatmeterEdit.class);
-            }
-        },
-        new UploadButton(id, true){
-            @Override
-            protected void onClick(AjaxRequestTarget target) {
-                importDialog.open(target);
-            }
-        });
+        return Arrays.asList(
+                new AddItemButton(id) {
+
+                    @Override
+                    protected void onClick() {
+                        setResponsePage(HeatmeterEdit.class);
+                    }
+                },
+                new UploadButton(id, true) {
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        importDialog.open(target);
+                    }
+                });
     }
 }

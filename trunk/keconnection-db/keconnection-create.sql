@@ -590,6 +590,20 @@ CREATE TABLE `building_correction` (
     CONSTRAINT `fk_building_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция дома';
 
+DROP TABLE IF EXISTS `heatmeter_correction`;
+CREATE TABLE `heatmeter_correction` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `system_heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор счетчика в системе',
+    `external_heatmeter_id` VARCHAR(50) NOT NULL COMMENT 'Внешний идентификатор счетчика',
+    `heatmeter_number` VARCHAR(50) COMMENT 'Номер счетчика во внешней системе',
+    `binding_date` TIMESTAMP NOT NULL COMMENT 'Время связывания',
+    `binding_status` INTEGER NOT NULL COMMENT 'Статус связывания',
+    `history` TINYINT (1) DEFAULT 0 NOT NULL COMMENT '', 
+    PRIMARY KEY (`id`),
+    KEY `key_system_heatmeter_id` (`system_heatmeter_id`),
+    CONSTRAINT `fk_heatmeter_correction__heatmeter` FOREIGN KEY (`system_heatmeter_id`) REFERENCES `heatmeter` (`id`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция счетчика';
+
 DROP TABLE IF EXISTS `operating_month`;
 CREATE TABLE `operating_month`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',

@@ -19,6 +19,7 @@ public class Heatmeter implements ILongId{
     private List<HeatmeterPeriod> periods; //Список периодов
 
     private HeatmeterPeriodType status;
+    private HeatmeterBindingStatus bindingStatus;
 
     public Long getId() {
         return id;
@@ -74,5 +75,13 @@ public class Heatmeter implements ILongId{
 
     public void setStatus(HeatmeterPeriodType status) {
         this.status = status;
+    }
+
+    public HeatmeterBindingStatus getBindingStatus() {
+        return bindingStatus;
+    }
+
+    public void setBindingStatus(HeatmeterBindingStatus bindingStatus) {
+        this.bindingStatus = bindingStatus;
     }
 }

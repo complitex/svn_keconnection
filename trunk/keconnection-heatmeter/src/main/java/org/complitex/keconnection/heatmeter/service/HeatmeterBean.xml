@@ -7,6 +7,7 @@
         <result property="type" column="type_id"/>
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
+        <result property="bindingStatus" column="binding_status"/>
         <collection property="heatmeterCodes"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterCodeBean.selectHeatmeterCodesByHeatmeterId"
                     column="id"/>
@@ -30,14 +31,17 @@
             <if test="object.ls != null">`ls` = #{object.ls}</if>
             <if test="object.type != null">and `type_id` = #{object.type}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
+            <if test="object.bindingStatus != null">and `binding_status` = #{object.bindingStatus}</if>
         </where>
     </sql>
 
     <sql id="selectHeatmeterSelectFrom">
         select h.*,
           IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
-            and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`
+            and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`,
+          hc.`binding_status`
         from `heatmeter` h
+            LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMap">
