@@ -11,6 +11,7 @@ public class HeatmeterWrapper {
     private String ls;
 
     private String address;
+    private String fileName;
 
     public HeatmeterWrapper(int row) {
         this.row = row;
@@ -21,7 +22,8 @@ public class HeatmeterWrapper {
         return  "row=" + row +
                 ", organizationCode='" + organizationCode + '\'' +
                 ", buildingCode='" + buildingCode + '\'' +
-                ", ls='" + ls + '\'';
+                ", ls='" + ls + '\'' +
+                ", fileName='" + fileName + '\'' ;
     }
 
     public int getRow() {
@@ -62,5 +64,13 @@ public class HeatmeterWrapper {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
