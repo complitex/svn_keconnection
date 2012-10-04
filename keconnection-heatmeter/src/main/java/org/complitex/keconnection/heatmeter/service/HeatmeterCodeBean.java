@@ -5,6 +5,7 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCode;
 
 import javax.ejb.Stateless;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -19,5 +20,13 @@ public class HeatmeterCodeBean extends AbstractBean{
         }else {
             sqlSession().update("updateHeatmeterCode", heatmeterCode);
         }
+    }
+
+    public List<HeatmeterCode> getHeatmeterCodes(Long heatmeterId){
+        return sqlSession().selectList("selectHeatmeterCodesByHeatmeterId", heatmeterId);
+    }
+
+    public void delete(Long id){
+        sqlSession().delete("deleteHeatmeterCode", id);
     }
 }

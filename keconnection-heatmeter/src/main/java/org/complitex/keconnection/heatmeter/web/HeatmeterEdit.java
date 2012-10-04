@@ -1,36 +1,25 @@
 package org.complitex.keconnection.heatmeter.web;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.*;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.address.strategy.building.entity.Building;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
-import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
-import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
-import org.complitex.dictionary.web.component.ShowMode;
-import org.complitex.dictionary.web.component.search.CollapsibleInputSearchComponent;
-import org.complitex.dictionary.web.component.search.ISearchCallback;
-import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
-import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterCodePanel;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
@@ -38,12 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import static org.complitex.dictionary.util.PageUtil.newRequiredTextFields;
+import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -83,7 +71,17 @@ public class HeatmeterEdit extends FormTemplatePage{
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
-        Heatmeter heatmeter = id != null ? heatmeterBean.getHeatmeter(id) : new Heatmeter();
+        Heatmeter heatmeter;
+
+        if (id != null){
+            heatmeter = heatmeterBean.getHeatmeter(id);
+        }
+        else{
+            heatmeter = new Heatmeter();
+            heatmeter.setHeatmeterCodes(new ArrayList<HeatmeterCode>());
+            heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);
+        }
+
         final IModel<Heatmeter> model = new CompoundPropertyModel<>(heatmeter);
 
         Form form = new Form<>("form", model);
@@ -95,66 +93,8 @@ public class HeatmeterEdit extends FormTemplatePage{
         //Type
         form.add(new EnumDropDownChoice<>("type", HeatmeterType.class).setNullValid(false));
 
-        //SearchComponentState
-        final SearchComponentState searchComponentState = new SearchComponentState();
-        if (heatmeter.getId() != null){
-            Building building = buildingStrategy.findById(0, true); //todo
-            searchComponentState.put("building", building);
-
-            DomainObject street = streetStrategy.findById(building.getPrimaryStreetId(), true);
-            searchComponentState.put("street", street);
-
-            DomainObject city = cityStrategy.findById(street.getParentId(), true);
-            searchComponentState.put("city", city);
-        }
-
-        //Organization
-//        final IModel<DomainObject> organizationModel = Model.of(heatmeter.getOrganizationId() != null
-//                ? organizationStrategy.findById(heatmeter.getOrganizationId(), true)
-//                : new DomainObject());                                             todo
-        final IModel<DomainObject> organizationModel = Model.of(new DomainObject());
-
-        final DisableAwareDropDownChoice<DomainObject> organizations = new DisableAwareDropDownChoice<>("organization",
-                organizationModel,
-                new LoadableDetachableModel<List<? extends DomainObject>>() {
-                    @Override
-                    protected List<? extends DomainObject> load() {
-                        List<DomainObject> list = new ArrayList<>();
-
-                        Building b = (Building) searchComponentState.get("building");
-
-                        if (b != null) {
-                            KeConnectionBuilding building = buildingStrategy.findById(b.getId(), true);
-
-                            if (building != null && building.getBuildingCodeList() != null){
-                                for (BuildingCode buildingCode : building.getBuildingCodeList()){
-                                    list.add(organizationStrategy.findById(buildingCode.getOrganizationId(), true));
-                                }
-                            }
-                        }
-
-                        return list;
-                    }
-                },
-                new DomainObjectDisableAwareRenderer() {
-
-                    @Override
-                    public Object getDisplayValue(DomainObject object) {
-                        return organizationStrategy.displayDomainObject(object, getLocale());
-                    }
-                });
-        organizations.setOutputMarkupId(true);
-
-        form.add(organizations);
-
-        //Building
-        form.add(new CollapsibleInputSearchComponent("building", searchComponentState,
-                Arrays.asList("city", "street", "building"), new ISearchCallback() {
-            @Override
-            public void found(Component component, Map<String, Long> ids, AjaxRequestTarget target) {
-                target.add(organizations);
-            }
-        }, ShowMode.ALL, true));
+        //Heatmeter Code Panel
+        form.add(new HeatmeterCodePanel("heatmeter_codes", new ListModel<>(heatmeter.getHeatmeterCodes())));
 
         //Save
         form.add(new Button("save"){
@@ -162,24 +102,6 @@ public class HeatmeterEdit extends FormTemplatePage{
             public void onSubmit() {
                 try {
                     Heatmeter heatmeter = model.getObject();
-
-                    Building building = (Building) searchComponentState.get("building");
-                    if (building == null){
-                        error(getString("error_building_required"));
-                        return;
-                    }
-
-                    DomainObject organization = organizations.getModelObject();
-                    if (organization == null){
-                        error(getString("error_organization_required"));
-                        return;
-                    }
-
-                    Long buildingCodeId = buildingStrategy.getBuildingCodeId(organization.getId(), building.getId());
-                    if (buildingCodeId == null){
-                        error(getString("error_building_code_not_found"));
-                        return;
-                    }
 
                     //heatmeter.setBuildingCodeId(buildingCodeId); todo
 

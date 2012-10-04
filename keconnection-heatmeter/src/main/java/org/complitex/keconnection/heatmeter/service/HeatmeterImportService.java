@@ -12,10 +12,7 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.*;
-import org.complitex.keconnection.heatmeter.service.exception.BuildingNotFoundException;
-import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeaterImportException;
-import org.complitex.keconnection.heatmeter.service.exception.DuplicateException;
-import org.complitex.keconnection.heatmeter.service.exception.OrganizationNotFoundException;
+import org.complitex.keconnection.heatmeter.service.exception.*;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,17 +58,17 @@ public class HeatmeterImportService extends AbstractImportService{
     public final static Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
 
     @Asynchronous
-    public void asyncUploadHeatmeters(InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
-        uploadHeatmeters(inputStream, listener);
+    public void asyncUploadHeatmeters(String fileName, InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
+        uploadHeatmeters(fileName, inputStream, listener);
     }
 
-    public void process(final IImportFile importFile, final IImportListener listener) throws ImportFileNotFoundException,
-            ImportFileReadException{
+    public void process(final IImportFile importFile, final IImportListener listener)
+            throws ImportFileNotFoundException, ImportFileReadException{
         int size = getRecordCount(importFile);
 
         listener.beginImport(importFile, size);
 
-        uploadHeatmeters(getInputStream(importFile), new IProcessListener<HeatmeterWrapper>() {
+        uploadHeatmeters(importFile.getFileName(), getInputStream(importFile), new IProcessListener<HeatmeterWrapper>() {
             int index = 0;
             int processed = 0;
 
@@ -100,7 +97,7 @@ public class HeatmeterImportService extends AbstractImportService{
         });
     }
 
-    private void uploadHeatmeters(InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
+    private void uploadHeatmeters(String fileName, InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
         HeatmeterWrapper heatmeaterWrapper = null;
 
         int lineNum = 0;
@@ -140,13 +137,14 @@ public class HeatmeterImportService extends AbstractImportService{
                     heatmeaterWrapper.setBuildingCode(line[1]);
                     heatmeaterWrapper.setLs(ls);
                     heatmeaterWrapper.setAddress(line[2] + " " + line[3]);
+                    heatmeaterWrapper.setFileName(fileName);
 
                     //create heatmeter
                     try {
                         createHeatmeter(heatmeaterWrapper);
 
                         listener.processed(heatmeaterWrapper);
-                    } catch (BuildingNotFoundException | OrganizationNotFoundException e) {
+                    } catch (BuildingNotFoundException | OrganizationNotFoundException | NumberLsException e) {
                         listener.error(heatmeaterWrapper, e);
                     }catch (DuplicateException e){
                         listener.skip(heatmeaterWrapper);
@@ -168,7 +166,7 @@ public class HeatmeterImportService extends AbstractImportService{
     }
 
     public void createHeatmeter(HeatmeterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
-            OrganizationNotFoundException, DuplicateException {
+            OrganizationNotFoundException, DuplicateException, NumberLsException {
         //find organization by code
         Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 
@@ -184,7 +182,12 @@ public class HeatmeterImportService extends AbstractImportService{
         }
 
         //ls
-        Integer ls = Integer.parseInt(heatmeaterWrapper.getLs());
+        Integer ls = null;
+        try {
+            ls = Integer.parseInt(heatmeaterWrapper.getLs());
+        } catch (NumberFormatException e) {
+            throw new NumberLsException(heatmeaterWrapper);
+        }
 
         //check duplicates
         if (heatmeterBean.isExist(ls, buildingCodeId, organizationId)){

@@ -5,12 +5,15 @@ import com.google.common.io.ByteStreams;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -31,6 +34,7 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
+import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRenderer;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
@@ -49,11 +53,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
-import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRenderer;
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -323,7 +322,7 @@ public class HeatmeterList extends TemplatePage {
                     });
                     target.add(dataContainer);
 
-                    heatmeterImportService.asyncUploadHeatmeters(inputStream, listener);
+                    heatmeterImportService.asyncUploadHeatmeters(fileUpload.getClientFileName(), inputStream, listener);
                 } catch (IOException e) {
                     log.error("Ошибка чтения файла", e);
                 }

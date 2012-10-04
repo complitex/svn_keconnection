@@ -31,4 +31,8 @@
           left join `building_code` bc on bc.`id` = hc.`building_code_id`
         where hc.`heatmeter_id` = #{heatmeterId}
     </select>
+
+    <delete id="deleteHeatmeterCode" parameterType="long">
+        delete from `heatmeter_code` where `id` = #{id}
+    </delete>
 </mapper>
