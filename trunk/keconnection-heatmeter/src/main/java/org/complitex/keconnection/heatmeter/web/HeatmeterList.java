@@ -1,5 +1,10 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.image.Image;
+import org.complitex.keconnection.heatmeter.service.HeatmeterBindService;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.complitex.dictionary.web.component.image.StaticImage;
 import com.google.common.base.Joiner;
 import com.google.common.io.ByteStreams;
 import org.apache.wicket.ThreadContext;
@@ -26,7 +31,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.address.service.AddressRendererBean;
-import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
@@ -53,6 +57,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeterBindException;
+import org.complitex.keconnection.heatmeter.service.exception.DBException;
+import org.complitex.keconnection.heatmeter.service.exception.HeatmeterBindException;
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -75,6 +82,8 @@ public class HeatmeterList extends TemplatePage {
     private IKeConnectionOrganizationStrategy organizationStrategy;
     @EJB
     private HeatmeterBindingStatusRenderer heatmeterBindingStatusRenderer;
+    @EJB
+    private HeatmeterBindService heatmeterBindService;
     private Dialog importDialog;
 
     public HeatmeterList() {
@@ -86,12 +95,12 @@ public class HeatmeterList extends TemplatePage {
         add(messages);
 
         //Filter Model
-        FilterWrapper<Heatmeter> filterWrapper = getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
-                FilterWrapper.of(new Heatmeter()));
-        final IModel<FilterWrapper<Heatmeter>> filterModel = new CompoundPropertyModel<>(filterWrapper);
+        HeatmeterFilterWrapper filterWrapper = (HeatmeterFilterWrapper) getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
+                new HeatmeterFilterWrapper(new Heatmeter()));
+        final IModel<HeatmeterFilterWrapper> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
         //Filter Form
-        final Form filterForm = new Form<>("filter_form", filterModel);
+        final Form<?> filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -100,7 +109,8 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                filterModel.setObject(FilterWrapper.of(new Heatmeter()));
+                filterModel.setObject(new HeatmeterFilterWrapper(new Heatmeter()));
+                filterForm.clearInput();
                 target.add(filterForm);
             }
 
@@ -154,7 +164,7 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected Iterable<Heatmeter> getData(int first, int count) {
-                FilterWrapper<Heatmeter> filterWrapper = filterModel.getObject();
+                HeatmeterFilterWrapper filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);
                 filterWrapper.setCount(count);
@@ -182,7 +192,7 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(dataContainer);
 
         //Data View
-        DataView dataView = new DataView<Heatmeter>("data_view", dataProvider) {
+        DataView<Heatmeter> dataView = new DataView<Heatmeter>("data_view", dataProvider) {
 
             @Override
             protected void populateItem(Item<Heatmeter> item) {
@@ -246,7 +256,7 @@ public class HeatmeterList extends TemplatePage {
         importDialog.setHeight(80);
         importDialogContainer.add(importDialog);
 
-        Form uploadForm = new Form("upload_form");
+        Form<?> uploadForm = new Form<>("upload_form");
         importDialog.add(uploadForm);
 
         final FileUploadField fileUploadField = new FileUploadField("file_upload_field");
@@ -336,13 +346,23 @@ public class HeatmeterList extends TemplatePage {
 
         //Bind all section
         {
+            final WebMarkupContainer bindAllIndicator = new WebMarkupContainer("bindAllIndicator");
+            bindAllIndicator.setOutputMarkupId(true);
+            final Image bindAllIndicatorImage = new StaticImage("bindAllIndicatorImage",
+                    AbstractDefaultAjaxBehavior.INDICATOR);
+            bindAllIndicatorImage.setVisible(false);
+            bindAllIndicator.add(bindAllIndicatorImage);
+            filterForm.add(bindAllIndicator);
+
             class BindAllTimerBehavior extends AjaxSelfUpdatingTimerBehavior {
 
                 final AtomicBoolean stopCondition;
+                final Component bindAll;
 
-                BindAllTimerBehavior(AtomicBoolean stopCondition) {
+                BindAllTimerBehavior(AtomicBoolean stopCondition, Component bindAll) {
                     super(Duration.seconds(BIND_ALL_AJAX_TIMER));
                     this.stopCondition = stopCondition;
+                    this.bindAll = bindAll;
                 }
 
                 @Override
@@ -353,20 +373,108 @@ public class HeatmeterList extends TemplatePage {
                     if (stopCondition.get()) {
                         stop();
                         getComponent().remove(this);
+                        bindAllIndicatorImage.setVisible(false);
+                        bindAll.setEnabled(true);
+                        target.add(bindAll);
+                        target.add(bindAllIndicator);
                     }
                 }
             }
-            filterForm.add(new AjaxLink<Void>("bindAll") {
+
+            AjaxLink<Void> bindAll = new AjaxLink<Void>("bindAll") {
 
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    AtomicBoolean stopCondition = new AtomicBoolean();
+                    if (heatmeterBindService.isProcessing()) {
+                        return;
+                    }
 
-                    //TODO: add invoke of bind all process
+                    bindAllIndicatorImage.setVisible(true);
+                    this.setEnabled(false);
+                    target.add(bindAllIndicator);
+                    target.add(this);
 
-                    dataContainer.add(new BindAllTimerBehavior(stopCondition));
+                    final AtomicBoolean stopCondition = new AtomicBoolean();
+
+                    heatmeterBindService.bindAll(new IProcessListener<Heatmeter>() {
+
+                        private int processedCount;
+                        private int errorCount;
+                        private ThreadContext threadContext = ThreadContext.get(false);
+
+                        @Override
+                        public void processed(Heatmeter object) {
+                            processedCount++;
+                        }
+
+                        @Override
+                        public void skip(Heatmeter object) {
+                            throw new UnsupportedOperationException("Not supported yet.");
+                        }
+
+                        @Override
+                        public void error(Heatmeter object, Exception ex) {
+                            ThreadContext.restore(threadContext);
+                            errorCount++;
+
+                            try {
+                                throw ex;
+                            } catch (HeatmeterBindException e) {
+                                bindingError(object, e.getStatus());
+                            } catch (DBException e) {
+                                getSession().error(getString("heatmeter_bind_db_error"));
+                            } catch (CriticalHeatmeterBindException e) {
+                                getSession().error(getStringFormat("critical_heatmeter_bind_error", e.getCause()));
+                            } catch (Exception e) {
+                                getSession().error(getStringFormat("critical_heatmeter_bind_error", e));
+                            }
+                        }
+
+                        private void bindingError(Heatmeter heatmeter, HeatmeterBindingStatus status) {
+                            final long id = heatmeter.getId();
+                            final int ls = heatmeter.getLs();
+
+                            String message;
+                            switch (status) {
+                                case BINDING_ERROR:
+                                    message = getStringFormat("heatmeter_bind_error", id, ls);
+                                    break;
+                                case BUILDING_NOT_FOUND: {
+                                    final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                                    message = getStringFormat("heatmeter_bind_building_not_found", id, ls,
+                                            addressRendererBean.displayBuildingSimple(buildingId, getLocale()));
+                                }
+                                break;
+                                case ORGANIZATION_NOT_FOUND: {
+                                    final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                                    message = getStringFormat("heatmeter_bind_organization_not_found", id, ls,
+                                            addressRendererBean.displayBuildingSimple(buildingId, getLocale()));
+                                }
+                                break;
+                                default:
+                                    throw new IllegalStateException("Impossible code path.");
+                            }
+                            getSession().error(message);
+                        }
+
+                        @Override
+                        public void done() {
+                            ThreadContext.restore(threadContext);
+                            getSession().info(getStringFormat("heatmeter_bind_done", processedCount, errorCount));
+                            stopTimer();
+                        }
+
+                        private void stopTimer() {
+                            stopCondition.lazySet(true);
+                        }
+                    });
+
+                    dataContainer.add(new BindAllTimerBehavior(stopCondition, this));
+                    target.add(dataContainer);
                 }
-            });
+            };
+            bindAll.setOutputMarkupId(true);
+            filterForm.add(bindAll);
         }
     }
 

@@ -19,24 +19,26 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection;
 @Stateless
 public class HeatmeterCorrectionBean extends AbstractBean {
 
+    private static final String MAPPING_NAMESPACE = HeatmeterCorrectionBean.class.getName();
+
     @Transactional
     public void insert(HeatmeterCorrection correction) {
-        sqlSession().insert("insert", correction);
+        sqlSession().insert(MAPPING_NAMESPACE + ".insert", correction);
     }
 
     @Transactional
-    public void updateBindingStatus(HeatmeterCorrection correction) {
-        sqlSession().update("updateBindingStatus", correction);
+    public void updateBindingDate(HeatmeterCorrection correction) {
+        sqlSession().update(MAPPING_NAMESPACE + ".updateBindingDate", correction);
     }
 
     @Transactional
-    public void makeHistory(long heatmeterId) {
-        sqlSession().update("makeHistory", heatmeterId);
+    public void markHistory(long heatmeterId) {
+        sqlSession().update(MAPPING_NAMESPACE + ".markHistory", heatmeterId);
     }
 
     public HeatmeterCorrection findById(long heatmeterId) {
-        List<HeatmeterCorrection> corrections = sqlSession().selectList("findById", heatmeterId);
-        if (corrections.isEmpty()) {
+        List<HeatmeterCorrection> corrections = sqlSession().selectList(MAPPING_NAMESPACE + ".findById", heatmeterId);
+        if (corrections == null || corrections.isEmpty()) {
             return null;
         } else if (corrections.size() > 1) {
             throw new IllegalStateException("More one non-history heatmeter correction found for heatmeter id: " + heatmeterId);

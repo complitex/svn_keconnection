@@ -145,8 +145,8 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
                         item.add(organization);
 
                         //building code
-                        IModel<String> buildingCodeModel = new PropertyModel<String>(association, "buildingCode");
-                        TextField<String> buildingCode = new TextField<String>("buildingCode", buildingCodeModel);
+                        IModel<Integer> buildingCodeModel = new PropertyModel<Integer>(association, "buildingCode");
+                        TextField<Integer> buildingCode = new TextField<Integer>("buildingCode", buildingCodeModel);
                         buildingCode.setEnabled(enabled);
                         buildingCode.add(new AjaxFormComponentUpdatingBehavior("onblur") {
 

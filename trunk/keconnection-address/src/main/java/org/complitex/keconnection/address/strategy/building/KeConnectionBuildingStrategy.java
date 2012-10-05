@@ -160,8 +160,7 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
 
         List<BuildingCode> buildingCodes = new ArrayList<>();
         if (!buildingCodeIds.isEmpty()) {
-            buildingCodes = sqlSession().selectList(MAPPING_NAMESPACE
-                    + ".getBuildingCodes", ImmutableMap.of("ids", buildingCodeIds));
+            buildingCodes = getBuildingCodes(buildingCodeIds);
             Collections.sort(buildingCodes, new Comparator<BuildingCode>() {
 
                 @Override
@@ -171,6 +170,10 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
             });
         }
         return new BuildingCodeList(buildingCodes);
+    }
+
+    private List<BuildingCode> getBuildingCodes(Set<Long> buildingCodeIds) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getBuildingCodes", ImmutableMap.of("ids", buildingCodeIds));
     }
 
     @Transactional
@@ -204,5 +207,13 @@ public class KeConnectionBuildingStrategy extends BuildingStrategy {
     public Long getBuildingCodeId(final Long organizationId, final Long buildingId) {
         return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectBuildingCodeIdByBuilding",
                 ImmutableMap.of("organizationId", organizationId, "buildingId", buildingId));
+    }
+
+    public BuildingCode getBuildingCodeById(long buildingCodeId) {
+        List<BuildingCode> codes = getBuildingCodes(Collections.singleton(buildingCodeId));
+        if (codes == null || codes.size() > 1) {
+            throw new IllegalStateException("There are more one building code for id: " + buildingCodeId);
+        }
+        return codes.get(0);
     }
 }

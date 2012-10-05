@@ -31,7 +31,16 @@
             <if test="object.ls != null">`ls` = #{object.ls}</if>
             <if test="object.type != null">and `type_id` = #{object.type}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
-            <if test="object.bindingStatus != null">and `binding_status` = #{object.bindingStatus}</if>
+            <if test="object.bindingStatus != null">
+                <choose>
+                    <when test="object.bindingStatus == unboundBindingStatus">
+                        AND (`binding_status` = #{object.bindingStatus} OR `binding_status` IS NULL)
+                    </when>
+                    <otherwise>
+                        AND `binding_status` = #{object.bindingStatus}
+                    </otherwise>
+                </choose>
+            </if>
         </where>
     </sql>
 
@@ -48,13 +57,13 @@
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
 
-    <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+    <select id="selectHeatmeters" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterFilterWrapper"
             resultMap="heatmeterResultMap">
         select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 
-    <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+    <select id="selectHeatmetersCount" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterFilterWrapper"
             resultType="int">
         select count(*) from
         (select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>) h3

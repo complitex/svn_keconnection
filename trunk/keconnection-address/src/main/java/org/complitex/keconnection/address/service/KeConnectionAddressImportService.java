@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.complitex.dictionary.util.StringUtil;
 import org.complitex.keconnection.address.entity.BuildingImport;
 import org.complitex.keconnection.address.entity.BuildingPartImport;
 import static org.complitex.address.entity.AddressImportFile.*;
@@ -172,8 +173,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 Long streetId = streetStrategy.getObjectId(streetExternalId);
                 if (streetId == null) {
                     listener.warn(BUILDING, ResourceUtil.getFormatString(RESOURCE_BUNDLE, "building_street_not_found_warn",
-                            localeBean.getLocale(localeId),
-                            b.getNum(), b.getBuildingPartId(), streetExternalId));
+                            localeBean.getLocale(localeId), b.getNum(), b.getBuildingPartId(), streetExternalId));
                     continue;
                 }
 
@@ -225,11 +225,23 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                             throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, String.valueOf(gekId));
                         }
 
-                        BuildingCode association = new BuildingCode();
-                        association.setOrganizationId(organizationId);
-                        association.setBuildingCode(buildingCode);
-                        building.getBuildingCodeList().add(association);
-                        subjectIds.add(organizationId);
+                        Integer buildingCodeInt = null;
+                        try {
+                            buildingCodeInt = StringUtil.parseInt(buildingCode);
+                        } catch (NumberFormatException e) {
+                        }
+
+                        if (buildingCodeInt == null) {
+                            listener.warn(BUILDING, ResourceUtil.getFormatString(RESOURCE_BUNDLE, "building_code_format_warn",
+                                    localeBean.getLocale(localeId), b.getNum(), b.getBuildingPartId(), buildingCode));
+                            continue;
+                        } else {
+                            BuildingCode association = new BuildingCode();
+                            association.setOrganizationId(organizationId);
+                            association.setBuildingCode(buildingCodeInt);
+                            building.getBuildingCodeList().add(association);
+                            subjectIds.add(organizationId);
+                        }
                     }
                     building.setSubjectIds(subjectIds);
                 }

@@ -4,7 +4,6 @@
  */
 package org.complitex.keconnection.address.strategy.building.entity;
 
-import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public final class BuildingCodeList extends ArrayList<BuildingCode> {
     public boolean hasNulls() {
         for (BuildingCode buildingCode : this) {
             if (buildingCode == null || buildingCode.getOrganizationId() == null
-                    || Strings.isNullOrEmpty(buildingCode.getBuildingCode())) {
+                    || buildingCode.getBuildingCode() == null) {
                 return true;
             }
         }

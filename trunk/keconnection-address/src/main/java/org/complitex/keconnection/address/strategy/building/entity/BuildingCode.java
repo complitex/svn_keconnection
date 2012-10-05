@@ -15,7 +15,7 @@ public class BuildingCode implements Serializable {
 
     private Long id;
     private Long organizationId;
-    private String buildingCode;
+    private Integer buildingCode;
     private Long buildingId;
 
     public Long getId() {
@@ -26,11 +26,11 @@ public class BuildingCode implements Serializable {
         this.id = id;
     }
 
-    public String getBuildingCode() {
+    public Integer getBuildingCode() {
         return buildingCode;
     }
 
-    public void setBuildingCode(String buildingCode) {
+    public void setBuildingCode(Integer buildingCode) {
         this.buildingCode = buildingCode;
     }
 

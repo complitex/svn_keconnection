@@ -2,82 +2,85 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
-<head>
-    <wicket:head>
-        <title wicket:id="title"></title>
-    </wicket:head>
-</head>
-<body>
-<wicket:extend>
-    <h1><wicket:message key="title"/></h1>
-    <div wicket:id="messages"></div>
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:extend>
+            <h1><wicket:message key="title"/></h1>
+            <div wicket:id="messages"></div>
 
-    <div wicket:id="import_dialog_container">
-        <div wicket:id="import_dialog">
-            <form action="#" wicket:id="upload_form">
-                <input type="file" wicket:id="file_upload_field"/>
-                <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
-            </form>
-        </div>
-    </div>
-
-    <form action="#" wicket:id="filter_form">
-        <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
-            <thead>
-            <tr>
-                <th></th>
-                <th class="center" wicket:id="header.ls"><wicket:message key="ls"/></th>
-                <th class="center" wicket:id="header.type_id"><wicket:message key="type"/></th>
-                <th class="center"><wicket:message key="buildingId"/></th>
-                <th class="center"><wicket:message key="organizationId"/></th>
-                <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
-                <th class="center"><wicket:message key="bindingStatus"/></th>
-
-                <th class="center">
-                    <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
-                </th>
-            </tr>
-            <tr>
-                <th></th>
-                <th><input type="text" wicket:id="object.ls"/></th>
-                <th><select wicket:id="object.type"></select></th>
-                <th><input type="text"/></th>
-                <th><input type="text"/></th>
-                <th><select wicket:id="object.status"></select></th>
-                <th><select wicket:id="object.bindingStatus"></select></th>
-
-                <th class="center">
-                    <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
-                </th>
-            </tr>
-            </thead>
-            <tbody wicket:id="data_container">
-            <tr wicket:id="data_view">
-                <td></td>
-                <td wicket:id="ls"></td>
-                <td wicket:id="type"></td>
-                <td wicket:id="buildingId"></td>
-                <td wicket:id="organizationId"></td>
-                <td wicket:id="status"></td>
-                <td wicket:id="bindingStatus"></td>
-                <td>
-                    <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
-                    <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
-                        <wicket:message key="delete"/>
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div wicket:id="paging"></div>
-        
-        <div style="margin-top: 20px;">
-            <div align="left">
-                <input type="button" wicket:id="bindAll" class="btnMiddle" wicket:message="value:bindAll"/>
+            <div wicket:id="import_dialog_container">
+                <div wicket:id="import_dialog">
+                    <form action="#" wicket:id="upload_form">
+                        <input type="file" wicket:id="file_upload_field"/>
+                        <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
+                    </form>
+                </div>
             </div>
-        </div>
-    </form>
-</wicket:extend>
-</body>
+
+            <form action="#" wicket:id="filter_form">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th class="center" wicket:id="header.ls"><wicket:message key="ls"/></th>
+                            <th class="center" wicket:id="header.type_id"><wicket:message key="type"/></th>
+                            <th class="center"><wicket:message key="buildingId"/></th>
+                            <th class="center"><wicket:message key="organizationId"/></th>
+                            <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
+                            <th class="center"><wicket:message key="bindingStatus"/></th>
+
+                            <th class="center">
+                                <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th><input type="text" wicket:id="object.ls"/></th>
+                            <th><select wicket:id="object.type"></select></th>
+                            <th><input type="text"/></th>
+                            <th><input type="text"/></th>
+                            <th><select wicket:id="object.status"></select></th>
+                            <th><select wicket:id="object.bindingStatus"></select></th>
+
+                            <th class="center">
+                                <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody wicket:id="data_container">
+                        <tr wicket:id="data_view">
+                            <td></td>
+                            <td wicket:id="ls"></td>
+                            <td wicket:id="type"></td>
+                            <td wicket:id="buildingId"></td>
+                            <td wicket:id="organizationId"></td>
+                            <td wicket:id="status"></td>
+                            <td wicket:id="bindingStatus"></td>
+                            <td>
+                                <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
+                                <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
+                                    <wicket:message key="delete"/>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div wicket:id="paging"></div>
+
+                <div style="margin-top: 20px;">
+                    <div align="left">
+                        <input type="button" wicket:id="bindAll" class="btnMiddle" wicket:message="value:bindAll"/>
+                        <span wicket:id="bindAllIndicator">
+                            <img alt="" wicket:id="bindAllIndicatorImage"/>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </wicket:extend>
+    </body>
 </html>
