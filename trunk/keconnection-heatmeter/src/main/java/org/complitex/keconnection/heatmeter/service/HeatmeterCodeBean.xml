@@ -17,9 +17,8 @@
     </insert>
 
     <update id="updateHeatmeterCode" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCode">
-        update `heatmeter_code` set `heatmeter_id` = #{heatmeterId}, `building_code_id` = #{buildingCodeId},
-          `begin_date` = #{beginDate}, `end_date` = #{endDate}
-        where `id` = #{id}
+        update `heatmeter_code` set `building_code_id` = #{buildingCodeId}, `begin_date` = #{beginDate},
+            `end_date` = #{endDate} where `id` = #{id}
     </update>
 
     <select id="selectHeatmeterCode" parameterType="long" resultMap="heatmeterCodeResultMap">

@@ -30,6 +30,8 @@ public class HeatmeterBean extends AbstractBean{
 
             //heatmeter codes
             for (HeatmeterCode heatmeterCode : heatmeter.getHeatmeterCodes()){
+                heatmeterCode.setHeatmeterId(heatmeter.getId());
+
                 heatmeterCodeBean.save(heatmeterCode);
             }
         }else {
@@ -45,6 +47,8 @@ public class HeatmeterBean extends AbstractBean{
 
             //save heatmeter codes
             for (HeatmeterCode heatmeterCode : heatmeter.getHeatmeterCodes()){
+                heatmeterCode.setHeatmeterId(heatmeter.getId());
+
                 heatmeterCodeBean.save(heatmeterCode);
             }
         }

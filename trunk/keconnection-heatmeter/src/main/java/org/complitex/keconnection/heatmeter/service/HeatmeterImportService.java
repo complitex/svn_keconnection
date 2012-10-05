@@ -182,7 +182,7 @@ public class HeatmeterImportService extends AbstractImportService{
         }
 
         //ls
-        Integer ls = null;
+        Integer ls;
         try {
             ls = Integer.parseInt(heatmeaterWrapper.getLs());
         } catch (NumberFormatException e) {
