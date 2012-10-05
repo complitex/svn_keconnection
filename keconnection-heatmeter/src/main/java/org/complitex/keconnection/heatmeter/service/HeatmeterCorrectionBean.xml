@@ -19,12 +19,12 @@
                 #{history})
     </insert>
 
-    <update id="updateBindingStatus" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection">
-        UPDATE `heatmeter_correction` SET `binding_status` = #{bindingStatus}, `binding_date` = #{bindingDate}
+    <update id="updateBindingDate" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection">
+        UPDATE `heatmeter_correction` SET `binding_date` = #{bindingDate}
           WHERE `system_heatmeter_id` = #{systemHeatmeterId} AND `history` = 0
     </update>
     
-    <update id="makeHistory" parameterType="long">
+    <update id="markHistory" parameterType="long">
         UPDATE `heatmeter_correction` SET `history` = 1 WHERE `system_heatmeter_id` = #{value} AND `history` = 0
     </update>
     

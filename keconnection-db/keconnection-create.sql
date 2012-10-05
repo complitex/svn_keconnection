@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS `building_code`;
 CREATE TABLE `building_code` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
   `organization_id` BIGINT(20) NOT NULL COMMENT 'ID обслуживающей организации',
-  `code` VARCHAR(10) NOT NULL COMMENT 'Код дома для данной обслуживающей организации',
+  `code` INTEGER NOT NULL COMMENT 'Код дома для данной обслуживающей организации',
   `building_id` BIGINT(20) NOT NULL COMMENT 'ID дома',
   PRIMARY KEY (`id`),
   KEY `key_organization_id` (`organization_id`),
@@ -594,7 +594,7 @@ DROP TABLE IF EXISTS `heatmeter_correction`;
 CREATE TABLE `heatmeter_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
     `system_heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор счетчика в системе',
-    `external_heatmeter_id` VARCHAR(50) NOT NULL COMMENT 'Внешний идентификатор счетчика',
+    `external_heatmeter_id` VARCHAR(50) COMMENT 'Внешний идентификатор счетчика',
     `heatmeter_number` VARCHAR(50) COMMENT 'Номер счетчика во внешней системе',
     `binding_date` TIMESTAMP NOT NULL COMMENT 'Время связывания',
     `binding_status` INTEGER NOT NULL COMMENT 'Статус связывания',
@@ -603,6 +603,14 @@ CREATE TABLE `heatmeter_correction` (
     KEY `key_system_heatmeter_id` (`system_heatmeter_id`),
     CONSTRAINT `fk_heatmeter_correction__heatmeter` FOREIGN KEY (`system_heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция счетчика';
+
+DROP TABLE IF EXISTS `heatmeter_bind`;
+CREATE TABLE `heatmeter_bind` (
+    `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор счетчика в системе',
+    `processed` TINYINT (1) DEFAULT 0 NOT NULL COMMENT 'Индикатор обработки',
+    PRIMARY KEY (`heatmeter_id`),
+    CONSTRAINT `fk_heatmeter_bind__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для связывания счетчиков';
 
 DROP TABLE IF EXISTS `operating_month`;
 CREATE TABLE `operating_month`(

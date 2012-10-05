@@ -25,12 +25,16 @@ public class HeatmeterCorrection implements Serializable {
     }
 
     public HeatmeterCorrection(long systemHeatmeterId, String externalHeatmeterId, String heatmeterNumber,
-            Date bindingDate, HeatmeterBindingStatus bindingStatus) {
+            HeatmeterBindingStatus bindingStatus) {
         this.systemHeatmeterId = systemHeatmeterId;
         this.externalHeatmeterId = externalHeatmeterId;
         this.heatmeterNumber = heatmeterNumber;
-        this.bindingDate = bindingDate;
         this.bindingStatus = bindingStatus;
+        this.history = false;
+    }
+
+    public HeatmeterCorrection(long systemHeatmeterId) {
+        this.systemHeatmeterId = systemHeatmeterId;
         this.history = false;
     }
 

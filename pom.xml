@@ -128,6 +128,21 @@
                 <artifactId>keconnection-tarif</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            
+            <!-- Oracle driver -->
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc14_g</artifactId>
+                <version>10.2.0.3.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>orai18n</artifactId>
+                <version>10.2.0.4.0</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
