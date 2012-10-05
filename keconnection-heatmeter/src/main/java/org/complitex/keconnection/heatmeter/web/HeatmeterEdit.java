@@ -13,6 +13,7 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.*;
@@ -71,7 +72,7 @@ public class HeatmeterEdit extends FormTemplatePage{
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
-        Heatmeter heatmeter;
+        final Heatmeter heatmeter;
 
         if (id != null){
             heatmeter = heatmeterBean.getHeatmeter(id);
@@ -103,7 +104,12 @@ public class HeatmeterEdit extends FormTemplatePage{
                 try {
                     Heatmeter heatmeter = model.getObject();
 
-                    //heatmeter.setBuildingCodeId(buildingCodeId); todo
+                    //validate
+                    for (HeatmeterCode code : heatmeter.getHeatmeterCodes()){
+                        if (code.getBuildingCodeId() == null){
+                            error(getString("error_code_not_found"));
+                        }
+                    }
 
                     //save
                     heatmeterBean.save(heatmeter);
@@ -125,7 +131,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                     getSession().info(getStringFormat("info_saved", heatmeter.getLs()));
                 } catch (Exception e) {
                     log.error("Ошибка сохранения теплосчетчика", e);
-                    getSession().error("Ошибка сохранения теплосчетчика: " + e.getMessage());
+                    getSession().error(new AbstractException(e, "Ошибка сохранения теплосчетчика: {0}", heatmeter.getLs()) {});
                 }
 
                 setResponsePage(HeatmeterList.class);

@@ -2,7 +2,6 @@ package org.complitex.keconnection.heatmeter.web.component;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -81,12 +80,13 @@ public class HeatmeterCodePanel extends Panel {
                 }
 
                 //Organization
-                final IModel<DomainObject> organizationModel = new Model<DomainObject>(new DomainObject()){
+                final IModel<DomainObject> organizationModel = new Model<DomainObject>(){
                     @Override
                     public void setObject(DomainObject object) {
                         super.setObject(object);
 
-                        heatmeterCode.setOrganizationId(object.getId());
+                        heatmeterCode.setOrganizationId(object != null ? object.getId() : null);
+                        updateHeatmeterCode(heatmeterCode);
                     }
                 };
 
@@ -96,6 +96,8 @@ public class HeatmeterCodePanel extends Panel {
                     if (organization != null){
                         organizationModel.setObject(organization);
                     }
+                }else {
+                    organizationModel.setObject(new DomainObject());
                 }
 
                 final DisableAwareDropDownChoice<DomainObject> organizations = new DisableAwareDropDownChoice<>("organization",
@@ -105,7 +107,7 @@ public class HeatmeterCodePanel extends Panel {
                             protected List<? extends DomainObject> load() {
                                 List<DomainObject> list = new ArrayList<>();
 
-                                Building b = (Building) searchComponentState.get("building");
+                                DomainObject b = searchComponentState.get("building");
 
                                 if (b != null) {
                                     KeConnectionBuilding building = buildingStrategy.findById(b.getId(), true);
@@ -128,13 +130,7 @@ public class HeatmeterCodePanel extends Panel {
                             }
                         });
                 organizations.setOutputMarkupId(true);
-                organizations.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        heatmeterCode.setOrganizationId(organizations.getModelObject().getId());
-                        updateHeatmeterCode(heatmeterCode);
-                    }
-                });
+
                 item.add(organizations);
 
                 //Building
