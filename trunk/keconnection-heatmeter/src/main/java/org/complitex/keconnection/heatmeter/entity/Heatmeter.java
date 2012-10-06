@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeter.entity;
 
 import org.complitex.dictionary.entity.ILongId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class Heatmeter implements ILongId{
     private Integer ls; //Номер л/с счетчика
     private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
-    private List<HeatmeterCode> heatmeterCodes; //Список кодов домов
+    private List<HeatmeterCode> heatmeterCodes = new ArrayList<>(); //Список кодов домов
     private List<HeatmeterPeriod> periods; //Список периодов
 
     private HeatmeterPeriodType status;
