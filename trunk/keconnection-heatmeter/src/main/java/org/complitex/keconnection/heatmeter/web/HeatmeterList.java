@@ -57,9 +57,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeterBindException;
-import org.complitex.keconnection.heatmeter.service.exception.DBException;
-import org.complitex.keconnection.heatmeter.service.exception.HeatmeterBindException;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindError;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -93,7 +93,7 @@ public class HeatmeterList extends TemplatePage {
         //Feedback Panel
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
         add(messages);
-
+        
         //Filter Model
         HeatmeterFilterWrapper filterWrapper = (HeatmeterFilterWrapper) getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
                 new HeatmeterFilterWrapper(new Heatmeter()));
@@ -191,6 +191,9 @@ public class HeatmeterList extends TemplatePage {
         dataContainer.setOutputMarkupId(true);
         filterForm.add(dataContainer);
 
+        final HeatmeterBindPanel heatmeterBindPanel = new HeatmeterBindPanel("heatmeterBindPanel");
+        add(heatmeterBindPanel);
+
         //Data View
         DataView<Heatmeter> dataView = new DataView<Heatmeter>("data_view", dataProvider) {
 
@@ -205,7 +208,8 @@ public class HeatmeterList extends TemplatePage {
                 for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()) {
                     building.add(addressRendererBean.displayBuildingSimple(hc.getBuildingId(), getLocale()));
                 }
-                item.add(new Label("buildingId", Joiner.on("; ").join(building)));
+                final String buildingLabel = Joiner.on("; ").join(building);
+                item.add(new Label("buildingId", buildingLabel));
 
                 //organization
                 List<String> organization = new ArrayList<>();
@@ -230,6 +234,14 @@ public class HeatmeterList extends TemplatePage {
                     public void onClick() {
                         info(getString("info_deleted"));
                         heatmeterBean.delete(heatmeter.getId());
+                    }
+                });
+
+                item.add(new AjaxLink<Void>("bindHeatmeter") {
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        heatmeterBindPanel.open(heatmeter, buildingLabel, target);
                     }
                 });
 
@@ -417,44 +429,7 @@ public class HeatmeterList extends TemplatePage {
                             ThreadContext.restore(threadContext);
                             errorCount++;
 
-                            try {
-                                throw ex;
-                            } catch (HeatmeterBindException e) {
-                                bindingError(object, e.getStatus());
-                            } catch (DBException e) {
-                                getSession().error(getString("heatmeter_bind_db_error"));
-                            } catch (CriticalHeatmeterBindException e) {
-                                getSession().error(getStringFormat("critical_heatmeter_bind_error", e.getCause()));
-                            } catch (Exception e) {
-                                getSession().error(getStringFormat("critical_heatmeter_bind_error", e));
-                            }
-                        }
-
-                        private void bindingError(Heatmeter heatmeter, HeatmeterBindingStatus status) {
-                            final long id = heatmeter.getId();
-                            final int ls = heatmeter.getLs();
-
-                            String message;
-                            switch (status) {
-                                case BINDING_ERROR:
-                                    message = getStringFormat("heatmeter_bind_error", id, ls);
-                                    break;
-                                case BUILDING_NOT_FOUND: {
-                                    final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
-                                    message = getStringFormat("heatmeter_bind_building_not_found", id, ls,
-                                            addressRendererBean.displayBuildingSimple(buildingId, getLocale()));
-                                }
-                                break;
-                                case ORGANIZATION_NOT_FOUND: {
-                                    final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
-                                    message = getStringFormat("heatmeter_bind_organization_not_found", id, ls,
-                                            addressRendererBean.displayBuildingSimple(buildingId, getLocale()));
-                                }
-                                break;
-                                default:
-                                    throw new IllegalStateException("Impossible code path.");
-                            }
-                            getSession().error(message);
+                            getSession().error(HeatmeterBindError.message(object, ex, getLocale()));
                         }
 
                         @Override
