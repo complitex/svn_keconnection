@@ -65,6 +65,9 @@
                                 <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
                                     <wicket:message key="delete"/>
                                 </a>
+                                <div>
+                                    <a href="#" wicket:id="bindHeatmeter"><wicket:message key="bindHeatmeter"/></a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -81,6 +84,7 @@
                     </div>
                 </div>
             </form>
+            <div wicket:id="heatmeterBindPanel"></div>
         </wicket:extend>
     </body>
 </html>

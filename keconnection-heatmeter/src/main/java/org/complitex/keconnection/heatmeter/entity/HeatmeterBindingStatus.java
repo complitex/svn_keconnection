@@ -14,7 +14,7 @@ import org.complitex.dictionary.mybatis.IFixedIdType;
 @FixedIdTypeHandler
 public enum HeatmeterBindingStatus implements IFixedIdType {
 
-    UNBOUND(1), ORGANIZATION_NOT_FOUND(2), BUILDING_NOT_FOUND(3), BINDING_ERROR(4), BOUND(5);
+    UNBOUND(1), ORGANIZATION_NOT_FOUND(2), BUILDING_NOT_FOUND(3), BINDING_ERROR(4), MORE_ONE_EXTERNAL_HEATMETER(5), BOUND(6);
     private long id;
 
     private HeatmeterBindingStatus(long id) {

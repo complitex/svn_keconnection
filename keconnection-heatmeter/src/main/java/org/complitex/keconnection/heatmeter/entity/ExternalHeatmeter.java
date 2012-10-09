@@ -4,11 +4,13 @@
  */
 package org.complitex.keconnection.heatmeter.entity;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Artem
  */
-public class ExternalHeatmeter {
+public class ExternalHeatmeter implements Serializable {
 
     private String id;
     private String number;

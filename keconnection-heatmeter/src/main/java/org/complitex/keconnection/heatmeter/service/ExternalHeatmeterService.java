@@ -66,10 +66,10 @@ public class ExternalHeatmeterService {
 
     public static class ExternalHeatmeterAndStatus implements Serializable {
 
-        final ExternalHeatmeter heatmeter;
-        final HeatmeterBindingStatus status;
+        public final ExternalHeatmeter heatmeter;
+        public final HeatmeterBindingStatus status;
 
-        ExternalHeatmeterAndStatus(ExternalHeatmeter heatmeter, HeatmeterBindingStatus status) {
+        private ExternalHeatmeterAndStatus(ExternalHeatmeter heatmeter, HeatmeterBindingStatus status) {
             this.heatmeter = heatmeter;
             this.status = status;
         }
@@ -84,9 +84,33 @@ public class ExternalHeatmeterService {
         }
     }
 
+    public static class ExternalHeatmetersAndStatus implements Serializable {
+
+        public final List<ExternalHeatmeter> heatmeters;
+        public final HeatmeterBindingStatus status;
+
+        private ExternalHeatmetersAndStatus(List<ExternalHeatmeter> heatmeters, HeatmeterBindingStatus status) {
+            this.heatmeters = heatmeters;
+            this.status = status;
+        }
+    }
+
     public ExternalHeatmeterAndStatus fetchExternalHeatmeter(long heatmeterId, Integer ls,
             String organizationCode, int buildingCode, Date date) throws DBException {
-        ExternalHeatmeter externalHeatmeter = null;
+        ExternalHeatmetersAndStatus ehs = fetchExternalHeatmeters(heatmeterId, ls, organizationCode, buildingCode, date);
+        ExternalHeatmeter externalHeatmeter = (ehs.heatmeters != null && !ehs.heatmeters.isEmpty()) ? ehs.heatmeters.get(0) : null;
+        return new ExternalHeatmeterAndStatus(externalHeatmeter, ehs.status);
+    }
+
+//    public ExternalHeatmetersAndStatus fetchExternalHeatmetersTest(long heatmeterId, Integer ls,
+//            String organizationCode, int buildingCode, Date date) throws DBException {
+//        return new ExternalHeatmetersAndStatus(ImmutableList.of(new ExternalHeatmeter("1", "#1")),
+//                HeatmeterBindingStatus.BOUND);
+//    }
+    
+    public ExternalHeatmetersAndStatus fetchExternalHeatmeters(long heatmeterId, Integer ls,
+            String organizationCode, int buildingCode, Date date) throws DBException {
+        List<ExternalHeatmeter> externalHeatmeters = null;
         HeatmeterBindingStatus status = null;
 
         Map<String, Object> params = new HashMap<>();
@@ -122,7 +146,7 @@ public class ExternalHeatmeterService {
         } else {
             switch (resultCode) {
                 case 1:
-                    List<ExternalHeatmeter> externalHeatmeters = (List<ExternalHeatmeter>) params.get("details");
+                    externalHeatmeters = (List<ExternalHeatmeter>) params.get("externalInfo");
                     if (externalHeatmeters == null || externalHeatmeters.isEmpty()) {
                         log.error("{}. Result code is 1 but external heatmeter data is null or empty."
                                 + "Heatmeter id: {}, ls: {}",
@@ -130,11 +154,9 @@ public class ExternalHeatmeterService {
                         logError(heatmeterId, "result_code_inconsistent", FETCH_EXTERNAL_HEATMETER_STORED_PROCEDURE);
                         status = HeatmeterBindingStatus.BINDING_ERROR;
                     } else if (externalHeatmeters.size() > 1) {
-                        log.warn("{}. Size of list of external heatmeters is more than 1. Only first entry will be used."
-                                + "Heatmeter id: {}, ls: {}",
-                                new Object[]{FETCH_EXTERNAL_HEATMETER_STORED_PROCEDURE, heatmeterId, ls});
+                        status = HeatmeterBindingStatus.MORE_ONE_EXTERNAL_HEATMETER;
                     } else {
-                        externalHeatmeter = externalHeatmeters.get(0);
+                        status = HeatmeterBindingStatus.BOUND;
                     }
                     break;
                 case -1:
@@ -150,6 +172,6 @@ public class ExternalHeatmeterService {
                     status = HeatmeterBindingStatus.BINDING_ERROR;
             }
         }
-        return new ExternalHeatmeterAndStatus(externalHeatmeter, status);
+        return new ExternalHeatmetersAndStatus(externalHeatmeters, status);
     }
 }

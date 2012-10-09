@@ -23,6 +23,7 @@ import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection;
 import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmeterAndStatus;
+import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmetersAndStatus;
 import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeterBindException;
 import org.complitex.keconnection.heatmeter.service.exception.DBException;
 import org.complitex.keconnection.heatmeter.service.exception.HeatmeterBindException;
@@ -91,47 +92,14 @@ public class HeatmeterBindService {
                                     final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
 
                                     //fetch external heatmeter.
-                                    final Date currentDate = getCurrentDate();
                                     ExternalHeatmeterAndStatus ehs = externalHeatmeterService.fetchExternalHeatmeter(
                                             heatmeterId, heatmeter.getLs(), organizationCode, buildingCode,
-                                            getFirstDayOfMonth(getYear(currentDate), getMonth(currentDate) + 1));
+                                            getDateParameter());
 
                                     final ExternalHeatmeter externalHeatmeter = ehs.heatmeter;
                                     final HeatmeterBindingStatus status = ehs.status;
 
-                                    HeatmeterCorrection correction = heatmeterCorrectionBean.findById(heatmeterId);
-                                    HeatmeterCorrection newCorrection = null;
-                                    if (externalHeatmeter == null) {
-                                        if (correction == null) {
-                                            newCorrection = new HeatmeterCorrection(heatmeterId);
-                                            newCorrection.setBindingStatus(status);
-                                        } else {
-                                            if (status != correction.getBindingStatus()) {
-                                                newCorrection = new HeatmeterCorrection(heatmeterId);
-                                                newCorrection.setBindingStatus(status);
-                                            }
-                                        }
-                                    } else {
-                                        if (correction == null) {
-                                            newCorrection = new HeatmeterCorrection(heatmeterId,
-                                                    externalHeatmeter.getId(), externalHeatmeter.getNumber(), status);
-                                        } else {
-                                            if (!Strings.isEqual(externalHeatmeter.getId(), correction.getExternalHeatmeterId())
-                                                    || !Strings.isEqual(externalHeatmeter.getNumber(), correction.getHeatmeterNumber())) {
-                                                newCorrection = new HeatmeterCorrection(heatmeterId,
-                                                        externalHeatmeter.getId(), externalHeatmeter.getNumber(), HeatmeterBindingStatus.BOUND);
-                                            }
-                                        }
-                                    }
-
-                                    if (newCorrection != null) {
-                                        heatmeterCorrectionBean.markHistory(heatmeterId);
-                                        newCorrection.setBindingDate(currentDate);
-                                        heatmeterCorrectionBean.insert(newCorrection);
-                                    } else if (correction != null) {
-                                        correction.setBindingDate(currentDate);
-                                        heatmeterCorrectionBean.updateBindingDate(correction);
-                                    }
+                                    updateHeatmeterCorrection(heatmeter, externalHeatmeter, status);
 
                                     if (status == HeatmeterBindingStatus.BOUND) {
                                         listener.processed(heatmeter);
@@ -170,5 +138,73 @@ public class HeatmeterBindService {
                 log.error("Couldn't clean heatmeter_bind table.", e);
             }
         }
+    }
+    
+    public void updateHeatmeterCorrection(Heatmeter heatmeter, ExternalHeatmeter externalHeatmeter, 
+            HeatmeterBindingStatus status) {
+        final long heatmeterId = heatmeter.getId();
+        HeatmeterCorrection correction = heatmeterCorrectionBean.findById(heatmeterId);
+        HeatmeterCorrection newCorrection = null;
+        if (externalHeatmeter == null) {
+            if (correction == null) {
+                newCorrection = new HeatmeterCorrection(heatmeterId);
+                newCorrection.setBindingStatus(status);
+            } else {
+                if (status != correction.getBindingStatus()) {
+                    newCorrection = new HeatmeterCorrection(heatmeterId);
+                    newCorrection.setBindingStatus(status);
+                }
+            }
+        } else {
+            if (correction == null) {
+                newCorrection = new HeatmeterCorrection(heatmeterId,
+                        externalHeatmeter.getId(), externalHeatmeter.getNumber(), status);
+            } else {
+                if (!Strings.isEqual(externalHeatmeter.getId(), correction.getExternalHeatmeterId())
+                        || !Strings.isEqual(externalHeatmeter.getNumber(), correction.getHeatmeterNumber())) {
+                    newCorrection = new HeatmeterCorrection(heatmeterId,
+                            externalHeatmeter.getId(), externalHeatmeter.getNumber(), HeatmeterBindingStatus.BOUND);
+                }
+            }
+        }
+
+        final Date bindingDate = getCurrentDate();
+        if (newCorrection != null) {
+            heatmeterCorrectionBean.markHistory(heatmeterId);
+            newCorrection.setBindingDate(bindingDate);
+            heatmeterCorrectionBean.insert(newCorrection);
+        } else if (correction != null) {
+            correction.setBindingDate(bindingDate);
+            heatmeterCorrectionBean.updateBindingDate(correction);
+        }
+    }
+
+    private Date getDateParameter() {
+        final Date currentDate = getCurrentDate();
+        return getFirstDayOfMonth(getYear(currentDate), getMonth(currentDate) + 1);
+    }
+
+    public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException, HeatmeterBindException {
+        if (heatmeter != null && heatmeter.getHeatmeterCodes() != null
+                && heatmeter.getHeatmeterCodes().size() == 1) {
+            Long buildingCodeId = heatmeter.getHeatmeterCodes().get(0).getBuildingCodeId();
+            if (buildingCodeId != null) {
+                BuildingCode buildingCodeObj = buildingStrategy.getBuildingCodeById(buildingCodeId);
+                if (buildingCodeObj != null) {
+                    final long organizationId = buildingCodeObj.getOrganizationId();
+                    final int buildingCode = buildingCodeObj.getBuildingCode();
+                    final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
+
+                    ExternalHeatmetersAndStatus ehs = externalHeatmeterService.fetchExternalHeatmeters(
+                            heatmeter.getId(), heatmeter.getLs(), organizationCode, buildingCode, getDateParameter());
+                    if (ehs.heatmeters != null && !ehs.heatmeters.isEmpty()) {
+                        return ehs.heatmeters;
+                    }
+
+                    throw new HeatmeterBindException(ehs.status);
+                }
+            }
+        }
+        return null;
     }
 }

@@ -12,7 +12,7 @@
             #{pDepCode, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pHouseCode, mode=IN, javaType=int, jdbcType=INTEGER},
             #{pDate, mode=IN, javaType=date, jdbcType=DATE},
-            #{details, mode=OUT, jdbcType=CURSOR, resultMap=externalHeatmeter})
+            #{externalInfo, mode=OUT, jdbcType=CURSOR, resultMap=externalHeatmeter})
         }
         ]]>
     </select>
