@@ -33,7 +33,7 @@
             <if test="object.status != null">and `status` = #{object.status}</if>
             <if test="object.bindingStatus != null">
                 <choose>
-                    <when test="object.bindingStatus == unboundBindingStatus">
+                    <when test="object.bindingStatus == map.unboundBindingStatus">
                         AND (`binding_status` = #{object.bindingStatus} OR `binding_status` IS NULL)
                     </when>
                     <otherwise>
@@ -57,13 +57,13 @@
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
 
-    <select id="selectHeatmeters" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterFilterWrapper"
+    <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeterResultMap">
         select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 
-    <select id="selectHeatmetersCount" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterFilterWrapper"
+    <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultType="int">
         select count(*) from
         (select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>) h3

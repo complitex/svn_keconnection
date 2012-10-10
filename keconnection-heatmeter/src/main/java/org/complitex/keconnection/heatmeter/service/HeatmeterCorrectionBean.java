@@ -6,10 +6,12 @@ package org.complitex.keconnection.heatmeter.service;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView;
 
 /**
  *
@@ -44,5 +46,13 @@ public class HeatmeterCorrectionBean extends AbstractBean {
             throw new IllegalStateException("More one non-history heatmeter correction found for heatmeter id: " + heatmeterId);
         }
         return corrections.get(0);
+    }
+
+    public List<HeatmeterCorrectionView> find(FilterWrapper<HeatmeterCorrectionView> filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".find", filter);
+    }
+
+    public int count(FilterWrapper<HeatmeterCorrectionView> filter) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", filter);
     }
 }
