@@ -57,6 +57,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindError;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
@@ -95,9 +96,9 @@ public class HeatmeterList extends TemplatePage {
         add(messages);
 
         //Filter Model
-        HeatmeterFilterWrapper filterWrapper = (HeatmeterFilterWrapper) getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
-                new HeatmeterFilterWrapper(new Heatmeter()));
-        final IModel<HeatmeterFilterWrapper> filterModel = new CompoundPropertyModel<>(filterWrapper);
+        FilterWrapper<Heatmeter> filterWrapper = (FilterWrapper) getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
+                FilterWrapper.of(new Heatmeter()));
+        final IModel<FilterWrapper<Heatmeter>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
         //Filter Form
         final Form<?> filterForm = new Form<>("filter_form", filterModel);
@@ -109,7 +110,7 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                filterModel.setObject(new HeatmeterFilterWrapper(new Heatmeter()));
+                filterModel.setObject(FilterWrapper.of(new Heatmeter()));
                 filterForm.clearInput();
                 target.add(filterForm);
             }
@@ -164,7 +165,7 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected Iterable<Heatmeter> getData(int first, int count) {
-                HeatmeterFilterWrapper filterWrapper = filterModel.getObject();
+                FilterWrapper<Heatmeter> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);
                 filterWrapper.setCount(count);

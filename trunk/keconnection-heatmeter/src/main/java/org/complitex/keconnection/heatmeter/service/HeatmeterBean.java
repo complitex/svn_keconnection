@@ -13,6 +13,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -57,12 +58,18 @@ public class HeatmeterBean extends AbstractBean{
     public Heatmeter getHeatmeter(Long id){
         return sqlSession().selectOne("selectHeatmeter", id);
     }
+    
+    private void addUnboundStatusParameter(FilterWrapper<Heatmeter> filter) {
+        filter.addMapEntry("unboundBindingStatus", HeatmeterBindingStatus.UNBOUND);
+    }
 
-    public List<Heatmeter> getHeatmeters(FilterWrapper<Heatmeter> filterWrapper){
+    public List<Heatmeter> getHeatmeters(FilterWrapper<Heatmeter> filterWrapper) {
+        addUnboundStatusParameter(filterWrapper);
         return sqlSession().selectList("selectHeatmeters", filterWrapper);
     }
 
-    public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper){
+    public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper) {
+        addUnboundStatusParameter(filterWrapper);
         return sqlSession().selectOne("selectHeatmetersCount", filterWrapper);
     }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean">
+    
     <resultMap id="heatmeterCorrection" type="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection">
         <id property="id" column="id"/>
         <result property="systemHeatmeterId" column="system_heatmeter_id"/>
@@ -9,6 +10,12 @@
         <result property="bindingDate" column="binding_date"/>
         <result property="bindingStatus" column="binding_status"/>
         <result property="history" column="history"/>
+    </resultMap>
+    
+    <resultMap id="heatmeterCorrectionView" 
+            extends="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrection" 
+            type="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView">
+        <result column="heatmeter_ls" property="ls"/>
     </resultMap>
 
     <insert id="insert" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection"
@@ -31,6 +38,35 @@
     <select id="findById" parameterType="long" 
             resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrection">
         SELECT * FROM `heatmeter_correction` WHERE `system_heatmeter_id` = #{systemHeatmeterId} AND `history` = 0
+    </select>
+
+    <sql id="join">
+        JOIN `heatmeter` h ON h.`id` = c.`system_heatmeter_id`
+    </sql>
+    
+    <sql id="where">
+        <where>
+            c.`history` = 0
+            <if test="object.ls != null"> AND h.`ls` = #{object.ls}</if>
+            <if test="object.externalHeatmeterId != null">AND c.`external_heatmeter_id` = #{object.externalHeatmeterId}</if>
+            <if test="object.heatmeterNumber != null">AND c.`heatmeter_number` = #{object.heatmeterNumber}</if>
+        </where>
+    </sql>
+    
+    <select id="find" resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrectionView"
+            parameterType="org.complitex.dictionary.entity.FilterWrapper">
+        SELECT c.*, h.`ls` as `heatmeter_ls`
+        FROM `heatmeter_correction` c
+        <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.join"/>
+        <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.where"/>
+        ORDER BY `${sortProperty}` ${asc} 
+        LIMIT #{first}, #{count}
+    </select>
+    
+    <select id="count" resultType="int" parameterType="org.complitex.dictionary.entity.FilterWrapper">
+        SELECT COUNT(1) FROM `heatmeter_correction` c
+        <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.join"/>
+        <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.where"/>
     </select>
 
 </mapper>

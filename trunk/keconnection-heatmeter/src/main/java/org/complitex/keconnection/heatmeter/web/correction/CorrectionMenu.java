@@ -31,6 +31,28 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
+                return getString(CorrectionMenu.class, locale, "heatmeter_correction");
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return HeatmeterCorrectionList.class;
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return new PageParameters();
+            }
+
+            @Override
+            public String getTagId() {
+                return "heatmeter_correction_item";
+            }
+        });
+        links.add(new ITemplateLink() {
+
+            @Override
+            public String getLabel(Locale locale) {
                 return getString(CorrectionMenu.class, locale, "city_correction");
             }
 
