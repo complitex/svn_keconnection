@@ -57,7 +57,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindError;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
@@ -85,6 +84,7 @@ public class HeatmeterList extends TemplatePage {
     @EJB
     private HeatmeterBindService heatmeterBindService;
     private Dialog importDialog;
+    private final AtomicBoolean stopBindingAllCondition = new AtomicBoolean(true);
 
     public HeatmeterList() {
         //Title
@@ -93,7 +93,7 @@ public class HeatmeterList extends TemplatePage {
         //Feedback Panel
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
         add(messages);
-        
+
         //Filter Model
         HeatmeterFilterWrapper filterWrapper = (HeatmeterFilterWrapper) getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
                 new HeatmeterFilterWrapper(new Heatmeter()));
@@ -191,7 +191,15 @@ public class HeatmeterList extends TemplatePage {
         dataContainer.setOutputMarkupId(true);
         filterForm.add(dataContainer);
 
-        final HeatmeterBindPanel heatmeterBindPanel = new HeatmeterBindPanel("heatmeterBindPanel");
+        final HeatmeterBindPanel heatmeterBindPanel = new HeatmeterBindPanel("heatmeterBindPanel") {
+
+            @Override
+            protected void onBind(Heatmeter heatmeter, AjaxRequestTarget target) {
+                if (stopBindingAllCondition.get()) {
+                    target.add(dataContainer);
+                }
+            }
+        };
         add(heatmeterBindPanel);
 
         //Data View
@@ -237,11 +245,16 @@ public class HeatmeterList extends TemplatePage {
                     }
                 });
 
-                item.add(new AjaxLink<Void>("bindHeatmeter") {
+                item.add(new AjaxLink<Void>("bindHeatmeterLink") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         heatmeterBindPanel.open(heatmeter, buildingLabel, target);
+                    }
+
+                    @Override
+                    public boolean isEnabled() {
+                        return stopBindingAllCondition.get();
                     }
                 });
 
@@ -406,7 +419,7 @@ public class HeatmeterList extends TemplatePage {
                     target.add(bindAllIndicator);
                     target.add(this);
 
-                    final AtomicBoolean stopCondition = new AtomicBoolean();
+                    stopBindingAllCondition.getAndSet(false);
 
                     heatmeterBindService.bindAll(new IProcessListener<Heatmeter>() {
 
@@ -440,11 +453,11 @@ public class HeatmeterList extends TemplatePage {
                         }
 
                         private void stopTimer() {
-                            stopCondition.lazySet(true);
+                            stopBindingAllCondition.getAndSet(true);
                         }
                     });
 
-                    dataContainer.add(new BindAllTimerBehavior(stopCondition, this));
+                    dataContainer.add(new BindAllTimerBehavior(stopBindingAllCondition, this));
                     target.add(dataContainer);
                 }
             };

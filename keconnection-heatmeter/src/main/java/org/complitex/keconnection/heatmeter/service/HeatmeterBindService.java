@@ -4,6 +4,7 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
@@ -184,7 +185,8 @@ public class HeatmeterBindService {
         return getFirstDayOfMonth(getYear(currentDate), getMonth(currentDate) + 1);
     }
 
-    public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException, HeatmeterBindException {
+    public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException, 
+            HeatmeterBindException {
         if (heatmeter != null && heatmeter.getHeatmeterCodes() != null
                 && heatmeter.getHeatmeterCodes().size() == 1) {
             Long buildingCodeId = heatmeter.getHeatmeterCodes().get(0).getBuildingCodeId();
@@ -207,4 +209,10 @@ public class HeatmeterBindService {
         }
         return null;
     }
+    
+    //TODO: remove after testing.
+//    public List<ExternalHeatmeter> getExternalHeatmetersTest(Heatmeter heatmeter) throws DBException, 
+//            HeatmeterBindException {
+//        return ImmutableList.of(new ExternalHeatmeter("1", "#1"), new ExternalHeatmeter("2", "#2"));
+//    }
 }
