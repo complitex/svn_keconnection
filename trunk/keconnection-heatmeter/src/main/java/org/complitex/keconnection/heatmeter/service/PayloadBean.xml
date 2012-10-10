@@ -3,6 +3,7 @@
 <mapper namespace="org.complitex.keconnection.heatmeter.service.PayloadBean">
     <resultMap id="payloadResultMap" type="org.complitex.keconnection.heatmeter.entity.Payload">
         <id property="id"/>
+        <result property="tablegramId"/>
         <result property="parentId"/>
         <result property="heatmeterId"/>
         <result property="beginDate"/>
@@ -16,9 +17,9 @@
 
     <insert id="insertPayload" parameterType="org.complitex.keconnection.heatmeter.entity.Payload"
         useGeneratedKeys="true" keyProperty="id">
-        insert into `payload` (`parent_id`, `heatmeter_id`, `begin_date`, `end_date`, `operating_month`,
+        insert into `payload` (`tablegram_id`, `parent_id`, `heatmeter_id`, `begin_date`, `end_date`, `operating_month`,
           `payload_1`, `payload_2`, `payload_3`)
-        values (#{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{operatingMonth},
+        values (#{tablegramId}, #{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{operatingMonth},
           #{payload1}, #{payload2}, #{payload3})
     </insert>
 
