@@ -40,6 +40,9 @@ public class PayloadImportService extends AbstractImportService{
     private HeatmeterBean heatmeterBean;
 
     @EJB
+    private TablegramBean tablegramBean;
+
+    @EJB
     private PayloadBean payloadBean;
 
     public void process(IImportFile importFile, IImportListener listener) throws ImportFileNotFoundException,
@@ -49,48 +52,64 @@ public class PayloadImportService extends AbstractImportService{
         //begin
         listener.beginImport(importFile, table.getRecordCount());
 
-        int index = 0;
+        //create tablegram file
+        Tablegram tablegram = new Tablegram();
+
+        tablegram.setFileName(importFile.getFileName());
+        tablegram.setOperatingMonth(DEFAULT_BEGIN_DATE);
+
         int processed = 0;
 
-        //process
-        for (Iterator<Record> it = table.recordIterator(); it.hasNext();){
-            index++;
+        if (!tablegramBean.isExist(tablegram)){
+            //save tablegram
+            tablegram.setCount(table.getRecordCount());
+            tablegramBean.save(tablegram);
 
-            Record record = it.next();
+            int index = 0;
 
-            Payload payload = new Payload();
+            //process
+            for (Iterator<Record> it = table.recordIterator(); it.hasNext();){
+                index++;
 
-            Integer ls = (Integer) record.getNumberValue("L_S");
+                Record record = it.next();
 
-            Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(ls, KE_ORGANIZATION_OBJECT_ID);
+//            Integer ls = (Integer) record.getNumberValue("L_S");
 
-            if (heatmeter == null){
-                listener.warn(importFile, "Счетчик не найден по л/с " + ls);
-                continue;
+//            Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(ls, KE_ORGANIZATION_OBJECT_ID); todo link
+//
+//            if (heatmeter == null){
+//                listener.warn(importFile, "Счетчик не найден по л/с " + ls);
+//                continue;
+//            }
+//
+//            if (payloadBean.isExist(heatmeter.getId())){
+//                continue;
+//            }
+//
+//            payload.setHeatmeterId(heatmeter.getId());
+
+                Payload payload = new Payload();
+
+
+                payload.setTablegramId(tablegram.getId());
+
+                payload.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
+                payload.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
+                payload.setPayload3((BigDecimal) record.getNumberValue("PR_T3"));
+
+                payload.setOperatingMonth(DEFAULT_BEGIN_DATE);
+                payload.setBeginDate(DEFAULT_BEGIN_DATE);
+
+                //save payload
+                payloadBean.save(payload);
+
+                //update heatmeter type
+//            heatmeterBean.updateHeatmeterType(heatmeter.getId(), HeatmeterType.HEATING);  //todo link
+
+                processed++;
+
+                listener.recordProcessed(importFile, index);
             }
-
-            if (payloadBean.isExist(heatmeter.getId())){
-                continue;
-            }
-
-            payload.setHeatmeterId(heatmeter.getId());
-
-            payload.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
-            payload.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
-            payload.setPayload3((BigDecimal) record.getNumberValue("PR_T3"));
-
-            payload.setOperatingMonth(DEFAULT_BEGIN_DATE);
-            payload.setBeginDate(DEFAULT_BEGIN_DATE);
-
-            //save payload
-            payloadBean.save(payload);
-
-            //update heatmeter type
-            heatmeterBean.updateHeatmeterType(heatmeter.getId(), HeatmeterType.HEATING);
-
-            processed++;
-
-            listener.recordProcessed(importFile, index);
         }
 
         listener.completeImport(importFile, processed);

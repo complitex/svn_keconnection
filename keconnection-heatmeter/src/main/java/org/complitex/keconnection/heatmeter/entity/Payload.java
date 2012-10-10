@@ -11,6 +11,7 @@ import java.util.Date;
  */
 public class Payload implements ILongId {
     private Long id;
+    private Long tablegramId;
     private Long parentId;
     private Long heatmeterId;
     private Date beginDate;
@@ -28,6 +29,14 @@ public class Payload implements ILongId {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getTablegramId() {
+        return tablegramId;
+    }
+
+    public void setTablegramId(Long tablegramId) {
+        this.tablegramId = tablegramId;
     }
 
     public Long getParentId() {

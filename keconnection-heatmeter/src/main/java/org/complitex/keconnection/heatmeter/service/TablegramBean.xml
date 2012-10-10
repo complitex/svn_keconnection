@@ -11,13 +11,14 @@
         <result property="processedCount"/>
     </resultMap>
 
-    <insert id="insertTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram">
-        insert into `tablegram` (`file_name`, `operating_month`, `uploaded`, `count`, `linked_count`, `processed_count`)
-            value (#{fileName}, #{operatingMonth}, #{uploaded}, #{count}, #{linkedCount}, #{processedCount})
+    <insert id="insertTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `tablegram` (`file_name`, `operating_month`, `count`, `linked_count`, `processed_count`)
+            value (#{fileName}, #{operatingMonth}, #{count}, #{linkedCount}, #{processedCount})
     </insert>
 
     <update id="updateTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram">
-        update `tablegram` set `file_name` = #{fileName}, `operating_month` = #{operatingMonth}, `uploaded` = #{uploaded},
+        update `tablegram` set `file_name` = #{fileName}, `operating_month` = #{operatingMonth},
             `count` = #{count}, `linked_count` = #{linkedCount}, `processed_count` = #{processedCount}
     </update>
 
@@ -36,5 +37,10 @@
 
     <select id="selectTablegramsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
         select count(*) from `tablegram` <include refid="selectTablegramsWhere"/>
+    </select>
+
+    <select id="isExistTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
+            resultType="boolean">
+        select count(*) > 0 from `tablegram` where `file_name` = #{fileName} and `operating_month` = #{operatingMonth}
     </select>
 </mapper>

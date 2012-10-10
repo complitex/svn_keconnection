@@ -418,9 +418,9 @@ CREATE TABLE `heatmeter_period`(
 DROP TABLE IF EXISTS `tablegram`;
 CREATE TABLE `tablegram`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-    `file_name` BIGINT(20) NOT NULL COMMENT 'Название файла',
+    `file_name` VARCHAR (255) NOT NULL COMMENT 'Название файла',
     `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
-    `uploaded` TIMESTAMP NOT NULL COMMENT  'Дата загрузки',
+    `uploaded` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT  'Дата загрузки',
     `count` INT NULL COMMENT  'Количество загруженных записей',
     `linked_count` INT NULL COMMENT  'Количество связанных записей',
     `processed_count` INT NULL COMMENT  'Количество обработанных записей',
@@ -434,9 +434,9 @@ CREATE TABLE `tablegram`(
 DROP TABLE IF EXISTS `payload`;
 CREATE TABLE `payload`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-    `tablegram_id` BIGINT(20) COMMENT 'Идентификатор файла табуляграммы',
+    `tablegram_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор файла табуляграммы',
     `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
-    `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
+    `heatmeter_id` BIGINT(20) NULL COMMENT 'Ссылка на теплосчетчик',
     `begin_date` DATE COMMENT 'Дата начала периода',
     `end_date` DATE COMMENT 'Дата окончания периода',
     `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
