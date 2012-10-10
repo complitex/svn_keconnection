@@ -102,6 +102,7 @@ public class ExternalHeatmeterService {
         return new ExternalHeatmeterAndStatus(externalHeatmeter, ehs.status);
     }
 
+    //TODO: remove after testing.
 //    public ExternalHeatmetersAndStatus fetchExternalHeatmetersTest(long heatmeterId, Integer ls,
 //            String organizationCode, int buildingCode, Date date) throws DBException {
 //        return new ExternalHeatmetersAndStatus(ImmutableList.of(new ExternalHeatmeter("1", "#1")),

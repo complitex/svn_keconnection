@@ -38,7 +38,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
  *
  * @author Artem
  */
-public final class HeatmeterBindPanel extends Panel {
+public abstract class HeatmeterBindPanel extends Panel {
 
     @EJB
     private HeatmeterBindService heatmeterBindService;
@@ -116,6 +116,8 @@ public final class HeatmeterBindPanel extends Panel {
 
                 heatmeterBindService.updateHeatmeterCorrection(heatmeter, externalHeatmeter,
                         HeatmeterBindingStatus.BOUND);
+                
+                onBind(heatmeter, target);
 
                 close(target);
             }
@@ -138,6 +140,8 @@ public final class HeatmeterBindPanel extends Panel {
     private void close(AjaxRequestTarget target) {
         dialog.close(target);
     }
+    
+    protected abstract void onBind(Heatmeter heatmeter, AjaxRequestTarget target);
 
     public void open(Heatmeter heatmeter, String buildingLabel, AjaxRequestTarget target) {
         this.heatmeter = heatmeter;
