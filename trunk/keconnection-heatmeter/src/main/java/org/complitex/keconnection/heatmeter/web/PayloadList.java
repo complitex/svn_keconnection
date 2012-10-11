@@ -12,6 +12,7 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -40,7 +41,9 @@ public class PayloadList extends TemplatePage{
     @EJB
     private PayloadBean payloadBean;
 
-    public PayloadList() {
+    public PayloadList(PageParameters pageParameters) {
+        Long tablegramId = pageParameters.get("t_id").toLongObject();
+
         //Title
         add(new Label("title", new ResourceModel("title")));
 
@@ -50,7 +53,7 @@ public class PayloadList extends TemplatePage{
 
         //Filter Model
         FilterWrapper<Payload> filterWrapper = getTemplateSession().getPreferenceFilter(PayloadList.class.getName(),
-                FilterWrapper.of(new Payload()));
+                FilterWrapper.of(new Payload(tablegramId)));
         final IModel<FilterWrapper<Payload>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
         //Filter Form
