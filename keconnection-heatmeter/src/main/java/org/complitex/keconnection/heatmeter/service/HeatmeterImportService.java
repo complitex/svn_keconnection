@@ -68,7 +68,7 @@ public class HeatmeterImportService extends AbstractImportService{
 
         listener.beginImport(importFile, size);
 
-        uploadHeatmeters(importFile.getFileName(), getInputStream(importFile), new IProcessListener<HeatmeterWrapper>() {
+        uploadHeatmeters(importFile.getFileName(), getInputStream(importFile.getFileName()), new IProcessListener<HeatmeterWrapper>() {
             int index = 0;
             int processed = 0;
 

@@ -41,6 +41,8 @@
     <sql id="selectPayloadFromWhere">
         from `payload` p left join `heatmeter` h on p.`heatmeter_id` = h.`id`
         <where>
+            p.`tablegram_id` = #{object.tablegramId}
+
             <if test="object.heatmeterLs != null">and h.`ls` = #{object.heatmeterLs}</if>
             <if test="object.beginDate != null">and p.`begin_date` = #{object.beginDate}</if>
             <if test="object.endDate != null">and p.`end_date` = #{object.endDate}</if>

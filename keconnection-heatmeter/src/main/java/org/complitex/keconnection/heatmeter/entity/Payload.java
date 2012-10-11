@@ -23,6 +23,13 @@ public class Payload implements ILongId {
 
     private String heatmeterLs;
 
+    public Payload() {
+    }
+
+    public Payload(Long tablegramId) {
+        this.tablegramId = tablegramId;
+    }
+
     public Long getId() {
         return id;
     }

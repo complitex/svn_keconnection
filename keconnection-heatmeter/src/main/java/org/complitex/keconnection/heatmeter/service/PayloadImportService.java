@@ -9,7 +9,10 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.keconnection.heatmeter.entity.*;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterConfig;
+import org.complitex.keconnection.heatmeter.entity.Payload;
+import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.entity.Tablegram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -47,7 +48,7 @@ public class PayloadImportService extends AbstractImportService{
 
     public void process(IImportFile importFile, IImportListener listener) throws ImportFileNotFoundException,
             ImportFileReadException {
-        Table table = getDbfTable(importFile);
+        Table table = getDbfTable(importFile.getFileName());
 
         //begin
         listener.beginImport(importFile, table.getRecordCount());

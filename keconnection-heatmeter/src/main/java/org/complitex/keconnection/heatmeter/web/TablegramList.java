@@ -7,11 +7,13 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -131,6 +133,12 @@ public class TablegramList extends TemplatePage{
             @Override
             protected void populateItem(Item<Tablegram> item) {
                 item.add(newTextLabels(properties));
+
+                PageParameters pageParameters = new PageParameters();
+                pageParameters.add("t_id", item.getModelObject().getId());
+                BookmarkablePageLink payloadLink = new BookmarkablePageLink("payload_link", PayloadList.class, pageParameters);
+                payloadLink.add(item.get("fileName"));
+                item.add(payloadLink);
             }
         };
         dataContainer.add(dataView);
