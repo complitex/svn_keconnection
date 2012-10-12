@@ -18,7 +18,7 @@ import org.complitex.keconnection.address.service.KeConnectionAddressImportServi
 import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
-import org.complitex.keconnection.heatmeter.service.PayloadImportService;
+import org.complitex.keconnection.heatmeter.service.TablegramImportService;
 import org.complitex.keconnection.importing.Module;
 import org.complitex.keconnection.organization.entity.OrganizationImportFile;
 import org.complitex.keconnection.organization.service.OrganizationImportService;
@@ -57,7 +57,7 @@ public class ImportService {
     private HeatmeterImportService heatmeterImportService;
 
     @EJB
-    private PayloadImportService payloadImportService;
+    private TablegramImportService tablegramImportService;
 
     private volatile boolean processing;
     private volatile boolean error;
@@ -191,7 +191,7 @@ public class ImportService {
                 } else if (importFile instanceof HeatmeterImportFile){ //import heatmeter
                     heatmeterImportService.process(importFile, listener);
                 } else if (importFile instanceof PayloadImportFile){ //import payload
-                    payloadImportService.process(importFile, listener);
+                    tablegramImportService.process(importFile, listener);
                 }
 
                 userTransaction.commit();

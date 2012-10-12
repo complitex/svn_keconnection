@@ -1,13 +1,10 @@
 package org.complitex.keconnection.heatmeter.web;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.image.Image;
-import org.complitex.keconnection.heatmeter.service.HeatmeterBindService;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
-import org.complitex.dictionary.web.component.image.StaticImage;
 import com.google.common.base.Joiner;
 import com.google.common.io.ByteStreams;
+import org.apache.wicket.Component;
 import org.apache.wicket.ThreadContext;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -21,6 +18,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
@@ -31,15 +29,21 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.address.service.AddressRendererBean;
+import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
+import org.complitex.keconnection.heatmeter.service.HeatmeterBindService;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRenderer;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindError;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindPanel;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -57,9 +61,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.complitex.dictionary.entity.FilterWrapper;
-import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindError;
-import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -300,58 +301,44 @@ public class HeatmeterList extends TemplatePage {
 
                 importDialog.close(target);
 
-                final AtomicBoolean stopTimer = new AtomicBoolean(false);
-
                 try {
                     InputStream is = fileUpload.getInputStream();
                     ByteArrayInputStream inputStream = new ByteArrayInputStream(ByteStreams.toByteArray(is));
 
-                    IProcessListener<HeatmeterWrapper> listener = new IProcessListener<HeatmeterWrapper>() {
+                    final AtomicBoolean stopTimer = new AtomicBoolean(false);
 
-                        private int processedCount = 0;
-                        private int skippedCount = 0;
-                        private int errorCount = 0;
-                        private ThreadContext threadContext = ThreadContext.get(false);
+                    ContextProcessListener<HeatmeterWrapper> listener = new ContextProcessListener<HeatmeterWrapper>() {
 
                         @Override
-                        public void processed(HeatmeterWrapper object) {
-                            processedCount++;
+                        public void onProcessed(HeatmeterWrapper object) {
+                            //nothing
                         }
 
                         @Override
-                        public void skip(HeatmeterWrapper object) {
-                            ThreadContext.restore(threadContext);
+                        public void onSkip(HeatmeterWrapper object) {
                             getSession().info(getStringFormat("info_skipped", object.getLs(), object.getAddress()));
-                            skippedCount++;
                         }
 
                         @Override
-                        public void error(HeatmeterWrapper object, Exception e) {
-                            ThreadContext.restore(threadContext);
+                        public void onError(HeatmeterWrapper object, Exception e) {
                             getSession().error(getStringFormat("error_upload", e.getMessage()));
-                            errorCount++;
                         }
 
                         @Override
-                        public void done() {
-                            ThreadContext.restore(threadContext);
-                            getSession().info(getStringFormat("info_done", processedCount, skippedCount, errorCount));
-                            stopTimer();
-                        }
+                        public void onDone() {
+                            getSession().info(getStringFormat("info_done", getProcessed(), getSkipped(), getErrors()));
 
-                        private void stopTimer() {
                             stopTimer.set(true);
                         }
                     };
 
-                    dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(IMPORT_AJAX_TIMER)) {
-
+                    dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)){
                         @Override
                         protected void onPostProcessTarget(AjaxRequestTarget target) {
                             target.add(messages);
                             target.add(paging);
 
-                            if (stopTimer.get()) {
+                            if (stopTimer.get()){
                                 stop();
                             }
                         }

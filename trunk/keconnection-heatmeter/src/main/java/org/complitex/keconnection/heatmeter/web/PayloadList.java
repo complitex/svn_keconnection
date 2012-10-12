@@ -15,9 +15,11 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.Payload;
+import org.complitex.keconnection.heatmeter.entity.PayloadStatus;
 import org.complitex.keconnection.heatmeter.service.PayloadBean;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
@@ -92,9 +94,14 @@ public class PayloadList extends TemplatePage{
         };
         filterForm.add(filterFind);
 
+        //properties
+        final String[] properties = new String[]{"ls", "name", "address", "beginDate", "endDate", "operatingMonth",
+                "payload1", "payload2", "payload3", "status"};
+
         //Filter Fields
-        filterForm.add(newTextFields("object.", "heatmeterLs", "beginDate", "endDate", "operatingMonth", "payload1",
-                "payload2", "payload3"));
+        filterForm.add(newTextFields("object.", properties));
+
+        filterForm.replace(new EnumDropDownChoice<>("object.status", PayloadStatus.class));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
@@ -136,23 +143,8 @@ public class PayloadList extends TemplatePage{
             protected void populateItem(Item<Payload> item) {
                 final Payload heatmeter = item.getModelObject();
 
-                item.add(newTextLabels("heatmeterLs", "beginDate", "endDate", "operatingMonth", "payload1",
-                        "payload2", "payload3"));
+                item.add(newTextLabels(properties));
 
-
-//                PageParameters pageParameters = new PageParameters();
-//                pageParameters.add("id", heatmeter.getId());
-//                item.add(new BookmarkablePageLink<>("edit", PayloadEdit.class, pageParameters));
-//
-//                item.add(new Link("delete") {
-//                    @Override
-//                    public void onClick() {
-//                        info(getString("info_deleted"));
-//                        heatmeterBean.delete(heatmeter.getId());
-//                    }
-//                });
-
-                //todo add date updated
             }
         };
         dataContainer.add(dataView);
@@ -162,7 +154,6 @@ public class PayloadList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "heatmeter_ls", "begin_date", "end_date",
-                "operating_month", "payload_1", "payload_2", "payload_3"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, true, properties));
     }
 }

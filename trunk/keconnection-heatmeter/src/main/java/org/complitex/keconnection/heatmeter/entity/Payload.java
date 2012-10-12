@@ -17,11 +17,13 @@ public class Payload implements ILongId {
     private Date beginDate;
     private Date endDate;
     private Date operatingMonth;
+    private Integer ls;
+    private String name;
+    private String address;
     private BigDecimal payload1;
     private BigDecimal payload2;
     private BigDecimal payload3;
-
-    private String heatmeterLs;
+    private PayloadStatus status;
 
     public Payload() {
     }
@@ -86,6 +88,30 @@ public class Payload implements ILongId {
         this.operatingMonth = operatingMonth;
     }
 
+    public Integer getLs() {
+        return ls;
+    }
+
+    public void setLs(Integer ls) {
+        this.ls = ls;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public BigDecimal getPayload1() {
         return payload1;
     }
@@ -110,11 +136,11 @@ public class Payload implements ILongId {
         this.payload3 = payload3;
     }
 
-    public String getHeatmeterLs() {
-        return heatmeterLs;
+    public PayloadStatus getStatus() {
+        return status;
     }
 
-    public void setHeatmeterLs(String heatmeterLs) {
-        this.heatmeterLs = heatmeterLs;
+    public void setStatus(PayloadStatus status) {
+        this.status = status;
     }
 }
