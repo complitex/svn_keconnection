@@ -5,6 +5,7 @@
 package org.complitex.keconnection.heatmeter.entity;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 
 /**
  *
@@ -37,5 +38,10 @@ public class ExternalHeatmeter implements Serializable {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return MessageFormat.format("'{'id: {0}, number: {1}'}'", getId(), getNumber());
     }
 }

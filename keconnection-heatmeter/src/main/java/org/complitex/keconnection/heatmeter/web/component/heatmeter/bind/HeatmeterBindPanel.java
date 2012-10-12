@@ -60,7 +60,6 @@ public abstract class HeatmeterBindPanel extends Panel {
             }
         };
         dialog.setModal(true);
-        dialog.setOutputMarkupId(true);
         add(dialog);
 
         container = new WebMarkupContainer("container");

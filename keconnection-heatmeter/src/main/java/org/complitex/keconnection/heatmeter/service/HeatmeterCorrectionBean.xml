@@ -35,7 +35,7 @@
         UPDATE `heatmeter_correction` SET `history` = 1 WHERE `system_heatmeter_id` = #{value} AND `history` = 0
     </update>
     
-    <select id="findById" parameterType="long" 
+    <select id="findByHeatmeterId" parameterType="long" 
             resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrection">
         SELECT * FROM `heatmeter_correction` WHERE `system_heatmeter_id` = #{systemHeatmeterId} AND `history` = 0
     </select>
@@ -67,6 +67,24 @@
         SELECT COUNT(1) FROM `heatmeter_correction` c
         <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.join"/>
         <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.where"/>
+    </select>
+    
+    <select id="findById" parameterType="long" 
+            resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrectionView">
+         SELECT c.*, h.`ls` as `heatmeter_ls` FROM `heatmeter_correction` c 
+         <include refid="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.join"/>
+         WHERE c.`id` = #{correctionId}
+    </select>
+    
+    <update id="update" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView">
+        UPDATE `heatmeter_correction` SET `external_heatmeter_id` = #{externalHeatmeterId}, 
+            `heatmeter_number` = #{heatmeterNumber}, `binding_date` = #{bindingDate},
+            `binding_status` = #{bindingStatus} WHERE `id` = #{id}
+    </update>
+    
+    <select id="findAllCorrections" parameterType="long" 
+            resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrection">
+        SELECT * FROM `heatmeter_correction` WHERE `system_heatmeter_id` = #{id}
     </select>
 
 </mapper>

@@ -18,7 +18,6 @@
                             <th class="center" wicket:id="header.heatmeter_ls"><wicket:message key="ls"/></th>
                             <th class="center" wicket:id="header.external_heatmeter_id"><wicket:message key="externalHeatmeterId"/></th>
                             <th class="center" wicket:id="header.heatmeter_number"><wicket:message key="heatmeterNumber"/></th>
-
                             <th class="center">
                                 <input class="btnSmall" wicket:id="reset" type="button" wicket:message="value:reset"/>
                             </th>
@@ -28,7 +27,6 @@
                             <th><input type="text" wicket:id="object.ls"/></th>
                             <th><input wicket:id="object.externalHeatmeterId" type="text"/></th>
                             <th><input wicket:id="object.heatmeterNumber" type="text"/></th>
-
                             <th class="center">
                                 <input wicket:id="find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
                             </th>
@@ -40,7 +38,11 @@
                             <td wicket:id="ls"></td>
                             <td wicket:id="externalHeatmeterId"></td>
                             <td wicket:id="heatmeterNumber"></td>
-                            <td></td>
+                            <td class="center">
+                                <a href="#" wicket:id="editLink">
+                                    <wicket:message key="edit"/>
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

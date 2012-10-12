@@ -4,12 +4,17 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.ejb.Stateless;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.util.DateUtil;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView;
 
@@ -22,6 +27,14 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView;
 public class HeatmeterCorrectionBean extends AbstractBean {
 
     private static final String MAPPING_NAMESPACE = HeatmeterCorrectionBean.class.getName();
+
+    private static class ByBindingDateComparator implements Comparator<HeatmeterCorrection> {
+
+        @Override
+        public int compare(HeatmeterCorrection o1, HeatmeterCorrection o2) {
+            return o2.getBindingDate().compareTo(o1.getBindingDate());
+        }
+    }
 
     @Transactional
     public void insert(HeatmeterCorrection correction) {
@@ -38,8 +51,8 @@ public class HeatmeterCorrectionBean extends AbstractBean {
         sqlSession().update(MAPPING_NAMESPACE + ".markHistory", heatmeterId);
     }
 
-    public HeatmeterCorrection findById(long heatmeterId) {
-        List<HeatmeterCorrection> corrections = sqlSession().selectList(MAPPING_NAMESPACE + ".findById", heatmeterId);
+    public HeatmeterCorrection findByHeatmeterId(long heatmeterId) {
+        List<HeatmeterCorrection> corrections = sqlSession().selectList(MAPPING_NAMESPACE + ".findByHeatmeterId", heatmeterId);
         if (corrections == null || corrections.isEmpty()) {
             return null;
         } else if (corrections.size() > 1) {
@@ -54,5 +67,36 @@ public class HeatmeterCorrectionBean extends AbstractBean {
 
     public int count(FilterWrapper<HeatmeterCorrectionView> filter) {
         return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", filter);
+    }
+
+    public HeatmeterCorrectionView findById(long correctionId) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", correctionId);
+    }
+
+    @Transactional
+    public void save(HeatmeterCorrectionView correction) {
+        correction.setBindingStatus(HeatmeterBindingStatus.BOUND);
+        correction.setBindingDate(DateUtil.getCurrentDate());
+        sqlSession().update(MAPPING_NAMESPACE + ".update", correction);
+    }
+
+    public List<HeatmeterCorrection> findHistoryCorrections(long heatmeterId) {
+        List<HeatmeterCorrection> historyCorrections = new ArrayList<>();
+        List<HeatmeterCorrection> allCorrections = findAllCorrections(heatmeterId);
+        if (allCorrections != null && !allCorrections.isEmpty()) {
+            for (HeatmeterCorrection c : allCorrections) {
+                if (c.isHistory()) {
+                    historyCorrections.add(c);
+                }
+            }
+        }
+        if (!historyCorrections.isEmpty()) {
+            Collections.sort(historyCorrections, new ByBindingDateComparator());
+        }
+        return historyCorrections;
+    }
+
+    public List<HeatmeterCorrection> findAllCorrections(long heatmeterId) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".findAllCorrections", heatmeterId);
     }
 }

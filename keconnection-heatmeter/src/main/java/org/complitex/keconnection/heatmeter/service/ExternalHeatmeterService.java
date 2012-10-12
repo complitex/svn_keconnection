@@ -64,26 +64,6 @@ public class ExternalHeatmeterService {
         return localeBean.getSystemLocale();
     }
 
-    public static class ExternalHeatmeterAndStatus implements Serializable {
-
-        public final ExternalHeatmeter heatmeter;
-        public final HeatmeterBindingStatus status;
-
-        private ExternalHeatmeterAndStatus(ExternalHeatmeter heatmeter, HeatmeterBindingStatus status) {
-            this.heatmeter = heatmeter;
-            this.status = status;
-        }
-
-        @Override
-        public String toString() {
-            String s = "External heatmeter info: {heatmeter: ";
-            s += heatmeter == null ? "null"
-                    : "{id: " + heatmeter.getId() + ", number: " + heatmeter.getNumber() + "}";
-            s += ", status: " + status + "}";
-            return s;
-        }
-    }
-
     public static class ExternalHeatmetersAndStatus implements Serializable {
 
         public final List<ExternalHeatmeter> heatmeters;
@@ -93,13 +73,14 @@ public class ExternalHeatmeterService {
             this.heatmeters = heatmeters;
             this.status = status;
         }
-    }
 
-    public ExternalHeatmeterAndStatus fetchExternalHeatmeter(long heatmeterId, Integer ls,
-            String organizationCode, int buildingCode, Date date) throws DBException {
-        ExternalHeatmetersAndStatus ehs = fetchExternalHeatmeters(heatmeterId, ls, organizationCode, buildingCode, date);
-        ExternalHeatmeter externalHeatmeter = (ehs.heatmeters != null && !ehs.heatmeters.isEmpty()) ? ehs.heatmeters.get(0) : null;
-        return new ExternalHeatmeterAndStatus(externalHeatmeter, ehs.status);
+        @Override
+        public String toString() {
+            String s = "External heatmeters: ";
+            s += heatmeters != null ? heatmeters.toString() : "[]";
+            s += ", status: " + status;
+            return s;
+        }
     }
 
     //TODO: remove after testing.
@@ -108,7 +89,6 @@ public class ExternalHeatmeterService {
 //        return new ExternalHeatmetersAndStatus(ImmutableList.of(new ExternalHeatmeter("1", "#1")),
 //                HeatmeterBindingStatus.BOUND);
 //    }
-    
     public ExternalHeatmetersAndStatus fetchExternalHeatmeters(long heatmeterId, Integer ls,
             String organizationCode, int buildingCode, Date date) throws DBException {
         List<ExternalHeatmeter> externalHeatmeters = null;
