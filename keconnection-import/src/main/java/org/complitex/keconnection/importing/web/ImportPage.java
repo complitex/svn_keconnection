@@ -5,7 +5,6 @@
 package org.complitex.keconnection.importing.web;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -29,7 +28,7 @@ import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
-import org.complitex.keconnection.heatmeter.service.PayloadImportService;
+import org.complitex.keconnection.heatmeter.service.TablegramImportService;
 import org.complitex.keconnection.importing.service.ImportService;
 import org.complitex.keconnection.organization.entity.OrganizationImportFile;
 import org.complitex.template.web.component.LocalePicker;
@@ -50,7 +49,7 @@ public final class ImportPage extends TemplatePage {
     private ImportService importService;
 
     @EJB
-    private PayloadImportService payloadImportService;
+    private TablegramImportService tablegramImportService;
 
     @EJB
     private HeatmeterImportService heatmeterImportService;
@@ -121,7 +120,7 @@ public final class ImportPage extends TemplatePage {
 
         form.add(new CheckBoxMultipleChoice<>("payloadData",
                 payloadDataModel,
-                payloadImportService.getPayloadImportFiles(),
+                tablegramImportService.getPayloadImportFiles(),
                 renderer));
 
         localeModel = new Model<>(localeBean.getSystemLocale());

@@ -1,6 +1,7 @@
 package org.complitex.keconnection.heatmeter.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -14,22 +15,25 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
 import org.complitex.keconnection.heatmeter.service.TablegramBean;
+import org.complitex.keconnection.heatmeter.service.TablegramService;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.complitex.dictionary.util.PageUtil.newSorting;
-import static org.complitex.dictionary.util.PageUtil.newTextFields;
-import static org.complitex.dictionary.util.PageUtil.newTextLabels;
+import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -41,6 +45,9 @@ public class TablegramList extends TemplatePage{
 
     @EJB
     private TablegramBean tablegramBean;
+
+    @EJB
+    private TablegramService tablegramService;
 
     public TablegramList() {
         //Title
@@ -132,13 +139,66 @@ public class TablegramList extends TemplatePage{
         DataView dataView = new DataView<Tablegram>("data_view", dataProvider) {
             @Override
             protected void populateItem(Item<Tablegram> item) {
+                final Tablegram tablegram = item.getModelObject();
+
                 item.add(newTextLabels(properties));
 
                 PageParameters pageParameters = new PageParameters();
-                pageParameters.add("t_id", item.getModelObject().getId());
-                BookmarkablePageLink payloadLink = new BookmarkablePageLink("payload_link", PayloadList.class, pageParameters);
+                pageParameters.add("t_id", tablegram.getId());
+                BookmarkablePageLink payloadLink = new BookmarkablePageLink<Void>("payload_link", PayloadList.class, pageParameters);
                 payloadLink.add(item.get("fileName"));
                 item.add(payloadLink);
+
+                item.add(new AjaxButton("link") {
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        final AtomicBoolean stopTimer = new AtomicBoolean(false);
+
+                        ContextProcessListener<Tablegram> listener = new ContextProcessListener<Tablegram>() {
+                            @Override
+                            public void onProcessed(Tablegram tablegram) {
+                                getSession().info(getStringFormat("info_processed", tablegram.getFileName()));
+                            }
+
+                            @Override
+                            public void onSkip(Tablegram tablegram) {
+                                //nothing
+                            }
+
+                            @Override
+                            public void onError(Tablegram tablegram, Exception e) {
+                                getSession().error(getStringFormat("error_link", e.getMessage()));
+                            }
+
+                            @Override
+                            public void onDone() {
+                                stopTimer.set(true);
+                            }
+                        };
+
+                        dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)){
+
+                            @Override
+                            protected void onPostProcessTarget(AjaxRequestTarget target) {
+                                target.add(messages);
+
+                                if (stopTimer.get()){
+                                    stop();
+                                }
+                            }
+                        });
+
+                        tablegramService.asyncLink(Arrays.asList(tablegram), listener);
+
+                        target.add(dataContainer);
+                        target.add(messages);
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        //no errors
+                    }
+                });
             }
         };
         dataContainer.add(dataView);
