@@ -17,9 +17,11 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView;
 import org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean;
@@ -109,16 +111,23 @@ public final class HeatmeterCorrectionList extends TemplatePage {
 
             @Override
             protected void populateItem(Item<HeatmeterCorrectionView> item) {
+                final HeatmeterCorrectionView correction = item.getModelObject();
                 item.add(newTextLabels("ls", "externalHeatmeterId", "heatmeterNumber"));
+                item.add(new Link<Void>("editLink") {
+
+                    @Override
+                    public void onClick() {
+                        setResponsePage(HeatmeterCorrectionEdit.class,
+                                new PageParameters().add(HeatmeterCorrectionEdit.CORRECTION_ID, correction.getId()));
+                    }
+                });
             }
         };
         dataContainer.add(dataView);
 
-        //Paging Navigator
         final PagingNavigator paging = new PagingNavigator("paging", dataView, form);
         form.add(paging);
 
-        //Sorting
         form.add(newSorting("header.", dataProvider, dataView, form, "heatmeter_ls", "external_heatmeter_id",
                 "heatmeter_number"));
     }

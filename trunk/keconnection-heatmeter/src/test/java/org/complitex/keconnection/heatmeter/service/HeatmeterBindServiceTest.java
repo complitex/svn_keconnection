@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Locale;
 import org.apache.ibatis.session.SqlSession;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmeterAndStatus;
+import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmetersAndStatus;
 import org.complitex.keconnection.heatmeter.service.exception.DBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,13 +50,13 @@ public class HeatmeterBindServiceTest {
         return new TestExternalHeatmeterService();
     }
 
-    private static ExternalHeatmeterAndStatus fetchExternalHeatmeter(long heatmeterId, Integer ls,
+    private static ExternalHeatmetersAndStatus fetchExternalHeatmeters(long heatmeterId, Integer ls,
             String organizationCode, int buildingCode, Date date) throws DBException {
-        return newExternalHeatmeterService().fetchExternalHeatmeter(heatmeterId, ls, organizationCode, buildingCode, date);
+        return newExternalHeatmeterService().fetchExternalHeatmeters(heatmeterId, ls, organizationCode, buildingCode, date);
     }
 
     public static void main(String[] args) throws DBException {
-        ExternalHeatmeterAndStatus info = fetchExternalHeatmeter(1, 1, "1", 1, DateUtil.getCurrentDate());
+        ExternalHeatmetersAndStatus info = fetchExternalHeatmeters(1, 1, "1", 1, DateUtil.getCurrentDate());
         log.info(info.toString());
     }
 }

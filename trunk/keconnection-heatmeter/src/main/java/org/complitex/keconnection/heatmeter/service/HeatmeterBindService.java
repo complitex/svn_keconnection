@@ -4,7 +4,6 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
@@ -23,7 +22,6 @@ import org.complitex.keconnection.heatmeter.entity.ExternalHeatmeter;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrection;
-import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmeterAndStatus;
 import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmetersAndStatus;
 import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeterBindException;
 import org.complitex.keconnection.heatmeter.service.exception.DBException;
@@ -92,13 +90,15 @@ public class HeatmeterBindService {
                                     final int buildingCode = buildingCodeObj.getBuildingCode();
                                     final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
 
-                                    //fetch external heatmeter.
-                                    ExternalHeatmeterAndStatus ehs = externalHeatmeterService.fetchExternalHeatmeter(
+                                    //fetch external heatmeters.
+                                    ExternalHeatmetersAndStatus ehs = externalHeatmeterService.fetchExternalHeatmeters(
                                             heatmeterId, heatmeter.getLs(), organizationCode, buildingCode,
                                             getDateParameter());
 
-                                    final ExternalHeatmeter externalHeatmeter = ehs.heatmeter;
                                     final HeatmeterBindingStatus status = ehs.status;
+                                    final ExternalHeatmeter externalHeatmeter =
+                                            ehs.heatmeters != null && ehs.heatmeters.size() == 1
+                                            ? ehs.heatmeters.get(0) : null;
 
                                     updateHeatmeterCorrection(heatmeter, externalHeatmeter, status);
 
@@ -140,11 +140,11 @@ public class HeatmeterBindService {
             }
         }
     }
-    
-    public void updateHeatmeterCorrection(Heatmeter heatmeter, ExternalHeatmeter externalHeatmeter, 
+
+    public void updateHeatmeterCorrection(Heatmeter heatmeter, ExternalHeatmeter externalHeatmeter,
             HeatmeterBindingStatus status) {
         final long heatmeterId = heatmeter.getId();
-        HeatmeterCorrection correction = heatmeterCorrectionBean.findById(heatmeterId);
+        HeatmeterCorrection correction = heatmeterCorrectionBean.findByHeatmeterId(heatmeterId);
         HeatmeterCorrection newCorrection = null;
         if (externalHeatmeter == null) {
             if (correction == null) {
@@ -185,7 +185,7 @@ public class HeatmeterBindService {
         return getFirstDayOfMonth(getYear(currentDate), getMonth(currentDate) + 1);
     }
 
-    public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException, 
+    public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException,
             HeatmeterBindException {
         if (heatmeter != null && heatmeter.getHeatmeterCodes() != null
                 && heatmeter.getHeatmeterCodes().size() == 1) {
@@ -209,10 +209,4 @@ public class HeatmeterBindService {
         }
         return null;
     }
-    
-    //TODO: remove after testing.
-//    public List<ExternalHeatmeter> getExternalHeatmetersTest(Heatmeter heatmeter) throws DBException, 
-//            HeatmeterBindException {
-//        return ImmutableList.of(new ExternalHeatmeter("1", "#1"), new ExternalHeatmeter("2", "#2"));
-//    }
 }
