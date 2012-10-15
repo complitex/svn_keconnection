@@ -17,14 +17,14 @@
             <thead>
             <tr>
                 <th></th>
+                <th class="center" wicket:id="header.heatmeter_id"><wicket:message key="heatmeterId"/></th>
                 <th class="center" wicket:id="header.ls"><wicket:message key="ls"/></th>
-                <th class="center" wicket:id="header.tablegram_record_id"><wicket:message key="tablegramRecordId"/></th>
-                <th class="center" wicket:id="header.begin_date"><wicket:message key="beginDate"/></th>
-                <th class="center" wicket:id="header.end_date"><wicket:message key="endDate"/></th>
-                <th class="center" wicket:id="header.operating_month"><wicket:message key="operatingMonth"/></th>
+                <th class="center" wicket:id="header.name"><wicket:message key="name"/></th>
+                <th class="center" wicket:id="header.address"><wicket:message key="address"/></th>
                 <th class="center" wicket:id="header.payload1"><wicket:message key="payload1"/></th>
                 <th class="center" wicket:id="header.payload2"><wicket:message key="payload2"/></th>
                 <th class="center" wicket:id="header.payload3"><wicket:message key="payload3"/></th>
+                <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
 
                 <th class="center">
                     <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
@@ -32,14 +32,14 @@
             </tr>
             <tr>
                 <th></th>
+                <th><input type="text" wicket:id="object.heatmeterId"/></th>
                 <th><input type="text" wicket:id="object.ls"/></th>
-                <th><input type="text" wicket:id="object.tablegramRecordId"/></th>
-                <th><input type="text" wicket:id="object.beginDate"/></th>
-                <th><input type="text" wicket:id="object.endDate"/></th>
-                <th><input type="text" wicket:id="object.operatingMonth"/></th>
+                <th><input type="text" wicket:id="object.name"/></th>
+                <th><input type="text" wicket:id="object.address"/></th>
                 <th><input type="text" wicket:id="object.payload1"/></th>
                 <th><input type="text" wicket:id="object.payload2"/></th>
                 <th><input type="text" wicket:id="object.payload3"/></th>
+                <th><select wicket:id="object.status"></select></th>
 
                 <th class="center">
                     <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
@@ -49,20 +49,14 @@
             <tbody wicket:id="data_container">
             <tr wicket:id="data_view">
                 <td></td>
+                <td wicket:id="heatmeterId"></td>
                 <td wicket:id="ls"></td>
-                <td wicket:id="tablegramRecordId"></td>
-                <td wicket:id="beginDate"></td>
-                <td wicket:id="endDate"></td>
-                <td wicket:id="operatingMonth"></td>
+                <td wicket:id="name"></td>
+                <td wicket:id="address"></td>
                 <td wicket:id="payload1"></td>
                 <td wicket:id="payload2"></td>
                 <td wicket:id="payload3"></td>
-                <td>
-                    <!--<a href="#" wicket:id="edit"><wicket:message key="edit"/></a>-->
-                    <!--<a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">-->
-                        <!--<wicket:message key="delete"/>-->
-                    <!--</a>-->
-                </td>
+                <td colspan="2" wicket:id="status"></td>
             </tr>
             </tbody>
         </table>

@@ -6,20 +6,16 @@
         <result property="fileName"/>
         <result property="operatingMonth"/>
         <result property="uploaded"/>
-        <result property="count"/>
-        <result property="linkedCount"/>
-        <result property="processedCount"/>
     </resultMap>
 
     <insert id="insertTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
             useGeneratedKeys="true" keyProperty="id">
-        insert into `tablegram` (`file_name`, `operating_month`, `count`, `linked_count`, `processed_count`)
-            value (#{fileName}, #{operatingMonth}, #{count}, #{linkedCount}, #{processedCount})
+        insert into `tablegram` (`file_name`, `operating_month`)
+            value (#{fileName}, #{operatingMonth})
     </insert>
 
     <update id="updateTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram">
-        update `tablegram` set `file_name` = #{fileName}, `operating_month` = #{operatingMonth},
-            `count` = #{count}, `linked_count` = #{linkedCount}, `processed_count` = #{processedCount}
+        update `tablegram` set `file_name` = #{fileName}, `operating_month` = #{operatingMonth}}
     </update>
 
     <select id="selectTablegram" parameterType="long" resultMap="tablegramResultMap">

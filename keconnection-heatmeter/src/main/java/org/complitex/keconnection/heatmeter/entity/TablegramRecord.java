@@ -3,27 +3,28 @@ package org.complitex.keconnection.heatmeter.entity;
 import org.complitex.dictionary.entity.ILongId;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 24.09.12 18:27
+ *         Date: 15.10.12 16:23
  */
-public class Payload implements ILongId {
+public class TablegramRecord implements ILongId{
     private Long id;
-    private Long tablegramRecordId;
-    private Long parentId;
+    private Long tablegramId;
     private Long heatmeterId;
-    private Date beginDate;
-    private Date endDate;
-    private Date operatingMonth;
+    private Integer ls;
+    private String name;
+    private String address;
     private BigDecimal payload1;
     private BigDecimal payload2;
     private BigDecimal payload3;
+    private TablegramRecordStatus status;
 
-    private String ls;
+    public TablegramRecord() {
+    }
 
-    public Payload() {
+    public TablegramRecord(Long tablegramId) {
+        this.tablegramId = tablegramId;
     }
 
     public Long getId() {
@@ -34,20 +35,12 @@ public class Payload implements ILongId {
         this.id = id;
     }
 
-    public Long getTablegramRecordId() {
-        return tablegramRecordId;
+    public Long getTablegramId() {
+        return tablegramId;
     }
 
-    public void setTablegramRecordId(Long tablegramRecordId) {
-        this.tablegramRecordId = tablegramRecordId;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setTablegramId(Long tablegramId) {
+        this.tablegramId = tablegramId;
     }
 
     public Long getHeatmeterId() {
@@ -58,28 +51,28 @@ public class Payload implements ILongId {
         this.heatmeterId = heatmeterId;
     }
 
-    public Date getBeginDate() {
-        return beginDate;
+    public Integer getLs() {
+        return ls;
     }
 
-    public void setBeginDate(Date beginDate) {
-        this.beginDate = beginDate;
+    public void setLs(Integer ls) {
+        this.ls = ls;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public String getName() {
+        return name;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Date getOperatingMonth() {
-        return operatingMonth;
+    public String getAddress() {
+        return address;
     }
 
-    public void setOperatingMonth(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public BigDecimal getPayload1() {
@@ -106,11 +99,11 @@ public class Payload implements ILongId {
         this.payload3 = payload3;
     }
 
-    public String getLs() {
-        return ls;
+    public TablegramRecordStatus getStatus() {
+        return status;
     }
 
-    public void setLs(String ls) {
-        this.ls = ls;
+    public void setStatus(TablegramRecordStatus status) {
+        this.status = status;
     }
 }

@@ -30,12 +30,4 @@ public class PayloadBean extends AbstractBean {
             sqlSession().update("updatePayload", payload);
         }
     }
-
-    public boolean isExist(Long heatmeterId){
-        return sqlSession().selectOne("isExistPayload", heatmeterId);
-    }
-
-    public List<Payload> getPayloads(Long tablegramId){
-        return sqlSession().selectList("selectPayloadsByTablegramId", tablegramId);
-    }
 }

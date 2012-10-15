@@ -421,25 +421,18 @@ CREATE TABLE `tablegram`(
     `file_name` VARCHAR (255) NOT NULL COMMENT 'Название файла',
     `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
     `uploaded` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT  'Дата загрузки',
-    `count` INT NULL COMMENT  'Количество загруженных записей',
-    `linked_count` INT NULL COMMENT  'Количество связанных записей',
-    `processed_count` INT NULL COMMENT  'Количество обработанных записей',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы табуляграмм';
 
 -- ------------------------------
--- Payload
+-- Tablegram Record
 -- ------------------------------
 
-DROP TABLE IF EXISTS `payload`;
-CREATE TABLE `payload`(
+DROP TABLE IF EXISTS `tablegram_record`;
+CREATE TABLE `tablegram_record`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
     `tablegram_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор файла табуляграммы',
-    `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
     `heatmeter_id` BIGINT(20) NULL COMMENT 'Ссылка на теплосчетчик',
-    `begin_date` DATE COMMENT 'Дата начала периода',
-    `end_date` DATE COMMENT 'Дата окончания периода',
-    `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
     `ls` INT(7) NOT NULL COMMENT 'Лицевой счет',
     `name` VARCHAR(255) NOT NULL COMMENT 'Абонент',
     `address` VARCHAR(255) NOT NULL COMMENT 'Адрес',
@@ -448,12 +441,35 @@ CREATE TABLE `payload`(
     `payload3` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 3',
     `status` INT COMMENT 'Статус',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `end_date`, `operating_month`),
+    UNIQUE KEY `tablegram_record_unique_id` (`tablegram_id`, `ls`),
     KEY `key_tablegram_id` (`tablegram_id`),
+    KEY `key_heatmeter_id` (`heatmeter_id`),
+    CONSTRAINT `fk_tablegram_record__tablegram` FOREIGN KEY (`tablegram_id`) REFERENCES `tablegram` (`id`),
+    CONSTRAINT `fk_tablegram_record__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Запись файла табуляграммы';
+
+-- ------------------------------
+-- Payload
+-- ------------------------------
+DROP TABLE IF EXISTS `payload`;
+CREATE TABLE `payload`(
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+    `tablegram_record_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор записи файла табуляграммы',
+    `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
+    `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
+    `begin_date` DATE COMMENT 'Дата начала периода',
+    `end_date` DATE COMMENT 'Дата окончания периода',
+    `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
+    `payload1` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 1',
+    `payload2` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 2',
+    `payload3` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 3',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `end_date`, `operating_month`),
+    KEY `key_tablegram_record_id` (`tablegram_record_id`),
     KEY `key_parent_id` (`parent_id`),
     KEY `key_heatmeter_id` (`heatmeter_id`),
     KEY `key_operating_month` (`operating_month`),
-    CONSTRAINT `fk_payload__tablegram` FOREIGN KEY (`tablegram_id`) REFERENCES `tablegram` (`id`),
+    CONSTRAINT `fk_payload__tablegram_record` FOREIGN KEY (`tablegram_record_id`) REFERENCES `tablegram_record` (`id`),
     CONSTRAINT `fk_payload__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
 
