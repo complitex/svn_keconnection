@@ -5,8 +5,6 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.ejb.Stateless;
 import org.complitex.dictionary.entity.FilterWrapper;
@@ -28,14 +26,13 @@ public class HeatmeterCorrectionBean extends AbstractBean {
 
     private static final String MAPPING_NAMESPACE = HeatmeterCorrectionBean.class.getName();
 
-    private static class ByBindingDateComparator implements Comparator<HeatmeterCorrection> {
-
-        @Override
-        public int compare(HeatmeterCorrection o1, HeatmeterCorrection o2) {
-            return o2.getBindingDate().compareTo(o1.getBindingDate());
-        }
-    }
-
+//    private static class ByBindingDateComparator implements Comparator<HeatmeterCorrection> {
+//
+//        @Override
+//        public int compare(HeatmeterCorrection o1, HeatmeterCorrection o2) {
+//            return o2.getBindingDate().compareTo(o1.getBindingDate());
+//        }
+//    }
     @Transactional
     public void insert(HeatmeterCorrection correction) {
         sqlSession().insert(MAPPING_NAMESPACE + ".insert", correction);
@@ -81,17 +78,17 @@ public class HeatmeterCorrectionBean extends AbstractBean {
     }
 
     public List<HeatmeterCorrection> findHistoryCorrections(long heatmeterId) {
+        return getHistoryCorrections(findAllCorrections(heatmeterId));
+    }
+
+    public List<HeatmeterCorrection> getHistoryCorrections(List<HeatmeterCorrection> allCorrections) {
         List<HeatmeterCorrection> historyCorrections = new ArrayList<>();
-        List<HeatmeterCorrection> allCorrections = findAllCorrections(heatmeterId);
         if (allCorrections != null && !allCorrections.isEmpty()) {
             for (HeatmeterCorrection c : allCorrections) {
                 if (c.isHistory()) {
                     historyCorrections.add(c);
                 }
             }
-        }
-        if (!historyCorrections.isEmpty()) {
-            Collections.sort(historyCorrections, new ByBindingDateComparator());
         }
         return historyCorrections;
     }

@@ -47,10 +47,8 @@ public final class HeatmeterHistoryCorrectionDialog extends Panel {
         }));
 
         List<HeatmeterCorrection> historyCorrections = heatmeterCorrectionBean.findHistoryCorrections(heatmeterId);
-        if (historyCorrections == null) {
+        if (historyCorrections == null || historyCorrections.isEmpty()) {
             historyCorrections = new ArrayList<>();
-        }
-        if (historyCorrections.isEmpty()) {
             setVisible(false);
         }
 

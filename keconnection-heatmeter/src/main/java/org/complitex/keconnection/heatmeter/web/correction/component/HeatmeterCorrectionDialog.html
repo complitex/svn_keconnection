@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <wicket:panel>
+            <div wicket:id="dialog" style="display: none" wicket:message="title:heatmeterCorrectionDialogTitle">
+                <h3>
+                    <span wicket:id="caption"/>
+                </h3>
+                <div style="max-height: 400px;">
+                    <div class="active_correction">
+                        <fieldset>
+                            <legend>
+                                <h4>
+                                    <wicket:message key="activeLabel"/>
+                                </h4>
+                            </legend>
+                            <div>
+                                <div wicket:id="heatmeterItemCorrectionPanel"></div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="history_corrections" wicket:id="historySection">
+                        <fieldset>
+                            <legend>
+                                <h4>
+                                    <wicket:message key="historyLabel"/>
+                                </h4>
+                            </legend>
+                            <div>
+                                <div wicket:id="heatmeterHistoryCorrectionPanel"></div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </wicket:panel>
+    </body>
+</html>
