@@ -145,11 +145,12 @@ public class TablegramList extends TemplatePage{
 
                 PageParameters pageParameters = new PageParameters();
                 pageParameters.add("t_id", tablegram.getId());
-                BookmarkablePageLink payloadLink = new BookmarkablePageLink<Void>("payload_link", PayloadList.class, pageParameters);
+                BookmarkablePageLink payloadLink = new BookmarkablePageLink<Void>("tablegram_record_link",
+                        TablegramRecordList.class, pageParameters);
                 payloadLink.add(item.get("fileName"));
                 item.add(payloadLink);
 
-                item.add(new AjaxButton("link") {
+                item.add(new AjaxButton("process") {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         final AtomicBoolean stopTimer = new AtomicBoolean(false);

@@ -1,19 +1,19 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.service.IProcessListener;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.Payload;
-import org.complitex.keconnection.heatmeter.entity.Tablegram;
+import org.complitex.dictionary.util.DateUtil;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.exception.HeatmeterNotFoundException;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.Date;
 import java.util.List;
 
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
-import static org.complitex.keconnection.heatmeter.entity.PayloadStatus.HEATMETER_NOT_FOUND;
-import static org.complitex.keconnection.heatmeter.entity.PayloadStatus.LINKED;
+import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.HEATMETER_NOT_FOUND;
+import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.PROCESSED;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
@@ -22,20 +22,25 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
  */
 @Stateless
 public class TablegramService {
+    private final Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
+
     @EJB
     private TablegramBean tablegramBean;
 
     @EJB
-    private PayloadBean payloadBean;
+    private TablegramRecordBean tablegramRecordBean;
 
     @EJB
     private HeatmeterBean heatmeterBean;
+
+    @EJB
+    private PayloadBean payloadBean;
 
     @Asynchronous
     public void asyncLink(List<Tablegram> tablegrams, IProcessListener<Tablegram> listener){
         for (Tablegram tablegram : tablegrams){
             try {
-                link(tablegram, listener);
+                process(tablegram, listener);
 
                 listener.processed(tablegram);
             } catch (Exception e) {
@@ -46,26 +51,46 @@ public class TablegramService {
         listener.done();
     }
 
-    public void link(Tablegram tablegram, IProcessListener<Tablegram> listener){
-        List<Payload> payloads = payloadBean.getPayloads(tablegram.getId());
+    public void process(Tablegram tablegram, IProcessListener<Tablegram> listener){
+        List<TablegramRecord> tablegramRecords = tablegramRecordBean.getTablegramRecords(tablegram.getId());
 
-        for (Payload payload : payloads){
-            Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(payload.getLs(), KE_ORGANIZATION_OBJECT_ID);
+        for (TablegramRecord tablegramRecord : tablegramRecords){
+            //skip processed
+            if (PROCESSED.equals(tablegramRecord.getStatus())){
+                continue;
+            }
+
+            Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(tablegramRecord.getLs(), KE_ORGANIZATION_OBJECT_ID);
 
             if (heatmeter == null){
-                payload.setStatus(HEATMETER_NOT_FOUND);
+                tablegramRecord.setStatus(HEATMETER_NOT_FOUND);
 
-                listener.error(tablegram, new HeatmeterNotFoundException(payload.getLs()));
+                listener.error(tablegram, new HeatmeterNotFoundException(tablegramRecord.getLs()));
             }else {
-                payload.setHeatmeterId(heatmeter.getId());
+                //create payload
+                Payload payload = new Payload();
 
-                payload.setStatus(LINKED);
+                payload.setTablegramRecordId(tablegramRecord.getId());
+
+                payload.setBeginDate(DEFAULT_BEGIN_DATE);
+                payload.setOperatingMonth(DEFAULT_BEGIN_DATE);
+
+                payload.setHeatmeterId(heatmeter.getId());
+                payload.setPayload1(tablegramRecord.getPayload1());
+                payload.setPayload2(tablegramRecord.getPayload2());
+                payload.setPayload3(tablegramRecord.getPayload3());
+
+                payloadBean.save(payload);
+
+                //update table record
+                tablegramRecord.setHeatmeterId(heatmeter.getId());
+                tablegramRecord.setStatus(PROCESSED);
 
                 //update heatmeter type
                 heatmeterBean.updateHeatmeterType(heatmeter.getId(), HEATING);
             }
 
-            payloadBean.save(payload);
+            tablegramRecordBean.save(tablegramRecord);
         }
     }
 }

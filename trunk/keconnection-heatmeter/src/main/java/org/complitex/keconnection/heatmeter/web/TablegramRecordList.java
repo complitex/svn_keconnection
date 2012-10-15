@@ -12,12 +12,15 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.keconnection.heatmeter.entity.Payload;
-import org.complitex.keconnection.heatmeter.service.PayloadBean;
+import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
+import org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus;
+import org.complitex.keconnection.heatmeter.service.TablegramRecordBean;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
@@ -31,20 +34,23 @@ import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 24.09.12 18:48
+ *         Date: 15.10.12 17:14
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public class PayloadList extends TemplatePage{
-    private final static Logger log = LoggerFactory.getLogger(PayloadList.class);
+public class TablegramRecordList extends TemplatePage{
+
+    private final static Logger log = LoggerFactory.getLogger(TablegramRecordList.class);
 
     @EJB
-    private PayloadBean payloadBean;
+    private TablegramRecordBean tablegramRecordBean;
 
     //properties
-    final String[] properties = new String[]{"ls", "tablegramRecordId", "beginDate", "endDate", "operatingMonth",
-            "payload1", "payload2", "payload3"};
+    private final String[] properties = new String[]{
+            "heatmeterId", "ls", "name", "address", "payload1", "payload2", "payload3", "status"
+    };
 
-    public PayloadList() {
+    public TablegramRecordList(PageParameters pageParameters) {
+        Long tablegramId = pageParameters.get("t_id").toLongObject();
 
         //Title
         add(new Label("title", new ResourceModel("title")));
@@ -54,9 +60,9 @@ public class PayloadList extends TemplatePage{
         add(messages);
 
         //Filter Model
-        FilterWrapper<Payload> filterWrapper = getTemplateSession().getPreferenceFilter(PayloadList.class.getName(),
-                FilterWrapper.of(new Payload()));
-        final IModel<FilterWrapper<Payload>> filterModel = new CompoundPropertyModel<>(filterWrapper);
+        FilterWrapper<TablegramRecord> filterWrapper = getTemplateSession()
+                .getPreferenceFilter(TablegramRecordList.class.getName(), FilterWrapper.of(new TablegramRecord(tablegramId)));
+        final IModel<FilterWrapper<TablegramRecord>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
         //Filter Form
         final Form filterForm = new Form<>("filter_form", filterModel);
@@ -67,7 +73,7 @@ public class PayloadList extends TemplatePage{
         AjaxButton filterReset = new AjaxButton("filter_reset") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                filterModel.setObject(FilterWrapper.of(new Payload()));
+                filterModel.setObject(FilterWrapper.of(new TablegramRecord()));
                 target.add(filterForm);
             }
 
@@ -96,31 +102,32 @@ public class PayloadList extends TemplatePage{
 
         //Filter Fields
         filterForm.add(newTextFields("object.", properties));
+        filterForm.replace(new EnumDropDownChoice<>("object.status", TablegramRecordStatus.class));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
 
         //Data Provider
-        DataProvider<Payload> dataProvider = new DataProvider<Payload>() {
+        DataProvider<TablegramRecord> dataProvider = new DataProvider<TablegramRecord>() {
             @Override
-            protected Iterable<Payload> getData(int first, int count) {
-                FilterWrapper<Payload> filterWrapper = filterModel.getObject();
+            protected Iterable<TablegramRecord> getData(int first, int count) {
+                FilterWrapper<TablegramRecord> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);
                 filterWrapper.setCount(count);
                 filterWrapper.setSortProperty(getSort().getProperty());
                 filterWrapper.setAscending(getSort().isAscending());
 
-                return payloadBean.getPayloads(filterWrapper);
+                return tablegramRecordBean.getTablegramRecords(filterWrapper);
             }
 
             @Override
             protected int getSize() {
-                return payloadBean.getPayloadsCount(filterModel.getObject());
+                return tablegramRecordBean.getTablegramRecordsCount(filterModel.getObject());
             }
 
             @Override
-            public IModel<Payload> model(Payload object) {
+            public IModel<TablegramRecord> model(TablegramRecord object) {
                 return new CompoundPropertyModel<>(object);
             }
         };
@@ -132,9 +139,9 @@ public class PayloadList extends TemplatePage{
         filterForm.add(dataContainer);
 
         //Data View
-        DataView dataView = new DataView<Payload>("data_view", dataProvider) {
+        DataView dataView = new DataView<TablegramRecord>("data_view", dataProvider) {
             @Override
-            protected void populateItem(Item<Payload> item) {
+            protected void populateItem(Item<TablegramRecord> item) {
                 item.add(newTextLabels(properties));
 
             }
@@ -142,7 +149,7 @@ public class PayloadList extends TemplatePage{
         dataContainer.add(dataView);
 
         //Paging Navigator
-        final PagingNavigator paging = new PagingNavigator("paging", dataView, PayloadList.class.getName(), filterForm);
+        final PagingNavigator paging = new PagingNavigator("paging", dataView, TablegramRecordList.class.getName(), filterForm);
         filterForm.add(paging);
 
         //Sorting

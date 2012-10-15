@@ -9,7 +9,10 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.keconnection.heatmeter.entity.*;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterConfig;
+import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
+import org.complitex.keconnection.heatmeter.entity.Tablegram;
+import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.complitex.keconnection.heatmeter.entity.PayloadStatus.NOT_LINKED;
+import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.LOADED;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -43,7 +46,7 @@ public class TablegramImportService extends AbstractImportService{
     private TablegramBean tablegramBean;
 
     @EJB
-    private PayloadBean payloadBean;
+    private TablegramRecordBean tablegramRecordBean;
 
     public void process(IImportFile importFile, IImportListener listener) throws ImportFileNotFoundException,
             ImportFileReadException {
@@ -73,24 +76,21 @@ public class TablegramImportService extends AbstractImportService{
 
                 Record record = it.next();
 
-                Payload payload = new Payload();
+                TablegramRecord tablegramRecord = new TablegramRecord();
 
-                payload.setTablegramId(tablegram.getId());
+                tablegramRecord.setTablegramId(tablegram.getId());
 
-                payload.setLs(record.getNumberValue("L_S").intValue());
-                payload.setName(record.getStringValue("NAM_AB"));
-                payload.setAddress(record.getStringValue("ADR_AB"));
-                payload.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
-                payload.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
-                payload.setPayload3((BigDecimal) record.getNumberValue("PR_T3"));
+                tablegramRecord.setLs(record.getNumberValue("L_S").intValue());
+                tablegramRecord.setName(record.getStringValue("NAM_AB"));
+                tablegramRecord.setAddress(record.getStringValue("ADR_AB"));
+                tablegramRecord.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
+                tablegramRecord.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
+                tablegramRecord.setPayload3((BigDecimal) record.getNumberValue("PR_T3"));
 
-                payload.setOperatingMonth(DEFAULT_BEGIN_DATE);
-                payload.setBeginDate(DEFAULT_BEGIN_DATE);
-
-                payload.setStatus(NOT_LINKED);
+                tablegramRecord.setStatus(LOADED);
 
                 //save payload
-                payloadBean.save(payload);
+                tablegramRecordBean.save(tablegramRecord);
 
                 processed++;
 

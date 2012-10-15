@@ -8,12 +8,12 @@ import org.complitex.dictionary.mybatis.IFixedIdType;
  *         Date: 08.10.12 16:11
  */
 @FixedIdTypeHandler
-public enum TablegramStatus implements IFixedIdType{
-    LOADED(1L), LINKED(2L), PROCESSED(3L);
+public enum TablegramRecordStatus implements IFixedIdType{
+    LOADED(1L), PROCESSED(2L), HEATMETER_NOT_FOUND(3L);
 
     private Long id;
 
-    private TablegramStatus(Long id) {
+    private TablegramRecordStatus(Long id) {
         this.id = id;
     }
 
