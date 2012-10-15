@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -24,6 +26,7 @@ import org.complitex.keconnection.heatmeter.web.component.HeatmeterCodePanel;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
+import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,5 +147,18 @@ public class HeatmeterEdit extends FormTemplatePage{
                 setResponsePage(HeatmeterList.class);
             }
         });
+        
+        final HeatmeterCorrectionDialog heatmeterCorrectionDialog =
+                new HeatmeterCorrectionDialog("heatmeterCorrectionDialog", heatmeter);
+        add(heatmeterCorrectionDialog);
+        AjaxLink<Void> correctionsLink = new AjaxLink<Void>("correctionsLink") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                heatmeterCorrectionDialog.open(target);
+            }
+        };
+        correctionsLink.setVisible(heatmeterCorrectionDialog.isVisible());
+        form.add(correctionsLink);
     }
 }

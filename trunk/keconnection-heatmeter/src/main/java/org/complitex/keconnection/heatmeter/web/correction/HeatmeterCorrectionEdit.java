@@ -23,7 +23,7 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView;
 import org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterHistoryCorrectionDialog;
 import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
+import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public final class HeatmeterCorrectionEdit extends TemplatePage {
+public final class HeatmeterCorrectionEdit extends FormTemplatePage {
 
     private static final Logger log = LoggerFactory.getLogger(HeatmeterCorrectionEdit.class);
     static final String CORRECTION_ID = "correction_id";

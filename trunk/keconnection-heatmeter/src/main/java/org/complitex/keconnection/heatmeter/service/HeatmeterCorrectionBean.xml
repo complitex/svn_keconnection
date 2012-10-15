@@ -84,7 +84,7 @@
     
     <select id="findAllCorrections" parameterType="long" 
             resultMap="org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean.heatmeterCorrection">
-        SELECT * FROM `heatmeter_correction` WHERE `system_heatmeter_id` = #{id}
+        SELECT * FROM `heatmeter_correction` WHERE `system_heatmeter_id` = #{id} ORDER BY `binding_date` DESC
     </select>
 
 </mapper>
