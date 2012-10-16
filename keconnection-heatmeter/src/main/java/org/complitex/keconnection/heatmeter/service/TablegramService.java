@@ -7,16 +7,13 @@ import org.complitex.keconnection.heatmeter.entity.Payload;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
 import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
 
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
-import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.ALREADY_HAS_PAYLOAD;
-import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.HEATMETER_NOT_FOUND;
-import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.PROCESSED;
+import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.*;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
@@ -39,41 +36,52 @@ public class TablegramService {
     @EJB
     private PayloadBean payloadBean;
 
-    @Asynchronous
-    public void asyncProcess(List<Tablegram> tablegrams, IProcessListener<Tablegram> listener){
-        for (Tablegram tablegram : tablegrams){
-            try {
-                process(tablegram, listener);
+    public void process(Tablegram tablegram, IProcessListener<TablegramRecord> listener){
+        TablegramRecord current = null;
 
-                listener.processed(tablegram);
-            } catch (Exception e) {
-                listener.error(tablegram, e);
+        try {
+            List<TablegramRecord> tablegramRecords = tablegramRecordBean.getTablegramRecords(tablegram.getId());
+
+            for (TablegramRecord tablegramRecord : tablegramRecords){
+                current = tablegramRecord;
+
+                process(tablegramRecord, listener);
             }
+
+
+        } catch (Exception e) {
+            listener.error(current, e);
         }
 
         listener.done();
     }
 
-    public void process(Tablegram tablegram, IProcessListener<Tablegram> listener){
-        List<TablegramRecord> tablegramRecords = tablegramRecordBean.getTablegramRecords(tablegram.getId());
-
-        for (TablegramRecord tablegramRecord : tablegramRecords){
-            if (!PROCESSED.equals(tablegramRecord.getStatus())){
-                process(tablegramRecord);
+    public void process(TablegramRecord tablegramRecord, IProcessListener<TablegramRecord> listener){
+        if (PROCESSED.equals(tablegramRecord.getStatus()) || ERROR_PAYLOAD_SUM.equals(tablegramRecord.getStatus())){
+            if (listener != null) {
+                listener.skip(tablegramRecord);
             }
-        }
-    }
 
-    public void process(TablegramRecord tablegramRecord){
+            return;
+        }
+
         Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(tablegramRecord.getLs(), KE_ORGANIZATION_OBJECT_ID);
 
         if (heatmeter == null){
             tablegramRecord.setStatus(HEATMETER_NOT_FOUND);
+
+            if (listener != null) {
+                listener.skip(tablegramRecord);
+            }
         }else {
             tablegramRecord.setHeatmeterId(heatmeter.getId());
 
             if (payloadBean.isExist(heatmeter.getId())){
                 tablegramRecord.setStatus(ALREADY_HAS_PAYLOAD);
+
+                if (listener != null) {
+                    listener.skip(tablegramRecord);
+                }
             }else {
                 //create payload
                 Payload payload = new Payload();
@@ -95,9 +103,27 @@ public class TablegramService {
 
                 //update heatmeter type
                 heatmeterBean.updateHeatmeterType(heatmeter.getId(), HEATING);
+
+                //processed
+                if (listener != null) {
+                    listener.processed(tablegramRecord);
+                }
             }
         }
 
         tablegramRecordBean.save(tablegramRecord);
+    }
+
+    public void rollback(Tablegram tablegram, IProcessListener<Tablegram> listener){
+        try {
+            payloadBean.deleteByTablegramId(tablegram.getId());
+            tablegramRecordBean.rollback(tablegram.getId());
+
+            listener.processed(tablegram);
+        } catch (Exception e) {
+            listener.error(tablegram, e);
+        }
+
+        listener.done();
     }
 }

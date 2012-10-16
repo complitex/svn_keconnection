@@ -55,4 +55,8 @@
     <select id="selectTablegramRecordIdByTablegramId" parameterType="long" resultMap="tablegramRecordResultMap">
         select * from `tablegram_record` where `tablegram_id` = #{tablegramId}
     </select>
+
+    <update id="rollbackTablegramStatus" parameterType="long">
+        update `tablegram_record` set `status` = 1 where `tablegram_id` = #{tablegramId} and `status` = 2
+    </update>
 </mapper>

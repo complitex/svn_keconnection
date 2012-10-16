@@ -444,7 +444,7 @@ CREATE TABLE `tablegram_record`(
     UNIQUE KEY `tablegram_record_unique_id` (`tablegram_id`, `ls`),
     KEY `key_tablegram_id` (`tablegram_id`),
     KEY `key_heatmeter_id` (`heatmeter_id`),
-    CONSTRAINT `fk_tablegram_record__tablegram` FOREIGN KEY (`tablegram_id`) REFERENCES `tablegram` (`id`),
+    CONSTRAINT `fk_tablegram_record__tablegram` FOREIGN KEY (`tablegram_id`) REFERENCES `tablegram` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_tablegram_record__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Запись файла табуляграммы';
 

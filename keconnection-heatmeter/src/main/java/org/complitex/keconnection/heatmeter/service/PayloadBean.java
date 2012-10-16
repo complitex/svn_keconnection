@@ -34,4 +34,8 @@ public class PayloadBean extends AbstractBean {
     public boolean isExist(Long heatmeterId){
         return sqlSession().selectOne("isExistPayload", heatmeterId);
     }
+
+    public void deleteByTablegramId(Long tablegramId){
+        sqlSession().delete("deletePayloadByTablegramId", tablegramId);
+    }
 }

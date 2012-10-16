@@ -1,7 +1,6 @@
 package org.complitex.keconnection.heatmeter.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -9,19 +8,21 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.ContextProcessListener;
+import org.complitex.dictionary.util.ExceptionUtil;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
+import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 import org.complitex.keconnection.heatmeter.service.TablegramBean;
 import org.complitex.keconnection.heatmeter.service.TablegramService;
 import org.complitex.template.web.security.SecurityRole;
@@ -30,8 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.complitex.dictionary.util.PageUtil.*;
 
@@ -149,61 +148,74 @@ public class TablegramList extends TemplatePage{
                 payloadLink.add(item.get("fileName"));
                 item.add(payloadLink);
 
-                item.add(new AjaxButton("process") {
-                    AtomicBoolean processing = new AtomicBoolean(false);
+                //process
+                item.add(new Link("process") {
 
                     @Override
-                    public boolean isVisible() {
-                        return !processing.get();
-                    }
-
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        processing.set(true);
-
-                        ContextProcessListener<Tablegram> listener = new ContextProcessListener<Tablegram>() {
+                    public void onClick() {
+                        tablegramService.process(tablegram, new ContextProcessListener<TablegramRecord>() {
                             @Override
-                            public void onProcessed(Tablegram tablegram) {
-                                getSession().info(getStringFormat("info_processed", tablegram.getFileName()));
-                            }
-
-                            @Override
-                            public void onSkip(Tablegram tablegram) {
+                            public void onProcessed(TablegramRecord tablegram) {
                                 //nothing
                             }
 
                             @Override
-                            public void onError(Tablegram tablegram, Exception e) {
+                            public void onSkip(TablegramRecord tablegram) {
+                                //nothing
+                            }
+
+                            @Override
+                            public void onError(TablegramRecord tablegram, Exception e) {
                                 getSession().error(getStringFormat("error_link", e.getMessage()));
                             }
 
                             @Override
                             public void onDone() {
-                                processing.set(false);
-                            }
-                        };
-
-                        dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)){
-
-                            @Override
-                            protected void onPostProcessTarget(AjaxRequestTarget target) {
-                                target.add(messages);
-
-                                if (!processing.get()){
-                                    stop();
-                                }
+                                getSession().info(getStringFormat("info_processed", tablegram.getFileName(),
+                                        getProcessed(), getSkipped()));
                             }
                         });
-
-                        tablegramService.asyncProcess(Arrays.asList(tablegram), listener);
-
-                        target.add(dataContainer);
-                        target.add(messages);
                     }
+                });
+
+                //rollback
+                item.add(new Link("rollback") {
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
-                        //no errors
+                    public void onClick() {
+                        tablegramService.rollback(tablegram, new ContextProcessListener<Tablegram>() {
+                            @Override
+                            public void onProcessed(Tablegram object) {
+                                //hello
+                            }
+
+                            @Override
+                            public void onSkip(Tablegram object) {
+                                //world
+                            }
+
+                            @Override
+                            public void onError(Tablegram object, Exception e) {
+                                getSession().error(getStringFormat("error_rollback", e.getMessage()));
+                            }
+
+                            @Override
+                            public void onDone() {
+                                getSession().info(getStringFormat("info_rollback", tablegram.getFileName()));
+                            }
+                        });
+                    }
+                });
+
+                item.add(new Link("delete"){
+
+                    @Override
+                    public void onClick() {
+                        try {
+                            tablegramBean.delete(tablegram.getId());
+                        } catch (Exception e) {
+                            getSession().error(ExceptionUtil.getCauseMessage(e, true));
+                        }
                     }
                 });
             }

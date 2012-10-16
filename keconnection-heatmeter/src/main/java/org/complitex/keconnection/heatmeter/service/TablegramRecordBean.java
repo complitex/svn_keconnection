@@ -35,4 +35,8 @@ public class TablegramRecordBean extends AbstractBean{
         return sqlSession().selectList("selectTablegramRecordIdByTablegramId", tablegramId);
     }
 
+    public void rollback(Long tablegramId){
+        sqlSession().update("rollbackTablegramStatus", tablegramId);
+    }
+
 }
