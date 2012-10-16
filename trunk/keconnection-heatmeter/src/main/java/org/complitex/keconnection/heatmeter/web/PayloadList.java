@@ -7,6 +7,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -18,13 +19,17 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.Payload;
 import org.complitex.keconnection.heatmeter.service.PayloadBean;
+import org.complitex.template.web.component.toolbar.AddItemButton;
+import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.complitex.dictionary.util.PageUtil.*;
@@ -137,6 +142,9 @@ public class PayloadList extends TemplatePage{
             protected void populateItem(Item<Payload> item) {
                 item.add(newTextLabels(properties));
 
+                item.add(new BookmarkablePageLink<>("edit", PayloadEdit.class,
+                        newPageParameters("id", item.getModelObject().getId())));
+
             }
         };
         dataContainer.add(dataView);
@@ -147,5 +155,16 @@ public class PayloadList extends TemplatePage{
 
         //Sorting
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, true, properties));
+    }
+
+    @Override
+    protected List<? extends ToolbarButton> getToolbarButtons(String id) {
+        return Arrays.asList(new AddItemButton(id) {
+
+            @Override
+            protected void onClick() {
+                setResponsePage(PayloadEdit.class);
+            }
+        });
     }
 }

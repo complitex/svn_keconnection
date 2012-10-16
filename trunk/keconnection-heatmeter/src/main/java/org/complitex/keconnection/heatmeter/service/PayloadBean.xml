@@ -35,7 +35,7 @@
     </update>
 
     <select id="selectPayload" parameterType="long" resultMap="payloadResultMap">
-        select * from `payload` where `id` = #{id}
+        select p.*, h.`ls` as ls from `payload` p left join `heatmeter` h on p.`heatmeter_id` = h.`id` where p.`id` = #{id}
     </select>
 
     <sql id="selectPayloadFromWhere">

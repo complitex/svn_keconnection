@@ -454,10 +454,10 @@ CREATE TABLE `tablegram_record`(
 DROP TABLE IF EXISTS `payload`;
 CREATE TABLE `payload`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-    `tablegram_record_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор записи файла табуляграммы',
+    `tablegram_record_id` BIGINT(20) COMMENT 'Идентификатор записи файла табуляграммы',
     `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
     `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
-    `begin_date` DATE COMMENT 'Дата начала периода',
+    `begin_date` DATE NOT NULL COMMENT 'Дата начала периода',
     `end_date` DATE COMMENT 'Дата окончания периода',
     `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
     `payload1` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 1',
