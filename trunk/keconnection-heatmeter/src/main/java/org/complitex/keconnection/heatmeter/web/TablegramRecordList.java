@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.complitex.dictionary.util.PageUtil.*;
+import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.PROCESSED;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -66,7 +67,8 @@ public class TablegramRecordList extends TemplatePage{
 
         //Filter Model
         FilterWrapper<TablegramRecord> filterWrapper = getTemplateSession()
-                .getPreferenceFilter(TablegramRecordList.class.getName(), FilterWrapper.of(new TablegramRecord(tablegramId)));
+                .getPreferenceFilter(TablegramRecordList.class.getName() + tablegramId,
+                        FilterWrapper.of(new TablegramRecord(tablegramId)));
         final IModel<FilterWrapper<TablegramRecord>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
         //Filter Form
@@ -155,13 +157,18 @@ public class TablegramRecordList extends TemplatePage{
                     @Override
                     public void onClick() {
                         try {
-                            tablegramService.process(tablegramRecord);
+                            tablegramService.process(tablegramRecord, null);
 
                             info(getStringFormat("info_processed", tablegramRecord.getLs(), tablegramRecord.getAddress())
                                     + ": " + getString(tablegramRecord.getStatus().name()));
                         } catch (Exception e) {
                             error(e.getMessage());
                         }
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return !PROCESSED.equals(tablegramRecord.getStatus());
                     }
                 });
             }

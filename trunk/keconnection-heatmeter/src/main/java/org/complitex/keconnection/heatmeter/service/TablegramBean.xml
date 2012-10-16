@@ -44,4 +44,8 @@
             resultType="boolean">
         select count(*) > 0 from `tablegram` where `file_name` = #{fileName} and `operating_month` = #{operatingMonth}
     </select>
+
+    <delete id="deleteTablegram" parameterType="long">
+        delete from `tablegram` where `id` = #{id}
+    </delete>
 </mapper>

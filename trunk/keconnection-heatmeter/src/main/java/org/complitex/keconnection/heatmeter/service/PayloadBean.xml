@@ -62,4 +62,9 @@
     <select id="isExistPayload" parameterType="long" resultType="boolean">
         select count(*) > 0 from `payload` where `heatmeter_id` = #{heatmeterId}
     </select>
+
+    <delete id="deletePayloadByTablegramId" parameterType="long">
+        delete from `payload`
+          where `tablegram_record_id` in (select `id` from `tablegram_record` where `tablegram_id` = #{tablegramId})
+    </delete>
 </mapper>

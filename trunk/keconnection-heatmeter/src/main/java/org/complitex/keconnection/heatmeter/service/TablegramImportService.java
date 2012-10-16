@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.ERROR_PAYLOAD_SUM;
 import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.LOADED;
 
 /**
@@ -76,21 +77,26 @@ public class TablegramImportService extends AbstractImportService{
 
                 Record record = it.next();
 
-                TablegramRecord tablegramRecord = new TablegramRecord();
+                TablegramRecord tr = new TablegramRecord();
 
-                tablegramRecord.setTablegramId(tablegram.getId());
+                tr.setTablegramId(tablegram.getId());
 
-                tablegramRecord.setLs(record.getNumberValue("L_S").intValue());
-                tablegramRecord.setName(record.getStringValue("NAM_AB"));
-                tablegramRecord.setAddress(record.getStringValue("ADR_AB"));
-                tablegramRecord.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
-                tablegramRecord.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
-                tablegramRecord.setPayload3((BigDecimal) record.getNumberValue("PR_T3"));
+                tr.setLs(record.getNumberValue("L_S").intValue());
+                tr.setName(record.getStringValue("NAM_AB"));
+                tr.setAddress(record.getStringValue("ADR_AB"));
+                tr.setPayload1((BigDecimal) record.getNumberValue("PR_T1"));
+                tr.setPayload2((BigDecimal) record.getNumberValue("PR_T2"));
+                tr.setPayload3((BigDecimal) record.getNumberValue("PR_T3"));
 
-                tablegramRecord.setStatus(LOADED);
+                //sum check
+                if (tr.getPayload1().add(tr.getPayload2()).add(tr.getPayload3()).doubleValue() == 100){
+                    tr.setStatus(LOADED);
+                }else {
+                    tr.setStatus(ERROR_PAYLOAD_SUM);
+                }
 
                 //save payload
-                tablegramRecordBean.save(tablegramRecord);
+                tablegramRecordBean.save(tr);
 
                 processed++;
 

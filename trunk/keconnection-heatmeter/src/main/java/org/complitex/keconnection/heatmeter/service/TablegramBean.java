@@ -6,7 +6,6 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
 
 import javax.ejb.Stateless;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,5 +37,9 @@ public class TablegramBean extends AbstractBean{
 
     public boolean isExist(Tablegram tablegram){
         return sqlSession().selectOne("isExistTablegram", tablegram);
+    }
+
+    public void delete(Long id){
+        sqlSession().delete("deleteTablegram", id);
     }
 }
