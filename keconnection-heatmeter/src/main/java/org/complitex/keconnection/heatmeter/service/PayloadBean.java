@@ -15,6 +15,10 @@ import java.util.List;
 @XmlMapper
 @Stateless
 public class PayloadBean extends AbstractBean {
+    public Payload getPayload(Long id){
+        return sqlSession().selectOne("selectPayload", id);
+    }
+
     public List<Payload> getPayloads(FilterWrapper<Payload> filterWrapper){
         return sqlSession().selectList("selectPayloads", filterWrapper);
     }

@@ -21,7 +21,7 @@ public class Payload implements ILongId {
     private BigDecimal payload2;
     private BigDecimal payload3;
 
-    private String ls;
+    private Integer ls;
 
     public Payload() {
     }
@@ -106,11 +106,11 @@ public class Payload implements ILongId {
         this.payload3 = payload3;
     }
 
-    public String getLs() {
+    public Integer getLs() {
         return ls;
     }
 
-    public void setLs(String ls) {
+    public void setLs(Integer ls) {
         this.ls = ls;
     }
 }

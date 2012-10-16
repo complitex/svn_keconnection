@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head><title wicket:id="title"></title></wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h2><wicket:message key="title"/></h2>
+    <div id="messages" wicket:id="messages"></div>
+
+    <form wicket:id="form" action="#">
+        <div>
+            <table  border="0" cellspacing="0" cellpadding="0" class="tbForm">
+                <tbody>
+                <tr>
+                    <th><wicket:message key="ls"/><b class="blue">*</b>:</th>
+                    <td><input wicket:id="ls" type="text"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="payload1"/><b class="blue">*</b>:</th>
+                    <td><input wicket:id="payload1" type="text"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="payload2"/><b class="blue">*</b>:</th>
+                    <td><input wicket:id="payload2"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="payload3"/><b class="blue">*</b>:</th>
+                    <td><input wicket:id="payload3"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="beginDate"/><b class="blue">*</b>:</th>
+                    <td><input wicket:id="beginDate"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="endDate"/>:</th>
+                    <td><input wicket:id="endDate"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="operatingMonth"/><b class="blue">*</b>:</th>
+                    <td><input wicket:id="operatingMonth"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding-top: 20px">
+            <input type="submit" class="btnMiddle" wicket:message="value:save" wicket:id="save"/>
+            <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>
