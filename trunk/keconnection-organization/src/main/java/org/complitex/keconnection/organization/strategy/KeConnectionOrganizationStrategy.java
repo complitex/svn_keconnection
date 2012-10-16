@@ -6,6 +6,8 @@ package org.complitex.keconnection.organization.strategy;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.util.Collections;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
@@ -18,8 +20,14 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
+import org.complitex.dictionary.entity.Attribute;
+import org.complitex.dictionary.entity.description.EntityAttributeType;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
+import org.complitex.keconnection.organization.strategy.web.list.OrganizationList;
 
 /**
  *
@@ -28,13 +36,12 @@ import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrg
 @Stateless
 public class KeConnectionOrganizationStrategy extends OrganizationStrategy implements IKeConnectionOrganizationStrategy {
 
+    private static final String MAPPING_NAMESPACE = KeConnectionOrganizationStrategy.class.getPackage().getName() + ".Organization";
+    private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.of(READY_CLOSE_OPER_MONTH);
     @EJB
     private LocaleBean localeBean;
-
-    @Override
-    protected List<Long> getListAttributeTypes() {
-        return ImmutableList.of(NAME, CODE, SHORT_NAME);
-    }
+    @EJB
+    private StringCultureBean stringBean;
 
     @Override
     public PageParameters getEditPageParams(Long objectId, Long parentId, String parentEntity) {
@@ -52,13 +59,16 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
 
     @Override
     public PageParameters getListPageParams() {
-        PageParameters pageParameters = super.getListPageParams();
-        pageParameters.set(STRATEGY, KECONNECTION_ORGANIZATION_STRATEGY_NAME);
-        return pageParameters;
+        return new PageParameters();
     }
 
     @Override
-    public List<DomainObject> getAllServicingOrganizations(Locale locale) {
+    public Class<? extends WebPage> getListPage() {
+        return OrganizationList.class;
+    }
+
+    @Override
+    public List<Organization> getAllServicingOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
                 ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION));
@@ -68,7 +78,7 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
             example.setAsc(true);
         }
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-        return (List<DomainObject>) find(example);
+        return find(example);
     }
 
     @Override
@@ -97,7 +107,7 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     }
 
     @Override
-    public List<DomainObject> getAllOuterOrganizations(Locale locale) {
+    public List<Organization> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         if (locale != null) {
             example.setOrderByAttributeTypeId(NAME);
@@ -108,11 +118,78 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
                 ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICE_PROVIDER,
                 KeConnectionOrganizationTypeStrategy.CALCULATION_MODULE));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-        return (List<DomainObject>) find(example);
+        return find(example);
     }
 
     @Override
     public Class<? extends AbstractComplexAttributesPanel> getComplexAttributesPanelAfterClass() {
         return KeConnectionOrganizationEditComponent.class;
+    }
+
+    @Transactional
+    @Override
+    public List<Organization> find(DomainObjectExample example) {
+        if (example.getId() != null && example.getId() <= 0) {
+            return Collections.emptyList();
+        }
+
+        example.setTable(getEntityTable());
+        if (!example.isAdmin()) {
+            prepareExampleForPermissionCheck(example);
+        }
+        extendOrderBy(example);
+
+        List<Organization> organizations = sqlSession().selectList(MAPPING_NAMESPACE + "." + FIND_OPERATION, example);
+        for (DomainObject o : organizations) {
+            loadAttributes(o);
+            //load subject ids
+            o.setSubjectIds(loadSubjects(o.getPermissionId()));
+        }
+        return organizations;
+    }
+
+    @Transactional
+    @Override
+    public int count(DomainObjectExample example) {
+        if (example.getId() != null && example.getId() <= 0) {
+            return 0;
+        }
+        example.setTable(getEntityTable());
+        prepareExampleForPermissionCheck(example);
+        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + "." + COUNT_OPERATION, example);
+    }
+
+    @Override
+    public boolean isSimpleAttributeType(EntityAttributeType entityAttributeType) {
+        if (CUSTOM_ATTRIBUTE_TYPES.contains(entityAttributeType.getId())) {
+            return false;
+        }
+        return super.isSimpleAttributeType(entityAttributeType);
+    }
+
+    @Override
+    protected void fillAttributes(DomainObject object) {
+        super.fillAttributes(object);
+
+        for (long attributeTypeId : CUSTOM_ATTRIBUTE_TYPES) {
+            if (object.getAttribute(attributeTypeId).getLocalizedValues() == null) {
+                object.getAttribute(attributeTypeId).setLocalizedValues(stringBean.newStringCultures());
+            }
+        }
+    }
+
+    @Override
+    protected void loadStringCultures(List<Attribute> attributes) {
+        super.loadStringCultures(attributes);
+
+        for (Attribute attribute : attributes) {
+            if (CUSTOM_ATTRIBUTE_TYPES.contains(attribute.getAttributeTypeId())) {
+                if (attribute.getValueId() != null) {
+                    loadStringCultures(attribute);
+                } else {
+                    attribute.setLocalizedValues(stringBean.newStringCultures());
+                }
+            }
+        }
     }
 }

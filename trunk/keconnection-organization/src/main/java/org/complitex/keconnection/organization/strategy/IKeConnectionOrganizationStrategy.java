@@ -9,6 +9,8 @@ import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 
 import java.util.List;
 import java.util.Locale;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 
 /**
  *
@@ -20,18 +22,28 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
     /*
      * Attribute type ids
      */
+    /**
+     * Organization's short name.
+     */
     long SHORT_NAME = 920;
+    /**
+     * Flag of organization being performer.
+     */
+    long PERFORMER = 921;
+    /**
+     * Flag of readiness to close operating month.
+     */
+    long READY_CLOSE_OPER_MONTH = 922;
     /**
      * Itself organization instance id.
      */
     long ITSELF_ORGANIZATION_OBJECT_ID = 0;
-
     /**
      * КИЕВЭНЕРГО
      */
     long KE_ORGANIZATION_OBJECT_ID = 1;
 
-    List<DomainObject> getAllServicingOrganizations(Locale locale);
+    List<Organization> getAllServicingOrganizations(Locale locale);
 
     String displayShortName(Long organizationId, Locale locale);
 
@@ -42,5 +54,7 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
      */
     DomainObject getItselfOrganization();
 
-    List<DomainObject> getAllOuterOrganizations(Locale locale);
+    List<Organization> getAllOuterOrganizations(Locale locale);
+
+    List<Organization> find(DomainObjectExample example);
 }

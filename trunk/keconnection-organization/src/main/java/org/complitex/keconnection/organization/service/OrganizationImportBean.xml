@@ -38,5 +38,13 @@
     <delete id="delete">
         DELETE FROM `organization_import`
     </delete>
+    
+    <select id="operatingMonthExists" parameterType="long" resultType="int">
+        SELECT 1 FROM `operating_month` WHERE `organization_id` = #{organizationId}
+    </select>
+    
+    <insert id="insertOperatingMonth" parameterType="map">
+        INSERT INTO `operating_month` (`organization_id`, `operating_month`) VALUES (#{organizationId}, #{operatingMonth})
+    </insert>
 
 </mapper>

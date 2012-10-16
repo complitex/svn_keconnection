@@ -4,12 +4,15 @@
  */
 package org.complitex.keconnection.organization.service;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
+import static org.complitex.dictionary.util.DateUtil.*;
 import org.complitex.keconnection.organization.entity.OrganizationImport;
 
 /**
@@ -37,5 +40,17 @@ public class OrganizationImportBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void delete() {
         sqlSession().delete(MAPPING_NAMESPACE + ".delete");
+    }
+
+    public boolean operatingMonthExists(long organizationId) {
+        Integer result = sqlSession().selectOne(MAPPING_NAMESPACE + ".operatingMonthExists", organizationId);
+        return result != null && result == 1;
+    }
+
+    @Transactional
+    public void insertOperatingMonth(long organizationId, Date currentDate) {
+        sqlSession().insert(MAPPING_NAMESPACE + ".insertOperatingMonth",
+                ImmutableMap.of("organizationId", organizationId,
+                "operatingMonth", getFirstDayOfMonth(getYear(currentDate), getMonth(currentDate) + 1)));
     }
 }

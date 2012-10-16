@@ -6,6 +6,7 @@ package org.complitex.keconnection.heatmeter.web.correction.component.edit;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -271,7 +272,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
             @Override
             protected List<DomainObject> load() {
-                return organizationStrategy.getAllOuterOrganizations(getLocale());
+                return new ArrayList<DomainObject>(organizationStrategy.getAllOuterOrganizations(getLocale()));
             }
         };
 
