@@ -6,6 +6,7 @@ package org.complitex.keconnection.heatmeter.web.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -162,7 +163,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
             @Override
             protected List<DomainObject> load() {
-                return organizationStrategy.getAllOuterOrganizations(getLocale());
+                return new ArrayList<DomainObject>(organizationStrategy.getAllOuterOrganizations(getLocale()));
             }
         };
         final IModel<DomainObject> outerOrganizationModel = new OrganizationModel() {

@@ -29,6 +29,7 @@ import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizatio
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 
 /**
  *
@@ -70,7 +71,7 @@ public class KeConnectionBuildingEditComponent extends AbstractComplexAttributes
             associationList.addNew();
         }
 
-        final List<DomainObject> allServicingOrganizations = organizationStrategy.getAllServicingOrganizations(getLocale());
+        final List<Organization> allServicingOrganizations = organizationStrategy.getAllServicingOrganizations(getLocale());
         final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override

@@ -53,6 +53,11 @@ INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (921, 1, UPPER('
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (921, 900, 1, 921, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (921, 921, 'boolean');
 
+-- Readiness to close operating month. It is servicing organization only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (922, 1, UPPER('Готовность к завершению опер. месяца')), (922, 2, UPPER('Готовность к завершению опер. месяца'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (922, 900, 1, 922, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (922, 922, 'boolean');
+
 -- ------------------------------
 -- Predefined organizations
 -- ------------------------------

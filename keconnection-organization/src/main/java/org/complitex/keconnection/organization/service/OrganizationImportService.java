@@ -8,11 +8,13 @@ import org.complitex.dictionary.util.DateUtil;
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.base.Strings;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.complitex.dictionary.converter.BooleanConverter;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.entity.DomainObject;
@@ -165,11 +167,18 @@ public class OrganizationImportService extends AbstractImportService {
             //type
             addOrganizationTypes(newObject);
 
+            //Readiness to close operating month. Only for servicing organizations.
+            addReadyCloseOperatingMonthFlag(newObject, systemLocaleId);
+
+            final Date currentDate = DateUtil.getCurrentDate();
             if (oldObject == null) {
-                organizationStrategy.insert(newObject, DateUtil.getCurrentDate());
+                organizationStrategy.insert(newObject, currentDate);
             } else {
-                organizationStrategy.update(oldObject, newObject, DateUtil.getCurrentDate());
+                organizationStrategy.update(oldObject, newObject, currentDate);
             }
+
+            //add operating month entry if necessary. Only for servicing organizations.
+            addOperatingMonth(newObject.getId(), currentDate);
 
             listener.recordProcessed(ORGANIZATION, recordIndex);
         }
@@ -190,5 +199,20 @@ public class OrganizationImportService extends AbstractImportService {
         a.setValueTypeId(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
         a.setValueId(organizationTypeId);
         return a;
+    }
+
+    private void addReadyCloseOperatingMonthFlag(DomainObject organization, long systemLocaleId) {
+        final Attribute attribute = organization.getAttribute(IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH);
+        String value = AttributeUtil.getSystemStringCultureValue(attribute);
+        if (Strings.isNullOrEmpty(value)) {
+            value = new BooleanConverter().toString(Boolean.FALSE);
+            AttributeUtil.setStringValue(attribute, value, systemLocaleId);
+        }
+    }
+
+    private void addOperatingMonth(long organizationId, Date currentDate) {
+        if (!organizationImportBean.operatingMonthExists(organizationId)) {
+            organizationImportBean.insertOperatingMonth(organizationId, currentDate);
+        }
     }
 }

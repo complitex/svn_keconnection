@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.keconnection.organization.strategy.Organization">
+
+    <resultMap id="organization" type="org.complitex.keconnection.organization.strategy.entity.Organization"
+                    extends="org.complitex.dictionary.entity.DomainObject.DomainObject">
+    </resultMap>
+    
+    <select id="find" resultMap="org.complitex.keconnection.organization.strategy.Organization.organization" 
+                parameterType="DomainObjectExample">
+        SELECT e.* FROM `organization` e WHERE
+        <include refid="org.complitex.dictionary.entity.DomainObject.statusFilter"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.permissionFilter"/>
+        <include refid="org.complitex.organization.strategy.Organization.filter"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.orderBy"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.limit"/>
+    </select>
+    
+    <select id="count" resultType="integer" parameterType="DomainObjectExample">
+        SELECT COUNT(1) FROM `organization` e WHERE
+        <include refid="org.complitex.dictionary.entity.DomainObject.statusFilter"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.permissionFilter"/>
+        <include refid="org.complitex.organization.strategy.Organization.filter"/>
+    </select>
+    
+</mapper>
