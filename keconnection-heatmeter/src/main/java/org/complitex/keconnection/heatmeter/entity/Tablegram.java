@@ -14,7 +14,6 @@ public class Tablegram implements ILongId{
     private Date operatingMonth;
     private Date uploaded;
     private Integer count;
-    private Integer linkedCount;
     private Integer processedCount;
 
     public Long getId() {
@@ -55,14 +54,6 @@ public class Tablegram implements ILongId{
 
     public void setCount(Integer count) {
         this.count = count;
-    }
-
-    public Integer getLinkedCount() {
-        return linkedCount;
-    }
-
-    public void setLinkedCount(Integer linkedCount) {
-        this.linkedCount = linkedCount;
     }
 
     public Integer getProcessedCount() {

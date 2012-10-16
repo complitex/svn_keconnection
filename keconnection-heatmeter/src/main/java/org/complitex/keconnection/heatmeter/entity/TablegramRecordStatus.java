@@ -9,7 +9,7 @@ import org.complitex.dictionary.mybatis.IFixedIdType;
  */
 @FixedIdTypeHandler
 public enum TablegramRecordStatus implements IFixedIdType{
-    LOADED(1L), PROCESSED(2L), HEATMETER_NOT_FOUND(3L);
+    LOADED(1L), PROCESSED(2L), HEATMETER_NOT_FOUND(3L), ALREADY_HAS_PAYLOAD(4L);
 
     private Long id;
 

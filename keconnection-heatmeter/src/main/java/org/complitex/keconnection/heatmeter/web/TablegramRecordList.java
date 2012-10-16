@@ -7,6 +7,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -21,6 +22,7 @@ import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 import org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus;
 import org.complitex.keconnection.heatmeter.service.TablegramRecordBean;
+import org.complitex.keconnection.heatmeter.service.TablegramService;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
@@ -43,6 +45,9 @@ public class TablegramRecordList extends TemplatePage{
 
     @EJB
     private TablegramRecordBean tablegramRecordBean;
+
+    @EJB
+    private TablegramService tablegramService;
 
     //properties
     private final String[] properties = new String[]{
@@ -142,8 +147,23 @@ public class TablegramRecordList extends TemplatePage{
         DataView dataView = new DataView<TablegramRecord>("data_view", dataProvider) {
             @Override
             protected void populateItem(Item<TablegramRecord> item) {
+                final TablegramRecord tablegramRecord = item.getModelObject();
+
                 item.add(newTextLabels(properties));
 
+                item.add(new Link("process") {
+                    @Override
+                    public void onClick() {
+                        try {
+                            tablegramService.process(tablegramRecord);
+
+                            info(getStringFormat("info_processed", tablegramRecord.getLs(), tablegramRecord.getAddress())
+                                    + ": " + getString(tablegramRecord.getStatus().name()));
+                        } catch (Exception e) {
+                            error(e.getMessage());
+                        }
+                    }
+                });
             }
         };
         dataContainer.add(dataView);

@@ -6,6 +6,8 @@
         <result property="fileName"/>
         <result property="operatingMonth"/>
         <result property="uploaded"/>
+        <result property="count"/>
+        <result property="processedCount"/>
     </resultMap>
 
     <insert id="insertTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
@@ -15,7 +17,7 @@
     </insert>
 
     <update id="updateTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram">
-        update `tablegram` set `file_name` = #{fileName}, `operating_month` = #{operatingMonth}}
+        update `tablegram` set `file_name` = #{fileName}, `operating_month` = #{operatingMonth}
     </update>
 
     <select id="selectTablegram" parameterType="long" resultMap="tablegramResultMap">
@@ -27,7 +29,10 @@
     </sql>
 
     <select id="selectTablegrams" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultMap="tablegramResultMap">
-        select * from `tablegram` <include refid="selectTablegramsWhere"/>
+        select *,
+        (select count(*) from `tablegram_record` r where r.`tablegram_id` = t.`id`) as `count`,
+        (select count(*) from `tablegram_record` r where r.`tablegram_id` = t.`id` and r.`status` = 2) as `processed_count`
+        from `tablegram` t <include refid="selectTablegramsWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 
