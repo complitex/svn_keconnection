@@ -41,6 +41,8 @@ import static org.complitex.dictionary.util.PageUtil.*;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class TablegramList extends TemplatePage{
+    final String[] properties = new String[]{"id", "fileName", "operatingMonth", "uploaded", "count",  "processedCount"};
+
     private final static Logger log = LoggerFactory.getLogger(TablegramList.class);
 
     @EJB
@@ -98,9 +100,6 @@ public class TablegramList extends TemplatePage{
         };
         filterForm.add(filterFind);
 
-        final String[] properties = new String[]{"id", "fileName", "operatingMonth", "uploaded", "count", "linkedCount",
-                "processedCount"};
-
         //Filter Fields
         filterForm.add(newTextFields("object.", properties));
 
@@ -151,9 +150,16 @@ public class TablegramList extends TemplatePage{
                 item.add(payloadLink);
 
                 item.add(new AjaxButton("process") {
+                    AtomicBoolean processing = new AtomicBoolean(false);
+
+                    @Override
+                    public boolean isVisible() {
+                        return !processing.get();
+                    }
+
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        final AtomicBoolean stopTimer = new AtomicBoolean(false);
+                        processing.set(true);
 
                         ContextProcessListener<Tablegram> listener = new ContextProcessListener<Tablegram>() {
                             @Override
@@ -173,7 +179,7 @@ public class TablegramList extends TemplatePage{
 
                             @Override
                             public void onDone() {
-                                stopTimer.set(true);
+                                processing.set(false);
                             }
                         };
 
@@ -183,13 +189,13 @@ public class TablegramList extends TemplatePage{
                             protected void onPostProcessTarget(AjaxRequestTarget target) {
                                 target.add(messages);
 
-                                if (stopTimer.get()){
+                                if (!processing.get()){
                                     stop();
                                 }
                             }
                         });
 
-                        tablegramService.asyncLink(Arrays.asList(tablegram), listener);
+                        tablegramService.asyncProcess(Arrays.asList(tablegram), listener);
 
                         target.add(dataContainer);
                         target.add(messages);
@@ -209,7 +215,6 @@ public class TablegramList extends TemplatePage{
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "id", "file_name",
-                "operating_month", "uploaded", "count", "linked_count", "processed_count"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, true, properties));
     }
 }

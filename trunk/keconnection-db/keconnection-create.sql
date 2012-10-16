@@ -464,7 +464,7 @@ CREATE TABLE `payload`(
     `payload2` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 2',
     `payload3` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 3',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `end_date`, `operating_month`),
+    UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `operating_month`),
     KEY `key_tablegram_record_id` (`tablegram_record_id`),
     KEY `key_parent_id` (`parent_id`),
     KEY `key_heatmeter_id` (`heatmeter_id`),
