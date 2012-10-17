@@ -3,25 +3,33 @@
 
 <mapper namespace="org.complitex.keconnection.organization.strategy.Organization">
 
-    <resultMap id="organization" type="org.complitex.keconnection.organization.strategy.entity.Organization"
+<!--    <resultMap id="organization" type="org.complitex.keconnection.organization.strategy.entity.Organization"
                     extends="org.complitex.dictionary.entity.DomainObject.DomainObject">
     </resultMap>
     
+    <sql id="filter">
+        <include refid="org.complitex.organization.strategy.Organization.filter"/>
+    </sql>
+    
     <select id="find" resultMap="org.complitex.keconnection.organization.strategy.Organization.organization" 
                 parameterType="DomainObjectExample">
-        SELECT e.* FROM `organization` e WHERE
+        SELECT e.* WHERE
         <include refid="org.complitex.dictionary.entity.DomainObject.statusFilter"/>
         <include refid="org.complitex.dictionary.entity.DomainObject.permissionFilter"/>
-        <include refid="org.complitex.organization.strategy.Organization.filter"/>
+        <include refid="org.complitex.keconnection.organization.strategy.Organization.filter"/>
         <include refid="org.complitex.dictionary.entity.DomainObject.orderBy"/>
         <include refid="org.complitex.dictionary.entity.DomainObject.limit"/>
     </select>
     
-    <select id="count" resultType="integer" parameterType="DomainObjectExample">
+    <select id="count" resultType="int" parameterType="DomainObjectExample">
         SELECT COUNT(1) FROM `organization` e WHERE
         <include refid="org.complitex.dictionary.entity.DomainObject.statusFilter"/>
         <include refid="org.complitex.dictionary.entity.DomainObject.permissionFilter"/>
-        <include refid="org.complitex.organization.strategy.Organization.filter"/>
+        <include refid="org.complitex.keconnection.organization.strategy.Organization.filter"/>
+    </select>-->
+    
+    <select id="findOperatingMonthDate" parameterType="long" resultType="date">
+        SELECT MAX(`operating_month`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
     </select>
     
 </mapper>

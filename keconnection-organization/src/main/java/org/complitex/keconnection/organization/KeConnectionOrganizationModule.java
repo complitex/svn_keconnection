@@ -14,7 +14,7 @@ import org.complitex.organization.IOrganizationModule;
 @Startup
 public class KeConnectionOrganizationModule implements IOrganizationModule {
 
-    @EJB(name = "KeConnectionOrganizationStrategy")
+    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy keConnectionOrganizationStrategy;
     public static final String NAME = "org.complitex.keconnection.organization";
 

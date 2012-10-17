@@ -32,6 +32,11 @@
                                         <wicket:message key="shortName"/>
                                     </span>
                                 </th>
+                                <th>
+                                    <span>
+                                        <wicket:message key="operatingMonth"/>
+                                    </span>
+                                </th>
                                 <th style="width:110px">
                                     <input wicket:id="reset" type="button" wicket:message="value:reset" class="btnSmall"/>
                                 </th>
@@ -46,6 +51,8 @@
                                 </td>
                                 <td class="filter-td">
                                     <input type="text" wicket:id="shortNameFilter"></input>
+                                </td>
+                                <td class="filter-td">
                                 </td>
                                 <td class="filter-td">
                                     <input wicket:id="submit" type="submit" wicket:message="value:find" class="btnSmall"/>
@@ -64,6 +71,9 @@
                                 </td>
                                 <td>
                                     <div wicket:id="shortName"></div>
+                                </td>
+                                <td>
+                                    <div wicket:id="operatingMonth"></div>
                                 </td>
                                 <td>
                                     <a wicket:id="detailsLink">
