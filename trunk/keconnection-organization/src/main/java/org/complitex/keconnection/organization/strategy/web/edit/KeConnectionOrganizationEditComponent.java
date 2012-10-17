@@ -14,6 +14,7 @@ import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.web.component.DomainObjectInputPanel;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
 
@@ -28,9 +29,15 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
     @EJB
     private StringCultureBean stringBean;
     private WebMarkupContainer readyCloseOperMonthSection;
+    private WebMarkupContainer operatingMonthSection;
 
     public KeConnectionOrganizationEditComponent(String id, boolean disabled) {
         super(id, disabled);
+    }
+
+    @Override
+    protected Organization getDomainObject() {
+        return (Organization) super.getDomainObject();
     }
 
     @Override
@@ -39,13 +46,14 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
         final boolean isDisabled = isDisabled();
 
-        final DomainObject organization = getDomainObject();
+        final Organization organization = getDomainObject();
 
         //Readiness to close operating month. It is servicing organization only attribute.
         {
             readyCloseOperMonthSection = new WebMarkupContainer("readyCloseOperMonthSection");
             readyCloseOperMonthSection.setOutputMarkupPlaceholderTag(true);
             add(readyCloseOperMonthSection);
+
             final long attributeTypeId = IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH;
             Attribute attribute = organization.getAttribute(attributeTypeId);
             if (attribute == null) {
@@ -61,12 +69,24 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
                     DomainObjectInputPanel.labelModel(attributeType.getAttributeNames(), getLocale())));
             readyCloseOperMonthSection.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
 
-            readyCloseOperMonthSection.add(
-                    DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
+            readyCloseOperMonthSection.add(DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
                     organization, attribute, getLocale(), isDisabled));
 
             //initial visibility
             readyCloseOperMonthSection.setVisible(isServicingOrganization());
+        }
+
+        //Operating month. Only for servicing organizations.
+        {
+            operatingMonthSection = new WebMarkupContainer("operatingMonthSection");
+            operatingMonthSection.setOutputMarkupPlaceholderTag(true);
+            add(operatingMonthSection);
+
+            operatingMonthSection.add(new Label("operatingMonth", organization.getOperatingMonth(getLocale())));
+
+            //initial visibility
+            operatingMonthSection.setVisibilityAllowed(!isDisabled);
+            operatingMonthSection.setVisible(isServicingOrganization());
         }
     }
 
@@ -81,6 +101,16 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
             boolean visibleNow = readyCloseOperMonthSection.isVisible();
             if (wasVisible ^ visibleNow) {
                 target.add(readyCloseOperMonthSection);
+            }
+        }
+
+        //Operating month.
+        {
+            boolean wasVisible = operatingMonthSection.isVisible();
+            operatingMonthSection.setVisible(isServicingOrganization());
+            boolean visibleNow = operatingMonthSection.isVisible();
+            if (wasVisible ^ visibleNow) {
+                target.add(operatingMonthSection);
             }
         }
     }
@@ -110,7 +140,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
     protected void onPersist() {
         super.onPersist();
 
-        final DomainObject organization = getDomainObject();
+        final Organization organization = getDomainObject();
 
         if (!isServicingOrganization()) {
             //Readiness to close operating month.

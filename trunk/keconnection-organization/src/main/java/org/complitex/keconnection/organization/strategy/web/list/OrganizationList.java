@@ -83,8 +83,8 @@ public class OrganizationList extends ScrollListPage {
             target.add(content);
         }
     }
-    
-    private DomainObjectExample newExample(){
+
+    private DomainObjectExample newExample() {
         DomainObjectExample e = new DomainObjectExample();
         e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.NAME));
         e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.CODE));
@@ -206,14 +206,15 @@ public class OrganizationList extends ScrollListPage {
 
             @Override
             protected void populateItem(Item<Organization> item) {
-                Organization organization = item.getModelObject();
+                final Organization organization = item.getModelObject();
 
                 item.add(new Label("order", StringUtil.valueOf(getFirstItemOffset() + item.getIndex() + 1)));
-                item.add(new Label("name", AttributeUtil.getStringCultureValue(organization, 
+                item.add(new Label("name", AttributeUtil.getStringCultureValue(organization,
                         IKeConnectionOrganizationStrategy.NAME, getLocale())));
                 item.add(new Label("code", getOrganizationStrategy().getUniqueCode(organization)));
-                item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization, 
+                item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization,
                         IKeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
+                item.add(new Label("operatingMonth", organization.getOperatingMonth(getLocale())));
 
                 ScrollBookmarkablePageLink<WebPage> detailsLink = new ScrollBookmarkablePageLink<WebPage>("detailsLink",
                         getOrganizationStrategy().getEditPage(),
@@ -223,7 +224,7 @@ public class OrganizationList extends ScrollListPage {
 
                     @Override
                     public String getObject() {
-                        if (DomainObjectAccessUtil.canAddNew(null, "building")) {
+                        if (DomainObjectAccessUtil.canAddNew(null, "organization")) {
                             return getString("edit");
                         } else {
                             return getString("view");
@@ -235,11 +236,11 @@ public class OrganizationList extends ScrollListPage {
         };
         filterForm.add(dataView);
 
-        filterForm.add(new ArrowOrderByBorder("nameHeader", 
+        filterForm.add(new ArrowOrderByBorder("nameHeader",
                 String.valueOf(IKeConnectionOrganizationStrategy.NAME), dataProvider, dataView, content));
-        filterForm.add(new ArrowOrderByBorder("codeHeader", 
+        filterForm.add(new ArrowOrderByBorder("codeHeader",
                 String.valueOf(IKeConnectionOrganizationStrategy.CODE), dataProvider, dataView, content));
-        filterForm.add(new ArrowOrderByBorder("shortNameHeader", 
+        filterForm.add(new ArrowOrderByBorder("shortNameHeader",
                 String.valueOf(IKeConnectionOrganizationStrategy.SHORT_NAME), dataProvider, dataView, content));
 
         //Reset Action

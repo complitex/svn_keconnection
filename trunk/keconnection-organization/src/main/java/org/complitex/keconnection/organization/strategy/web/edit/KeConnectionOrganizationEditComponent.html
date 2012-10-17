@@ -37,7 +37,7 @@
                     </td>
                 </tr>
                 
-                <!-- Readiness to close operating month. Only for user servicing organizations. -->
+                <!-- Readiness to close operating month. Only for servicing organizations. -->
                 <tr wicket:id="readyCloseOperMonthSection">
                     <th>
                         <div style="max-width: 200px;">
@@ -46,6 +46,16 @@
                     </th>
                     <td>
                         <div wicket:id="input"></div>
+                    </td>
+                </tr>
+                
+                <!-- Operating month. Only for servicing organizations -->
+                <tr wicket:id="operatingMonthSection">
+                    <th>
+                        <wicket:message key="operatingMonthLabel"/>:
+                    </th>
+                    <td>
+                        <div wicket:id="operatingMonth"></div>
                     </td>
                 </tr>
             </table>

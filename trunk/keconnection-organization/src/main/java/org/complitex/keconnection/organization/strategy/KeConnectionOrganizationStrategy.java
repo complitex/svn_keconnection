@@ -6,7 +6,8 @@ package org.complitex.keconnection.organization.strategy;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Date;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
@@ -38,6 +39,7 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
 
     private static final String MAPPING_NAMESPACE = KeConnectionOrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.of(READY_CLOSE_OPER_MONTH);
+    public static final String OPERATING_MONTH_FILTER = "operating_month";
     @EJB
     private LocaleBean localeBean;
     @EJB
@@ -126,37 +128,43 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
         return KeConnectionOrganizationEditComponent.class;
     }
 
-    @Transactional
     @Override
-    public List<Organization> find(DomainObjectExample example) {
-        if (example.getId() != null && example.getId() <= 0) {
-            return Collections.emptyList();
-        }
-
-        example.setTable(getEntityTable());
-        if (!example.isAdmin()) {
-            prepareExampleForPermissionCheck(example);
-        }
-        extendOrderBy(example);
-
-        List<Organization> organizations = sqlSession().selectList(MAPPING_NAMESPACE + "." + FIND_OPERATION, example);
-        for (DomainObject o : organizations) {
-            loadAttributes(o);
-            //load subject ids
-            o.setSubjectIds(loadSubjects(o.getPermissionId()));
-        }
-        return organizations;
+    public DomainObject newInstance() {
+        return new Organization(super.newInstance());
     }
 
     @Transactional
     @Override
-    public int count(DomainObjectExample example) {
-        if (example.getId() != null && example.getId() <= 0) {
-            return 0;
+    public Organization findById(long id, boolean runAsAdmin) {
+        DomainObject object = super.findById(id, runAsAdmin);
+        if (object == null) {
+            return null;
         }
-        example.setTable(getEntityTable());
-        prepareExampleForPermissionCheck(example);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + "." + COUNT_OPERATION, example);
+
+        Organization organization = new Organization(object);
+        loadOperatingMonthDate(organization);
+        return organization;
+    }
+
+    @Transactional
+    @Override
+    public List<Organization> find(DomainObjectExample example) {
+        List<Organization> organizations = new ArrayList<>();
+        List<? extends DomainObject> objects = super.find(example);
+        if (objects != null && !objects.isEmpty()) {
+            for (DomainObject o : objects) {
+                Organization organization = new Organization(o);
+                loadOperatingMonthDate(organization);
+                organizations.add(organization);
+            }
+        }
+        return organizations;
+    }
+
+    private void loadOperatingMonthDate(Organization organization) {
+        Date operatingMonthDate = sqlSession().selectOne(MAPPING_NAMESPACE + ".findOperatingMonthDate",
+                organization.getId());
+        organization.setOperatingMonthDate(operatingMonthDate);
     }
 
     @Override
@@ -191,5 +199,18 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
                 }
             }
         }
+    }
+
+    @Transactional
+    @Override
+    public DomainObject findHistoryObject(long objectId, Date date) {
+        DomainObject object = super.findHistoryObject(objectId, date);
+        if (object == null) {
+            return null;
+        }
+
+        Organization organization = new Organization(object);
+        loadOperatingMonthDate(organization);
+        return organization;
     }
 }
