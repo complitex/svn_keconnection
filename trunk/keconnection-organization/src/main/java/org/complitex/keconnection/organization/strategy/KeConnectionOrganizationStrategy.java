@@ -6,7 +6,7 @@ package org.complitex.keconnection.organization.strategy;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -39,7 +39,7 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
 
     private static final String MAPPING_NAMESPACE = KeConnectionOrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.of(READY_CLOSE_OPER_MONTH);
-    public static final String OPERATING_MONTH_FILTER = "operating_month";
+    public static final String PARENT_SHORT_NAME_FILTER = "parentShortName";
     @EJB
     private LocaleBean localeBean;
     @EJB
@@ -149,16 +149,44 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     @Transactional
     @Override
     public List<Organization> find(DomainObjectExample example) {
-        List<Organization> organizations = new ArrayList<>();
-        List<? extends DomainObject> objects = super.find(example);
-        if (objects != null && !objects.isEmpty()) {
-            for (DomainObject o : objects) {
-                Organization organization = new Organization(o);
-                loadOperatingMonthDate(organization);
-                organizations.add(organization);
-            }
+        if (example.getId() != null && example.getId() <= 0) {
+            return Collections.emptyList();
+        }
+
+        example.setTable(getEntityTable());
+        if (!example.isAdmin()) {
+            prepareExampleForPermissionCheck(example);
+        }
+        extendOrderBy(example);
+
+        setupFindOperationParameters(example);
+        List<Organization> organizations = sqlSession().selectList(MAPPING_NAMESPACE + "." + FIND_OPERATION, example);
+        for (Organization organization : organizations) {
+            loadAttributes(organization);
+            //load subject ids
+            organization.setSubjectIds(loadSubjects(organization.getPermissionId()));
+            //load operating month date
+            loadOperatingMonthDate(organization);
         }
         return organizations;
+    }
+
+    private void setupFindOperationParameters(DomainObjectExample example) {
+        //set up attribute type id parameters:
+        example.addAdditionalParam("parentAT", USER_ORGANIZATION_PARENT);
+        example.addAdditionalParam("organizationShortNameAT", SHORT_NAME);
+    }
+
+    @Transactional
+    @Override
+    public int count(DomainObjectExample example) {
+        if (example.getId() != null && example.getId() <= 0) {
+            return 0;
+        }
+        example.setTable(getEntityTable());
+        prepareExampleForPermissionCheck(example);
+        setupFindOperationParameters(example);
+        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + "." + COUNT_OPERATION, example);
     }
 
     private void loadOperatingMonthDate(Organization organization) {
