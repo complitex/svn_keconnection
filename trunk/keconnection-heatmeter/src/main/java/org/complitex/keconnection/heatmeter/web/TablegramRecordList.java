@@ -1,6 +1,7 @@
 package org.complitex.keconnection.heatmeter.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -77,19 +78,13 @@ public class TablegramRecordList extends TemplatePage{
         add(filterForm);
 
         //Filter Reset Button
-        AjaxButton filterReset = new AjaxButton("filter_reset") {
+        AjaxLink filterReset = new AjaxLink("filter_reset") {
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onClick(AjaxRequestTarget target) {
                 filterModel.setObject(FilterWrapper.of(new TablegramRecord()));
                 target.add(filterForm);
             }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //skip
-            }
         };
-        filterReset.setDefaultFormProcessing(false);
         filterForm.add(filterReset);
 
         //Filter Find

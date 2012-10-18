@@ -2,7 +2,7 @@ package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.AbstractListBean;
 import org.complitex.keconnection.heatmeter.entity.Payload;
 
 import javax.ejb.Stateless;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 @XmlMapper
 @Stateless
-public class PayloadBean extends AbstractBean {
+public class PayloadBean extends AbstractListBean<Payload> {
     public Payload getPayload(Long id){
         return sqlSession().selectOne("selectPayload", id);
     }
@@ -41,5 +41,15 @@ public class PayloadBean extends AbstractBean {
 
     public void deleteByTablegramId(Long tablegramId){
         sqlSession().delete("deletePayloadByTablegramId", tablegramId);
+    }
+
+    @Override
+    public List<Payload> getList(FilterWrapper<Payload> filterWrapper) {
+        return getPayloads(filterWrapper);
+    }
+
+    @Override
+    public Integer getCount(FilterWrapper<Payload> filterWrapper) {
+        return getPayloadsCount(filterWrapper);
     }
 }
