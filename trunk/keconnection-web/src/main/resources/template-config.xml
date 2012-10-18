@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
-<template xmlns="http://www.complitex.org/web/template"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://www.complitex.org/web/template http://www.complitex.org/web/template/complitex-template.xsd">
+<template>
+    <web-components>
+        <main-user-organization-picker-component>
+            org.complitex.keconnection.web.template.KeConnectionMainUserOrganizationPicker
+        </main-user-organization-picker-component>
+    </web-components>
     <sidebar>
         <menu class="org.complitex.keconnection.web.admin.AdminMenu"/>
         <menu class="org.complitex.keconnection.heatmeter.web.HeatmeterMenu"/>
