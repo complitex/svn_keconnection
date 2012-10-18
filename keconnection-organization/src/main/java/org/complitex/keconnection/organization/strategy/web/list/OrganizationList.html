@@ -34,6 +34,11 @@
                                 </th>
                                 <th>
                                     <span>
+                                        <wicket:message key="parentShortName"/>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span>
                                         <wicket:message key="operatingMonth"/>
                                     </span>
                                 </th>
@@ -51,6 +56,9 @@
                                 </td>
                                 <td class="filter-td">
                                     <input type="text" wicket:id="shortNameFilter"></input>
+                                </td>
+                                <td class="filter-td">
+                                    <input type="text" wicket:id="parentShortNameFilter"/>
                                 </td>
                                 <td class="filter-td">
                                 </td>
@@ -71,6 +79,9 @@
                                 </td>
                                 <td>
                                     <div wicket:id="shortName"></div>
+                                </td>
+                                <td>
+                                    <div wicket:id="parentShortName"></div>
                                 </td>
                                 <td>
                                     <div wicket:id="operatingMonth"></div>

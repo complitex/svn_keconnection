@@ -16,6 +16,7 @@ import static org.complitex.dictionary.util.DateUtil.*;
 public class Organization extends DomainObject {
 
     private Date operatingMonthDate;
+    private String parentShortName;
 
     public Organization(DomainObject copy) {
         super(copy);
@@ -37,5 +38,13 @@ public class Organization extends DomainObject {
             return null;
         }
         return displayMonth(getMonth(getOperatingMonthDate()) + 1, locale);
+    }
+
+    public String getParentShortName() {
+        return parentShortName;
+    }
+
+    public void setParentShortName(String parentShortName) {
+        this.parentShortName = parentShortName;
     }
 }

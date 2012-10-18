@@ -43,6 +43,7 @@ import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.web.component.search.CollapsibleSearchPanel;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.template.web.component.toolbar.search.CollapsibleSearchToolbarButton;
 import org.complitex.template.web.pages.DomainObjectList;
@@ -200,6 +201,18 @@ public class OrganizationList extends ScrollListPage {
                 example.getAttributeExample(IKeConnectionOrganizationStrategy.SHORT_NAME).setValue(shortName);
             }
         }));
+        filterForm.add(new TextField<String>("parentShortNameFilter", new Model<String>() {
+
+            @Override
+            public String getObject() {
+                return example.getAdditionalParam(KeConnectionOrganizationStrategy.PARENT_SHORT_NAME_FILTER);
+            }
+
+            @Override
+            public void setObject(String parentShortName) {
+                example.addAdditionalParam(KeConnectionOrganizationStrategy.PARENT_SHORT_NAME_FILTER, parentShortName);
+            }
+        }));
 
         //Data View
         dataView = new DataView<Organization>("data", dataProvider) {
@@ -214,6 +227,7 @@ public class OrganizationList extends ScrollListPage {
                 item.add(new Label("code", getOrganizationStrategy().getUniqueCode(organization)));
                 item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization,
                         IKeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
+                item.add(new Label("parentShortName", organization.getParentShortName()));
                 item.add(new Label("operatingMonth", organization.getOperatingMonth(getLocale())));
 
                 ScrollBookmarkablePageLink<WebPage> detailsLink = new ScrollBookmarkablePageLink<WebPage>("detailsLink",
@@ -253,6 +267,7 @@ public class OrganizationList extends ScrollListPage {
                 example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).setValue(null);
                 example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).setValue(null);
                 example.getAttributeExample(IKeConnectionOrganizationStrategy.SHORT_NAME).setValue(null);
+                example.addAdditionalParam(KeConnectionOrganizationStrategy.PARENT_SHORT_NAME_FILTER, null);
                 target.add(content);
             }
         };
