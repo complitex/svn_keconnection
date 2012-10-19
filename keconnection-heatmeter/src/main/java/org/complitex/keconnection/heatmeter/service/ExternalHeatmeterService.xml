@@ -3,7 +3,7 @@
 <mapper namespace="org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService">
     <resultMap id="externalHeatmeter" type="org.complitex.keconnection.heatmeter.entity.ExternalHeatmeter">
         <result column="id" property="id"/>
-        <result column="с_num" property="number"/>
+        <result column="c_num" property="number"/>
     </resultMap>
 
     <select id="fetchExternalHeatmeter" statementType="CALLABLE" parameterType="map">
