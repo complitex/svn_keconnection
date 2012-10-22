@@ -87,4 +87,11 @@
     <update id="updateHeatmeterType" parameterType="map">
         update `heatmeter` set `type_id` = #{type} where `id` = #{id}
     </update>
+    
+    <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
+        SELECT COUNT(1) FROM `heatmeter` h 
+            LEFT JOIN `heatmeter_code` hc ON hc.`heatmeter_id` = h.`id`
+            LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+            WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId}
+    </select>
 </mapper>

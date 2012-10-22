@@ -129,11 +129,7 @@ public class ExternalHeatmeterService {
                 case 1:
                     externalHeatmeters = (List<ExternalHeatmeter>) params.get("externalInfo");
                     if (externalHeatmeters == null || externalHeatmeters.isEmpty()) {
-                        log.error("{}. Result code is 1 but external heatmeter data is null or empty."
-                                + "Heatmeter id: {}, ls: {}",
-                                new Object[]{FETCH_EXTERNAL_HEATMETER_STORED_PROCEDURE, heatmeterId, ls});
-                        logError(heatmeterId, "result_code_inconsistent", FETCH_EXTERNAL_HEATMETER_STORED_PROCEDURE);
-                        status = HeatmeterBindingStatus.BINDING_ERROR;
+                        status = HeatmeterBindingStatus.NO_EXTERNAL_HEATMETERS;
                     } else if (externalHeatmeters.size() > 1) {
                         status = HeatmeterBindingStatus.MORE_ONE_EXTERNAL_HEATMETER;
                     } else {

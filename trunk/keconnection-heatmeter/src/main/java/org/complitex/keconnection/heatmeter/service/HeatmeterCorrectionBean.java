@@ -26,13 +26,6 @@ public class HeatmeterCorrectionBean extends AbstractBean {
 
     private static final String MAPPING_NAMESPACE = HeatmeterCorrectionBean.class.getName();
 
-//    private static class ByBindingDateComparator implements Comparator<HeatmeterCorrection> {
-//
-//        @Override
-//        public int compare(HeatmeterCorrection o1, HeatmeterCorrection o2) {
-//            return o2.getBindingDate().compareTo(o1.getBindingDate());
-//        }
-//    }
     @Transactional
     public void insert(HeatmeterCorrection correction) {
         sqlSession().insert(MAPPING_NAMESPACE + ".insert", correction);

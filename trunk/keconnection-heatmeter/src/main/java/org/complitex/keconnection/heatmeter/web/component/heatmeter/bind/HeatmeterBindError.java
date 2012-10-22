@@ -79,6 +79,12 @@ public class HeatmeterBindError {
                         addressRendererBean().displayBuildingSimple(buildingId, locale));
             }
             break;
+            case NO_EXTERNAL_HEATMETERS: {
+                final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                message = getStringFormat("heatmeter_bind_no_external", locale, id, ls,
+                        addressRendererBean().displayBuildingSimple(buildingId, locale));
+            }
+            break;
             default:
                 throw new IllegalStateException("Impossible code path.");
         }
