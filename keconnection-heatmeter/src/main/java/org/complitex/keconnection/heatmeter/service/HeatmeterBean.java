@@ -21,33 +21,34 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterBean extends AbstractBean{
+public class HeatmeterBean extends AbstractBean {
+
     @EJB
     private HeatmeterCodeBean heatmeterCodeBean;
 
-    public void save(Heatmeter heatmeter){
-        if (heatmeter.getId() == null){
+    public void save(Heatmeter heatmeter) {
+        if (heatmeter.getId() == null) {
             sqlSession().insert("insertHeatmeter", heatmeter);
 
             //heatmeter codes
-            for (HeatmeterCode heatmeterCode : heatmeter.getHeatmeterCodes()){
+            for (HeatmeterCode heatmeterCode : heatmeter.getHeatmeterCodes()) {
                 heatmeterCode.setHeatmeterId(heatmeter.getId());
 
                 heatmeterCodeBean.save(heatmeterCode);
             }
-        }else {
+        } else {
             sqlSession().update("updateHeatmeter", heatmeter);
 
             //heatmeter codes in db
             List<HeatmeterCode> db = heatmeterCodeBean.getHeatmeterCodes(heatmeter.getId());
 
             //delete heatmeter codes
-            for(HeatmeterCode heatmeterCode : IdListUtil.getDiff(db, heatmeter.getHeatmeterCodes())){
+            for (HeatmeterCode heatmeterCode : IdListUtil.getDiff(db, heatmeter.getHeatmeterCodes())) {
                 heatmeterCodeBean.delete(heatmeterCode.getId());
             }
 
             //save heatmeter codes
-            for (HeatmeterCode heatmeterCode : heatmeter.getHeatmeterCodes()){
+            for (HeatmeterCode heatmeterCode : heatmeter.getHeatmeterCodes()) {
                 heatmeterCode.setHeatmeterId(heatmeter.getId());
 
                 heatmeterCodeBean.save(heatmeterCode);
@@ -55,10 +56,10 @@ public class HeatmeterBean extends AbstractBean{
         }
     }
 
-    public Heatmeter getHeatmeter(Long id){
+    public Heatmeter getHeatmeter(Long id) {
         return sqlSession().selectOne("selectHeatmeter", id);
     }
-    
+
     private void addUnboundStatusParameter(FilterWrapper<Heatmeter> filter) {
         filter.addMapEntry("unboundBindingStatus", HeatmeterBindingStatus.UNBOUND);
     }
@@ -73,23 +74,32 @@ public class HeatmeterBean extends AbstractBean{
         return sqlSession().selectOne("selectHeatmetersCount", filterWrapper);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         sqlSession().delete("deleteHeatmeter", id);
     }
 
-    public boolean isExist(Integer ls, Long buildingCodeId, Long organizationId){
+    public boolean isExist(Integer ls, Long buildingCodeId, Long organizationId) {
         return sqlSession().selectOne("isExistHeatmeter", ImmutableMap.of("ls", ls, "buildingCodeId", buildingCodeId,
                 "organizationId", organizationId));
     }
 
-    public Heatmeter getHeatmeterByLs(Integer ls, Long organizationId){
+    public Heatmeter getHeatmeterByLs(Integer ls, Long organizationId) {
         return sqlSession().selectOne("selectHeatmeterByLs", ImmutableMap.of("ls", ls, "organizationId", organizationId));
     }
 
-    public void updateHeatmeterType(final Long id, final HeatmeterType type){
-        sqlSession().update("updateHeatmeterType", new HashMap<String, Object>(){{
-            put("id", id);
-            put("type", type);
-        }});
+    public void updateHeatmeterType(final Long id, final HeatmeterType type) {
+        sqlSession().update("updateHeatmeterType", new HashMap<String, Object>() {
+
+            {
+                put("id", id);
+                put("type", type);
+            }
+        });
+    }
+
+    public boolean isOnlyHeatmeterForBuildingCode(long heatmeterId, long buildingCodeId) {
+        int result = sqlSession().selectOne("isOnlyHeatmeterForBuildingCode",
+                ImmutableMap.of("buildingCodeId", buildingCodeId, "heatmeterId", heatmeterId));
+        return result == 0;
     }
 }

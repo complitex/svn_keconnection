@@ -4,8 +4,12 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -15,7 +19,6 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.service.IProcessListener;
-import static org.complitex.dictionary.util.DateUtil.*;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.ExternalHeatmeter;
@@ -29,6 +32,7 @@ import org.complitex.keconnection.heatmeter.service.exception.HeatmeterBindExcep
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.complitex.dictionary.util.DateUtil.*;
 
 /**
  *
@@ -80,33 +84,79 @@ public class HeatmeterBindService {
                     for (long heatmeterId : batch) {
                         heatmeter = heatmeterBean.getHeatmeter(heatmeterId);
 
-                        if (heatmeter != null && heatmeter.getHeatmeterCodes() != null
-                                && heatmeter.getHeatmeterCodes().size() == 1) {
-                            Long buildingCodeId = heatmeter.getHeatmeterCodes().get(0).getBuildingCodeId();
-                            if (buildingCodeId != null) {
-                                BuildingCode buildingCodeObj = buildingStrategy.getBuildingCodeById(buildingCodeId);
-                                if (buildingCodeObj != null) {
-                                    final long organizationId = buildingCodeObj.getOrganizationId();
-                                    final int buildingCode = buildingCodeObj.getBuildingCode();
-                                    final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
+                        if (heatmeter != null) {
+                            if (heatmeter.isConnectedToSingleBuildingCode()) {
+                                // подключен только к одному коду дома
+                                final long buildingCodeId = heatmeter.getFirstBuildingCodeId();
+                                if (heatmeterBean.isOnlyHeatmeterForBuildingCode(heatmeterId, buildingCodeId)) {
+                                    // это единственный счетчик, подключенный к коду дома
 
                                     //fetch external heatmeters.
-                                    ExternalHeatmetersAndStatus ehs = externalHeatmeterService.fetchExternalHeatmeters(
-                                            heatmeterId, heatmeter.getLs(), organizationCode, buildingCode,
-                                            getDateParameter());
-
-                                    final HeatmeterBindingStatus status = ehs.status;
+                                    ExternalHeatmetersAndStatus ehas =
+                                            fetchExternalHeatmeters(buildingCodeId, heatmeterId, heatmeter.getLs());
+                                    final HeatmeterBindingStatus status = ehas.status;
                                     final ExternalHeatmeter externalHeatmeter =
-                                            ehs.heatmeters != null && ehs.heatmeters.size() == 1
-                                            ? ehs.heatmeters.get(0) : null;
+                                            ehas.heatmeters != null && ehas.heatmeters.size() == 1
+                                            ? ehas.heatmeters.get(0) : null;
 
+                                    //обновить соответствие
                                     updateHeatmeterCorrection(heatmeter, externalHeatmeter, status);
 
+                                    //сообщить в UI об ошибках
                                     if (status == HeatmeterBindingStatus.BOUND) {
                                         listener.processed(heatmeter);
                                     } else {
                                         listener.error(heatmeter, new HeatmeterBindException(status));
                                     }
+                                } else {
+                                    // к данному коду дома подключенно более одного счетчика
+                                    updateHeatmeterCorrection(heatmeter, null,
+                                            HeatmeterBindingStatus.MORE_ONE_EXTERNAL_HEATMETER);
+
+                                    //сообщить в UI об ошибках
+                                    listener.error(heatmeter, new HeatmeterBindException(
+                                            HeatmeterBindingStatus.MORE_ONE_EXTERNAL_HEATMETER));
+                                }
+                            } else {
+                                // счетчик подключен к нескольким кодам домов
+
+                                boolean bound = true;
+                                LinkedList<ExternalHeatmeter> externalHeatmeters = new LinkedList<>();
+
+                                for (long buildingCodeId : heatmeter.getBuildingCodeIds()) {
+                                    ExternalHeatmetersAndStatus ehas = fetchExternalHeatmeters(buildingCodeId,
+                                            heatmeterId, heatmeter.getLs());
+                                    if (ehas.heatmeters != null && ehas.heatmeters.size() == 1
+                                            && ehas.status == HeatmeterBindingStatus.BOUND) {
+                                        externalHeatmeters.add(ehas.heatmeters.get(0));
+                                    } else {
+                                        bound = false;
+                                        break;
+                                    }
+                                }
+
+                                if (bound) {
+                                    if (!externalHeatmeters.isEmpty()) {
+                                        ExternalHeatmeter first = externalHeatmeters.getFirst();
+                                        for (ExternalHeatmeter e : externalHeatmeters) {
+                                            if (!first.getId().equals(e.getId())) {
+                                                bound = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (bound) {
+                                            updateHeatmeterCorrection(heatmeter, first, HeatmeterBindingStatus.BOUND);
+                                        }
+                                    }
+                                }
+
+                                //сообщить в UI об ошибках
+                                if (!bound) {
+                                    listener.error(heatmeter, new HeatmeterBindException(
+                                            HeatmeterBindingStatus.MORE_ONE_EXTERNAL_HEATMETER));
+                                } else {
+                                    listener.processed(heatmeter);
                                 }
                             }
                         }
@@ -139,6 +189,18 @@ public class HeatmeterBindService {
                 log.error("Couldn't clean heatmeter_bind table.", e);
             }
         }
+    }
+
+    private ExternalHeatmetersAndStatus fetchExternalHeatmeters(long buildingCodeId, long heatmeterId, int ls)
+            throws DBException {
+        final BuildingCode buildingCodeObj = buildingStrategy.getBuildingCodeById(buildingCodeId);
+        final long organizationId = buildingCodeObj.getOrganizationId();
+        final int buildingCode = buildingCodeObj.getBuildingCode();
+        final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
+
+        return externalHeatmeterService.fetchExternalHeatmeters(
+                heatmeterId, ls, organizationCode, buildingCode,
+                getDateParameter());
     }
 
     public void updateHeatmeterCorrection(Heatmeter heatmeter, ExternalHeatmeter externalHeatmeter,
@@ -187,26 +249,24 @@ public class HeatmeterBindService {
 
     public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException,
             HeatmeterBindException {
-        if (heatmeter != null && heatmeter.getHeatmeterCodes() != null
-                && heatmeter.getHeatmeterCodes().size() == 1) {
-            Long buildingCodeId = heatmeter.getHeatmeterCodes().get(0).getBuildingCodeId();
-            if (buildingCodeId != null) {
-                BuildingCode buildingCodeObj = buildingStrategy.getBuildingCodeById(buildingCodeId);
-                if (buildingCodeObj != null) {
-                    final long organizationId = buildingCodeObj.getOrganizationId();
-                    final int buildingCode = buildingCodeObj.getBuildingCode();
-                    final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
-
-                    ExternalHeatmetersAndStatus ehs = externalHeatmeterService.fetchExternalHeatmeters(
-                            heatmeter.getId(), heatmeter.getLs(), organizationCode, buildingCode, getDateParameter());
-                    if (ehs.heatmeters != null && !ehs.heatmeters.isEmpty()) {
-                        return ehs.heatmeters;
-                    }
-
-                    throw new HeatmeterBindException(ehs.status);
+        HeatmeterBindingStatus errorStatus = null;
+        Map<String, ExternalHeatmeter> externalHeatmeters = new HashMap<>();
+        for (long buildingCodeId : heatmeter.getBuildingCodeIds()) {
+            ExternalHeatmetersAndStatus ehas = fetchExternalHeatmeters(buildingCodeId, heatmeter.getId(), heatmeter.getLs());
+            if (ehas.heatmeters != null && !ehas.heatmeters.isEmpty()) {
+                for (ExternalHeatmeter e : ehas.heatmeters) {
+                    externalHeatmeters.put(e.getId(), e);
                 }
+            } else if (errorStatus == null) {
+                errorStatus = ehas.status;
+                break;
             }
         }
-        return null;
+
+        if (errorStatus != null) {
+            throw new HeatmeterBindException(errorStatus);
+        }
+
+        return new ArrayList<>(externalHeatmeters.values());
     }
 }

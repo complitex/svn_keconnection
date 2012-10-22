@@ -3,18 +3,7 @@
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterBindBean">
     
     <insert id="fill">
-        INSERT INTO `heatmeter_bind` (`heatmeter_id`) 
-            SELECT h.`id` FROM `heatmeter` h
-                LEFT JOIN `heatmeter_code` hc ON h.`id` = hc.`heatmeter_id`
-                LEFT JOIN `building_code` bc ON hc.`building_code_id` = bc.`id`
-                WHERE 1 = (SELECT COUNT(1) FROM `building_code` bc1
-                                LEFT JOIN `heatmeter_code` hc1 ON bc1.`id` = hc1.`building_code_id`
-                                WHERE hc1.`heatmeter_id` = h.`id`)
-                AND NOT EXISTS(
-                    SELECT 1 FROM `heatmeter_code` hc2
-                        LEFT JOIN `building_code` bc2 ON hc2.`building_code_id` = bc2.`id`
-                    WHERE bc2.`building_id` = bc.`building_id` AND bc2.`code` = bc.`code` AND
-                        bc2.`organization_id` = bc.`organization_id` AND hc2.`heatmeter_id` != h.`id`)
+        INSERT INTO `heatmeter_bind` (`heatmeter_id`) SELECT h.`id` FROM `heatmeter` h
     </insert>
     
     <delete id="delete">

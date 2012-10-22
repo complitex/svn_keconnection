@@ -3,7 +3,9 @@ package org.complitex.keconnection.heatmeter.entity;
 import org.complitex.dictionary.entity.ILongId;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author  Anatoly A. Ivanov java@inheaven.ru
@@ -11,14 +13,14 @@ import java.util.List;
  *
  * Теплосчетчик
  */
-public class Heatmeter implements ILongId{
+public class Heatmeter implements ILongId {
+
     private Long id; //Идентификатор
     private Integer ls; //Номер л/с счетчика
     private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
     private List<HeatmeterCode> heatmeterCodes = new ArrayList<>(); //Список кодов домов
     private List<HeatmeterPeriod> periods; //Список периодов
-
     private HeatmeterPeriodType status;
     private HeatmeterBindingStatus bindingStatus;
 
@@ -84,5 +86,22 @@ public class Heatmeter implements ILongId{
 
     public void setBindingStatus(HeatmeterBindingStatus bindingStatus) {
         this.bindingStatus = bindingStatus;
+    }
+
+    public boolean isConnectedToSingleBuildingCode() {
+        Set<Long> buildingCodeIds = getBuildingCodeIds();
+        return buildingCodeIds.size() == 1 ? true : false;
+    }
+
+    public Long getFirstBuildingCodeId() {
+        return heatmeterCodes == null || heatmeterCodes.isEmpty() ? null : heatmeterCodes.get(0).getBuildingCodeId();
+    }
+
+    public Set<Long> getBuildingCodeIds() {
+        Set<Long> buildingCodeIds = new HashSet<>();
+        for (HeatmeterCode hc : heatmeterCodes) {
+            buildingCodeIds.add(hc.getBuildingCodeId());
+        }
+        return buildingCodeIds;
     }
 }
