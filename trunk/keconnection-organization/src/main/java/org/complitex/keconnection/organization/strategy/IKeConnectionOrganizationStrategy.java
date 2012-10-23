@@ -57,4 +57,6 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
     List<Organization> getAllOuterOrganizations(Locale locale);
 
     List<Organization> find(DomainObjectExample example);
+
+    void setReadyCloseOperatingMonthFlag(Organization organization);
 }

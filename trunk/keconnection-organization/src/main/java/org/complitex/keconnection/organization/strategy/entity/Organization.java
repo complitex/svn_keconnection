@@ -4,9 +4,12 @@
  */
 package org.complitex.keconnection.organization.strategy.entity;
 
+import org.complitex.dictionary.converter.BooleanConverter;
 import java.util.Date;
 import java.util.Locale;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.util.AttributeUtil;
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import static org.complitex.dictionary.util.DateUtil.*;
 
 /**
@@ -46,5 +49,10 @@ public class Organization extends DomainObject {
 
     public void setParentShortName(String parentShortName) {
         this.parentShortName = parentShortName;
+    }
+
+    public Boolean isReadyCloseOperatingMonth() {
+        return AttributeUtil.getAttributeValue(this, IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH,
+                new BooleanConverter());
     }
 }

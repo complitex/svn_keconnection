@@ -214,6 +214,16 @@ public class OrganizationList extends ScrollListPage {
             }
         }));
 
+        final SetReadyCloseOperatingMonthDialog setReadyCloseOperatingMonthDialog =
+                new SetReadyCloseOperatingMonthDialog("setReadyCloseOperatingMonthDialog") {
+
+                    @Override
+                    protected void onSet(Organization organization, AjaxRequestTarget target) {
+                        target.add(content);
+                    }
+                };
+        add(setReadyCloseOperatingMonthDialog);
+
         //Data View
         dataView = new DataView<Organization>("data", dataProvider) {
 
@@ -246,6 +256,33 @@ public class OrganizationList extends ScrollListPage {
                     }
                 }));
                 item.add(detailsLink);
+
+                //ready close operating month flag
+                {
+                    final Boolean readyCloseFlag = organization.isReadyCloseOperatingMonth();
+                    AjaxLink<Void> setReadyCloseOperatingMonthLink = new AjaxLink<Void>("setReadyCloseOperatingMonthLink") {
+
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            setReadyCloseOperatingMonthDialog.open(target, organization);
+                        }
+                    };
+                    setReadyCloseOperatingMonthLink.setVisibilityAllowed(readyCloseFlag != null && !readyCloseFlag);
+                    item.add(setReadyCloseOperatingMonthLink);
+                }
+
+                //close operating month
+                {
+                    final Boolean readyCloseFlag = organization.isReadyCloseOperatingMonth();
+                    AjaxLink<Void> closeOperatingMonthLink = new AjaxLink<Void>("closeOperatingMonthLink") {
+
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                        }
+                    };
+                    closeOperatingMonthLink.setVisibilityAllowed(readyCloseFlag != null && readyCloseFlag);
+                    item.add(closeOperatingMonthLink);
+                }
             }
         };
         filterForm.add(dataView);

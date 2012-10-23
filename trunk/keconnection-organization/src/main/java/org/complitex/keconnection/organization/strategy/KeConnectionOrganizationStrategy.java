@@ -21,11 +21,13 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
+import org.complitex.dictionary.converter.BooleanConverter;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
 import org.complitex.keconnection.organization.strategy.web.list.OrganizationList;
@@ -240,5 +242,14 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
         Organization organization = new Organization(object);
         loadOperatingMonthDate(organization);
         return organization;
+    }
+
+    @Transactional
+    @Override
+    public void setReadyCloseOperatingMonthFlag(Organization organization) {
+        AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
+                new BooleanConverter().toString(Boolean.TRUE),
+                localeBean.getSystemLocaleObject().getId());
+        update(findById(organization.getId(), true), organization, DateUtil.getCurrentDate());
     }
 }

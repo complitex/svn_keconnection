@@ -70,7 +70,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
             readyCloseOperMonthSection.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
 
             readyCloseOperMonthSection.add(DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
-                    organization, attribute, getLocale(), isDisabled));
+                    organization, attribute, getLocale(), true));
 
             //initial visibility
             readyCloseOperMonthSection.setVisible(isServicingOrganization());
