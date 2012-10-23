@@ -10,7 +10,7 @@
         <wicket:extend>
             <h2 wicket:id="label"></h2>
             <div wicket:id="searchPanel"></div>
-            
+
             <div wicket:id="content">
                 <form action="#" wicket:id="filterForm">
                     <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
@@ -87,9 +87,21 @@
                                     <div wicket:id="operatingMonth"></div>
                                 </td>
                                 <td>
-                                    <a wicket:id="detailsLink">
-                                        <span wicket:id="editMessage"></span>
-                                    </a>
+                                    <div>
+                                        <a wicket:id="detailsLink">
+                                            <span wicket:id="editMessage"></span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="#" wicket:id="setReadyCloseOperatingMonthLink" style="margin-top: 3px;">
+                                            <wicket:message key="setReadyCloseOperatingMonth"/>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="#" wicket:id="closeOperatingMonthLink" style="margin-top: 3px;">
+                                            <wicket:message key="closeOperatingMonth"/>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -97,6 +109,8 @@
                 </form>
                 <div wicket:id="navigator"></div>
             </div>
+            
+            <div wicket:id="setReadyCloseOperatingMonthDialog"></div>
         </wicket:extend>
     </body>
 </html>

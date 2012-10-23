@@ -103,7 +103,8 @@ public class HeatmeterBindService {
                                     updateHeatmeterCorrection(heatmeter, externalHeatmeter, status);
 
                                     //сообщить в UI об ошибках
-                                    if (status == HeatmeterBindingStatus.BOUND) {
+                                    if (status == HeatmeterBindingStatus.BOUND
+                                            || status == HeatmeterBindingStatus.NO_EXTERNAL_HEATMETERS) {
                                         listener.processed(heatmeter);
                                     } else {
                                         listener.error(heatmeter, new HeatmeterBindException(status));
