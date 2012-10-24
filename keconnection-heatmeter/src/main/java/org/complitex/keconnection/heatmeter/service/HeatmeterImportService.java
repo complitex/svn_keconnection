@@ -44,7 +44,7 @@ public class HeatmeterImportService extends AbstractImportService{
     private HeatmeterBean heatmeterBean;
 
     @EJB
-    private HeatmeterCodeBean heatmeterCodeBean;
+    private HeatmeterConnectionBean heatmeterConnectionBean;
 
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
@@ -207,6 +207,9 @@ public class HeatmeterImportService extends AbstractImportService{
             //default organization
             heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);
 
+            //default calculating
+            heatmeter.setCalculating(true);
+
             //save
             heatmeterBean.save(heatmeter);
 
@@ -222,11 +225,12 @@ public class HeatmeterImportService extends AbstractImportService{
         }
 
         //create heatmeter code
-        HeatmeterCode heatmeterCode = new HeatmeterCode();
-        heatmeterCode.setHeatmeterId(heatmeter.getId());
-        heatmeterCode.setBuildingCodeId(buildingCodeId);
-        heatmeterCode.setBeginDate(DEFAULT_BEGIN_DATE);
-        heatmeterCodeBean.save(heatmeterCode);
+        HeatmeterConnection heatmeterConnection = new HeatmeterConnection();
+        heatmeterConnection.setHeatmeterId(heatmeter.getId());
+        heatmeterConnection.setBuildingCodeId(buildingCodeId);
+        heatmeterConnection.setBeginDate(DEFAULT_BEGIN_DATE);
+        heatmeterConnection.setOperatingMonth(DEFAULT_BEGIN_DATE);
+        heatmeterConnectionBean.save(heatmeterConnection);
     }
 
     public List<HeatmeterImportFile> getHeatmeterImportFiles(){

@@ -62,25 +62,25 @@ public class HeatmeterBindError {
             }
             break;
             case BUILDING_NOT_FOUND: {
-                final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                final long buildingId = heatmeter.getConnections().get(0).getBuildingId();
                 message = getStringFormat("heatmeter_bind_building_not_found", locale, id, ls,
                         addressRendererBean().displayBuildingSimple(buildingId, locale));
             }
             break;
             case ORGANIZATION_NOT_FOUND: {
-                final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                final long buildingId = heatmeter.getConnections().get(0).getBuildingId();
                 message = getStringFormat("heatmeter_bind_organization_not_found", locale, id, ls,
                         addressRendererBean().displayBuildingSimple(buildingId, locale));
             }
             break;
             case MORE_ONE_EXTERNAL_HEATMETER: {
-                final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                final long buildingId = heatmeter.getConnections().get(0).getBuildingId();
                 message = getStringFormat("heatmeter_bind_more_one_external", locale, id, ls,
                         addressRendererBean().displayBuildingSimple(buildingId, locale));
             }
             break;
             case NO_EXTERNAL_HEATMETERS: {
-                final long buildingId = heatmeter.getHeatmeterCodes().get(0).getBuildingId();
+                final long buildingId = heatmeter.getConnections().get(0).getBuildingId();
                 message = getStringFormat("heatmeter_bind_no_external", locale, id, ls,
                         addressRendererBean().displayBuildingSimple(buildingId, locale));
             }

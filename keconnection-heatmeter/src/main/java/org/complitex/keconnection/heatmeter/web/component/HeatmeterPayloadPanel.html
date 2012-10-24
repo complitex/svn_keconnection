@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+
+<body>
+<wicket:panel>
+    <table>
+        <tr wicket:id="header">
+            <th><wicket:message key="begin_date"/></th>
+            <th><wicket:message key="end_date"/></th>
+            <th><wicket:message key="payload1"/></th>
+            <th><wicket:message key="payload2"/></th>
+            <th><wicket:message key="payload3"/></th>
+        </tr>
+        <tr wicket:id="payloads">
+            <td><input type="text" wicket:id="begin_date"/></td>
+            <td><input type="text" wicket:id="end_date"/></td>
+            <td><input wicket:id="payload1"/></td>
+            <td><input wicket:id="payload2"/></td>
+            <td><input wicket:id="payload3"/></td>
+        </tr>
+    </table>
+    <div>
+        <a wicket:id="add_payload"><wicket:message key="add"/></a>
+        <a wicket:id="remove_payload"><wicket:message key="remove"/></a>
+    </div>
+</wicket:panel>
+</body>
+</html>

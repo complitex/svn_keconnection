@@ -5,31 +5,50 @@
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
         <result property="type" column="type_id"/>
+        <result property="calculating" column="calculating"/>
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
-        <collection property="heatmeterCodes"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterCodeBean.selectHeatmeterCodesByHeatmeterId"
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
+                    column="id"/>
+    </resultMap>
+
+    <resultMap id="heatmeterResultMapCollection" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <result property="bindingStatus" column="binding_status"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
         <collection property="periods"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
+                    column="id"/>
+        <collection property="payloads"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByHeatmeterId"
                     column="id"/>
     </resultMap>
 
     <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
             useGeneratedKeys="true" keyProperty="id">
-        insert into `heatmeter` (`ls`, `organization_id`, `type_id`) values (#{ls}, #{organizationId}, #{type})
+        insert into `heatmeter` (`ls`, `organization_id`, `type_id`, `calculating`)
+            values (#{ls}, #{organizationId}, #{type}, #{calculating})
     </insert>
 
     <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
-        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type_id` = #{type}
-          where `id` = #{id}
+        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type_id` = #{type},
+          `calculating` = #{calculating} where `id` = #{id}
     </update>
 
     <sql id="selectHeatmetersWhere">
         <where>
             <if test="object.ls != null">`ls` = #{object.ls}</if>
             <if test="object.type != null">and `type_id` = #{object.type}</if>
+            <if test="object.calculating != null">and `calculating` = #{object.calculating}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
             <if test="object.bindingStatus != null">
                 <choose>
@@ -53,7 +72,7 @@
             LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
     </sql>
 
-    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMap">
+    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMapCollection">
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
 
@@ -75,7 +94,7 @@
 
     <select id="isExistHeatmeter" parameterType="map" resultType="boolean">
         select count(*) > 0 from `heatmeter` h
-          left join `heatmeter_code` hc on hc.`heatmeter_id` = h.`id`
+          left join `heatmeter_connection` hc on hc.`heatmeter_id` = h.`id`
           left join `building_code` bc on bc.`id` = hc.`building_code_id`
         where h.`ls` = #{ls} and hc.`building_code_id` = #{buildingCodeId} and bc.`organization_id` = #{organizationId}
     </select>
@@ -90,7 +109,7 @@
     
     <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
         SELECT COUNT(1) FROM `heatmeter` h 
-            LEFT JOIN `heatmeter_code` hc ON hc.`heatmeter_id` = h.`id`
+            LEFT JOIN `heatmeter_connection` hc ON hc.`heatmeter_id` = h.`id`
             LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
             WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId}
     </select>

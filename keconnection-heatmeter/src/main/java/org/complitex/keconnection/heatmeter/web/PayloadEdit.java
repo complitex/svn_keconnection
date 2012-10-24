@@ -12,9 +12,9 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.Payload;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
-import org.complitex.keconnection.heatmeter.service.PayloadBean;
+import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 
@@ -31,7 +31,7 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class PayloadEdit extends FormTemplatePage{
     @EJB
-    private PayloadBean payloadBean;
+    private HeatmeterPayloadBean heatmeterPayloadBean;
 
     @EJB
     private HeatmeterBean heatmeterBean;
@@ -39,14 +39,14 @@ public class PayloadEdit extends FormTemplatePage{
     public PayloadEdit(PageParameters pageParameters) {
         Long id = pageParameters.get("id").toOptionalLong();
 
-        Payload payload = id != null ? payloadBean.getPayload(id) : new Payload();
+        HeatmeterPayload heatmeterPayload = id != null ? heatmeterPayloadBean.getHeatmeterPayload(id) : new HeatmeterPayload();
 
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
-        final IModel<Payload> model = new CompoundPropertyModel<>(payload);
+        final IModel<HeatmeterPayload> model = new CompoundPropertyModel<>(heatmeterPayload);
 
-        Form<Payload> form = new Form<>("form", model);
+        Form<HeatmeterPayload> form = new Form<>("form", model);
         add(form);
 
         //fields
@@ -57,9 +57,9 @@ public class PayloadEdit extends FormTemplatePage{
         form.add(new Button("save"){
             @Override
             public void onSubmit() {
-                Payload payload = model.getObject();
+                HeatmeterPayload heatmeterPayload = model.getObject();
 
-                Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(payload.getLs(), KE_ORGANIZATION_OBJECT_ID);
+                Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(heatmeterPayload.getLs(), KE_ORGANIZATION_OBJECT_ID);
 
                 if (heatmeter == null){
                     error(getStringFormat("error_heatmeter_not_found"));
@@ -67,11 +67,11 @@ public class PayloadEdit extends FormTemplatePage{
                 }
 
                 //heatmeter
-                payload.setHeatmeterId(heatmeter.getId());
+                heatmeterPayload.setHeatmeterId(heatmeter.getId());
 
-                payloadBean.save(payload);
+                heatmeterPayloadBean.save(heatmeterPayload);
 
-                getSession().info(getStringFormat("info_saved", payload.getLs()));
+                getSession().info(getStringFormat("info_saved", heatmeterPayload.getLs()));
 
                 setResponsePage(PayloadList.class);
             }

@@ -17,6 +17,13 @@ public class HeatmeterPeriod implements ILongId{
     private Date endDate;
     private Date operatingMonth;
 
+    public HeatmeterPeriod() {
+    }
+
+    public HeatmeterPeriod(Date operatingMonth) {
+        this.operatingMonth = operatingMonth;
+    }
+
     public Long getId() {
         return id;
     }

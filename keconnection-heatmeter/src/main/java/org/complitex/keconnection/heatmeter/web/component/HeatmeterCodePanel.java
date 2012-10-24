@@ -23,7 +23,7 @@ import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterCode;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 
 import javax.ejb.EJB;
@@ -49,23 +49,23 @@ public class HeatmeterCodePanel extends Panel {
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
-    public HeatmeterCodePanel(String id, final IModel<List<HeatmeterCode>> model) {
+    public HeatmeterCodePanel(String id, final IModel<List<HeatmeterConnection>> model) {
         super(id, model);
 
         final WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
 
-        ListView listView = new ListView<HeatmeterCode>("list", model) {
+        ListView listView = new ListView<HeatmeterConnection>("list", model) {
             @Override
-            protected void populateItem(ListItem<HeatmeterCode> item) {
-                final HeatmeterCode heatmeterCode = item.getModelObject();
+            protected void populateItem(ListItem<HeatmeterConnection> item) {
+                final HeatmeterConnection heatmeterConnection = item.getModelObject();
 
                 //SearchComponentState
                 final SearchComponentState searchComponentState = new SearchComponentState();
 
-                if (heatmeterCode.getBuildingId() != null) {
-                    Building building = buildingStrategy.findById(heatmeterCode.getBuildingId(), true);
+                if (heatmeterConnection.getBuildingId() != null) {
+                    Building building = buildingStrategy.findById(heatmeterConnection.getBuildingId(), true);
                     searchComponentState.put("building", building);
 
                     if (building != null && building.getPrimaryStreetId() != null) {
@@ -85,13 +85,13 @@ public class HeatmeterCodePanel extends Panel {
                     public void setObject(DomainObject object) {
                         super.setObject(object);
 
-                        heatmeterCode.setOrganizationId(object != null ? object.getId() : null);
-                        updateHeatmeterCode(heatmeterCode);
+                        heatmeterConnection.setOrganizationId(object != null ? object.getId() : null);
+                        updateHeatmeterCode(heatmeterConnection);
                     }
                 };
 
-                if (heatmeterCode.getOrganizationId() != null) {
-                    DomainObject organization = organizationStrategy.findById(heatmeterCode.getOrganizationId(), true);
+                if (heatmeterConnection.getOrganizationId() != null) {
+                    DomainObject organization = organizationStrategy.findById(heatmeterConnection.getOrganizationId(), true);
 
                     if (organization != null){
                         organizationModel.setObject(organization);
@@ -138,17 +138,17 @@ public class HeatmeterCodePanel extends Panel {
                         Arrays.asList("city", "street", "building"), new ISearchCallback() {
                     @Override
                     public void found(Component component, Map<String, Long> ids, AjaxRequestTarget target) {
-                        heatmeterCode.setBuildingId(ids.get("building"));
-                        updateHeatmeterCode(heatmeterCode);
+                        heatmeterConnection.setBuildingId(ids.get("building"));
+                        updateHeatmeterCode(heatmeterConnection);
 
                         target.add(organizations);
                     }
                 }, ShowMode.ALL, true));
 
-                item.add(new AjaxLink<List<HeatmeterCode>>("remove", model) {
+                item.add(new AjaxLink<List<HeatmeterConnection>>("remove", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        getModelObject().remove(heatmeterCode);
+                        getModelObject().remove(heatmeterConnection);
 
                         target.add(container);
                     }
@@ -157,17 +157,17 @@ public class HeatmeterCodePanel extends Panel {
         };
         container.add(listView);
 
-        add(new AjaxLink<List<HeatmeterCode>>("add", model) {
+        add(new AjaxLink<List<HeatmeterConnection>>("add", model) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                getModelObject().add(new HeatmeterCode());
+                getModelObject().add(new HeatmeterConnection());
 
                 target.add(container);
             }
         });
     }
 
-    private void updateHeatmeterCode(HeatmeterCode code){
+    private void updateHeatmeterCode(HeatmeterConnection code){
         if (code.getBuildingId() != null && code.getOrganizationId() != null){
             Long buildingCodeId = buildingStrategy.getBuildingCodeId(code.getOrganizationId(), code.getBuildingId());
 
