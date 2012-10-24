@@ -124,20 +124,26 @@ public class HeatmeterBindService {
                                 boolean bound = true;
                                 LinkedList<ExternalHeatmeter> externalHeatmeters = new LinkedList<>();
 
+                                // делаем запросы для всех кодов домов
+                                List<ExternalHeatmetersAndStatus> ehass = new ArrayList<>();
                                 for (long buildingCodeId : heatmeter.getBuildingCodeIds()) {
-                                    ExternalHeatmetersAndStatus ehas = fetchExternalHeatmeters(buildingCodeId,
-                                            heatmeterId, heatmeter.getLs());
-                                    if (ehas.heatmeters != null && ehas.heatmeters.size() == 1
-                                            && ehas.status == HeatmeterBindingStatus.BOUND) {
-                                        externalHeatmeters.add(ehas.heatmeters.get(0));
-                                    } else {
-                                        bound = false;
-                                        break;
-                                    }
+                                    ehass.add(fetchExternalHeatmeters(buildingCodeId, heatmeterId, heatmeter.getLs()));
                                 }
 
-                                if (bound) {
-                                    if (!externalHeatmeters.isEmpty()) {
+                                //1. все запросы возвращают один внешний счетчик
+                                {
+                                    for (ExternalHeatmetersAndStatus ehas : ehass) {
+                                        if (ehas.status == HeatmeterBindingStatus.BOUND) {
+                                            externalHeatmeters.add(ehas.heatmeters.get(0));
+                                        } else {
+                                            bound = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (bound) {
+                                        // все возвращаемые счетчики имеют одинаковый ID
+
                                         ExternalHeatmeter first = externalHeatmeters.getFirst();
                                         for (ExternalHeatmeter e : externalHeatmeters) {
                                             if (!first.getId().equals(e.getId())) {
@@ -148,6 +154,25 @@ public class HeatmeterBindService {
 
                                         if (bound) {
                                             updateHeatmeterCorrection(heatmeter, first, HeatmeterBindingStatus.BOUND);
+                                        }
+                                    }
+                                }
+
+                                if (!bound) {
+                                    bound = true;
+                                    
+                                    //2. все запросы возвращают пустой курсор
+                                    {
+                                        for (ExternalHeatmetersAndStatus ehas : ehass) {
+                                            if (ehas.status != HeatmeterBindingStatus.NO_EXTERNAL_HEATMETERS) {
+                                                bound = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (bound) {
+                                            updateHeatmeterCorrection(heatmeter, null,
+                                                    HeatmeterBindingStatus.NO_EXTERNAL_HEATMETERS);
                                         }
                                     }
                                 }
