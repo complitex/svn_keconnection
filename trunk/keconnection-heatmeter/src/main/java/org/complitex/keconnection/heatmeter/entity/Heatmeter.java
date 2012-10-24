@@ -16,11 +16,13 @@ import java.util.Set;
 public class Heatmeter implements ILongId {
 
     private Long id; //Идентификатор
-    private Integer ls; //Номер л/с счетчика
+    private Integer ls = 0; //Номер л/с счетчика
     private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
-    private List<HeatmeterCode> heatmeterCodes = new ArrayList<>(); //Список кодов домов
-    private List<HeatmeterPeriod> periods; //Список периодов
+    private Boolean calculating; //Участвует в расчетах
+    private List<HeatmeterConnection> connections = new ArrayList<>(); //Список кодов домов
+    private List<HeatmeterPeriod> periods = new ArrayList<>(); //Список периодов
+    private List<HeatmeterPayload> payloads = new ArrayList<>(); //Список распределений
     private HeatmeterPeriodType status;
     private HeatmeterBindingStatus bindingStatus;
 
@@ -56,12 +58,20 @@ public class Heatmeter implements ILongId {
         this.type = type;
     }
 
-    public List<HeatmeterCode> getHeatmeterCodes() {
-        return heatmeterCodes;
+    public Boolean getCalculating() {
+        return calculating;
     }
 
-    public void setHeatmeterCodes(List<HeatmeterCode> heatmeterCodes) {
-        this.heatmeterCodes = heatmeterCodes;
+    public void setCalculating(Boolean calculating) {
+        this.calculating = calculating;
+    }
+
+    public List<HeatmeterConnection> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<HeatmeterConnection> connections) {
+        this.connections = connections;
     }
 
     public List<HeatmeterPeriod> getPeriods() {
@@ -70,6 +80,14 @@ public class Heatmeter implements ILongId {
 
     public void setPeriods(List<HeatmeterPeriod> periods) {
         this.periods = periods;
+    }
+
+    public List<HeatmeterPayload> getPayloads() {
+        return payloads;
+    }
+
+    public void setPayloads(List<HeatmeterPayload> payloads) {
+        this.payloads = payloads;
     }
 
     public HeatmeterPeriodType getStatus() {
@@ -89,17 +107,16 @@ public class Heatmeter implements ILongId {
     }
 
     public boolean isConnectedToSingleBuildingCode() {
-        Set<Long> buildingCodeIds = getBuildingCodeIds();
-        return buildingCodeIds.size() == 1 ? true : false;
+        return getBuildingCodeIds().size() == 1;
     }
 
     public Long getFirstBuildingCodeId() {
-        return heatmeterCodes == null || heatmeterCodes.isEmpty() ? null : heatmeterCodes.get(0).getBuildingCodeId();
+        return connections == null || connections.isEmpty() ? null : connections.get(0).getBuildingCodeId();
     }
 
     public Set<Long> getBuildingCodeIds() {
         Set<Long> buildingCodeIds = new HashSet<>();
-        for (HeatmeterCode hc : heatmeterCodes) {
+        for (HeatmeterConnection hc : connections) {
             buildingCodeIds.add(hc.getBuildingCodeId());
         }
         return buildingCodeIds;

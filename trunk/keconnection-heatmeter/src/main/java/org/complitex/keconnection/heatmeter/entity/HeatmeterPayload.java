@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.09.12 18:27
  */
-public class Payload implements ILongId {
+public class HeatmeterPayload implements ILongId {
     private Long id;
     private Long tablegramRecordId;
     private Long parentId;
@@ -23,7 +23,11 @@ public class Payload implements ILongId {
 
     private Integer ls;
 
-    public Payload() {
+    public HeatmeterPayload() {
+    }
+
+    public HeatmeterPayload(Date operatingMonth) {
+        this.operatingMonth = operatingMonth;
     }
 
     public Long getId() {

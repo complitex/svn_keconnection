@@ -3,13 +3,17 @@ package org.complitex.keconnection.heatmeter.web;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -23,18 +27,20 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterCodePanel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterPeriodPanel;
+import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-
 import java.util.ArrayList;
+import java.util.Date;
 
-import static org.complitex.dictionary.util.PageUtil.newRequiredTextFields;
+import static org.complitex.dictionary.util.DateUtil.*;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
@@ -60,8 +66,11 @@ public class HeatmeterEdit extends FormTemplatePage{
     @EJB
     private CityStrategy cityStrategy;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+
+
+    public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
+
+    private IModel<Date> operatingMonthModel = Model.of(getFirstDayOfCurrentMonth());
 
     public HeatmeterEdit() {
         init(null);
@@ -75,14 +84,14 @@ public class HeatmeterEdit extends FormTemplatePage{
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
 
-        final Heatmeter heatmeter;
+        Heatmeter heatmeter;
 
         if (id != null){
             heatmeter = heatmeterBean.getHeatmeter(id);
         }
         else{
             heatmeter = new Heatmeter();
-            heatmeter.setHeatmeterCodes(new ArrayList<HeatmeterCode>());
+            heatmeter.setConnections(new ArrayList<HeatmeterConnection>());
             heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);
         }
 
@@ -92,13 +101,60 @@ public class HeatmeterEdit extends FormTemplatePage{
         add(form);
 
         //Ls
-        form.add(newRequiredTextFields(new String[]{"ls"}));
+        form.add(new TextField<>("ls").setRequired(true));
 
         //Type
         form.add(new EnumDropDownChoice<>("type", HeatmeterType.class).setNullValid(false));
 
+        //Calculating
+        form.add(new CheckBox("calculating"));
+
+        final WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        form.add(container);
+
+        //Operating month
+        container.add(new Label("current_operation_month", operatingMonthModel));
+
+        container.add(new AjaxLink("previous_month") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                operatingMonthModel.setObject(addMonth(operatingMonthModel.getObject(), -1));
+
+                target.add(container);
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return DEFAULT_BEGIN_DATE.before(operatingMonthModel.getObject());
+            }
+        });
+
+        container.add(new AjaxLink("next_month") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                operatingMonthModel.setObject(addMonth(operatingMonthModel.getObject(), 1));
+
+                target.add(container);
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return getCurrentDate().after(operatingMonthModel.getObject());
+            }
+        });
+
+        //Periods
+        container.add(new HeatmeterPeriodPanel("periods", model, operatingMonthModel));
+
+        //Connection
+        container.add(new HeatmeterConnectionPanel("connections", model, operatingMonthModel));
+
+        //Payloads
+        container.add(new HeatmeterPayloadPanel("payloads", model, operatingMonthModel));
+
         //Heatmeter Code Panel
-        form.add(new HeatmeterCodePanel("heatmeter_codes", new ListModel<>(heatmeter.getHeatmeterCodes())));
+        form.add(new HeatmeterCodePanel("heatmeter_codes", new ListModel<>(heatmeter.getConnections())));
 
         //Save
         form.add(new Button("save"){
@@ -108,7 +164,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                     Heatmeter heatmeter = model.getObject();
 
                     //validate
-                    for (HeatmeterCode code : heatmeter.getHeatmeterCodes()){
+                    for (HeatmeterConnection code : heatmeter.getConnections()){
                         if (code.getBuildingCodeId() == null){
                             error(getString("error_code_not_found"));
                         }
@@ -134,7 +190,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                     getSession().info(getStringFormat("info_saved", heatmeter.getLs()));
                 } catch (Exception e) {
                     log.error("Ошибка сохранения теплосчетчика", e);
-                    getSession().error(new AbstractException(e, "Ошибка сохранения теплосчетчика: {0}", heatmeter.getLs()) {});
+                    getSession().error(new AbstractException(e, "Ошибка сохранения теплосчетчика: {0}", model.getObject().getLs()) {});
                 }
 
                 setResponsePage(HeatmeterList.class);
@@ -147,7 +203,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                 setResponsePage(HeatmeterList.class);
             }
         });
-        
+
         final HeatmeterCorrectionDialog heatmeterCorrectionDialog =
                 new HeatmeterCorrectionDialog("heatmeterCorrectionDialog", heatmeter);
         add(heatmeterCorrectionDialog);

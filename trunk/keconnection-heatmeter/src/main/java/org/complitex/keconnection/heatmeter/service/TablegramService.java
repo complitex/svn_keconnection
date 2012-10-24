@@ -3,7 +3,7 @@ package org.complitex.keconnection.heatmeter.service;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.Payload;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
 import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 
@@ -34,7 +34,7 @@ public class TablegramService {
     private HeatmeterBean heatmeterBean;
 
     @EJB
-    private PayloadBean payloadBean;
+    private HeatmeterPayloadBean heatmeterPayloadBean;
 
     public void process(Tablegram tablegram, IProcessListener<TablegramRecord> listener){
         TablegramRecord current = null;
@@ -76,27 +76,27 @@ public class TablegramService {
         }else {
             tablegramRecord.setHeatmeterId(heatmeter.getId());
 
-            if (payloadBean.isExist(heatmeter.getId())){
+            if (heatmeterPayloadBean.isExist(heatmeter.getId())){
                 tablegramRecord.setStatus(ALREADY_HAS_PAYLOAD);
 
                 if (listener != null) {
                     listener.skip(tablegramRecord);
                 }
             }else {
-                //create payload
-                Payload payload = new Payload();
+                //create heatmeterPayload
+                HeatmeterPayload heatmeterPayload = new HeatmeterPayload();
 
-                payload.setTablegramRecordId(tablegramRecord.getId());
+                heatmeterPayload.setTablegramRecordId(tablegramRecord.getId());
 
-                payload.setBeginDate(DEFAULT_BEGIN_DATE);
-                payload.setOperatingMonth(DEFAULT_BEGIN_DATE);
+                heatmeterPayload.setBeginDate(DEFAULT_BEGIN_DATE);
+                heatmeterPayload.setOperatingMonth(DEFAULT_BEGIN_DATE);
 
-                payload.setHeatmeterId(heatmeter.getId());
-                payload.setPayload1(tablegramRecord.getPayload1());
-                payload.setPayload2(tablegramRecord.getPayload2());
-                payload.setPayload3(tablegramRecord.getPayload3());
+                heatmeterPayload.setHeatmeterId(heatmeter.getId());
+                heatmeterPayload.setPayload1(tablegramRecord.getPayload1());
+                heatmeterPayload.setPayload2(tablegramRecord.getPayload2());
+                heatmeterPayload.setPayload3(tablegramRecord.getPayload3());
 
-                payloadBean.save(payload);
+                heatmeterPayloadBean.save(heatmeterPayload);
 
                 //update table record
                 tablegramRecord.setStatus(PROCESSED);
@@ -116,7 +116,7 @@ public class TablegramService {
 
     public void rollback(Tablegram tablegram, IProcessListener<Tablegram> listener){
         try {
-            payloadBean.deleteByTablegramId(tablegram.getId());
+            heatmeterPayloadBean.deleteByTablegramId(tablegram.getId());
             tablegramRecordBean.rollback(tablegram.getId());
 
             listener.processed(tablegram);

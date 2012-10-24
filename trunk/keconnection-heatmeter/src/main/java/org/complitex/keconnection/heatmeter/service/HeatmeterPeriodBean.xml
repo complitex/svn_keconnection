@@ -30,7 +30,7 @@
     </select>
 
     <select id="selectHeatmeterPeriodsByHeatmeterId" parameterType="long" resultMap="heatmeterPeriodResultMap">
-        select * from `heatmeter_period` where `heatmeter_id` = #{heatmeterId}
+        select * from `heatmeter_period` where `heatmeter_id` = #{heatmeterId} order by `begin_date`
     </select>
 
     <update id="updateHeatmeterPeriodParent" parameterType="map">

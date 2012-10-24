@@ -143,6 +143,18 @@ public class HeatmeterList extends TemplatePage {
         //Filter Fields
         filterForm.add(newTextFields("object.", "ls"));
         filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class));
+        filterForm.add(new DropDownChoice<>("object.calculating", Arrays.asList(true, false),
+                new IChoiceRenderer<Object>() {
+                    @Override
+                    public Object getDisplayValue(Object object) {
+                        return getString(object.toString());
+                    }
+
+                    @Override
+                    public String getIdValue(Object object, int index) {
+                        return object.toString();
+                    }
+                }).setNullValid(true));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class));
         filterForm.add(new DropDownChoice<>("object.bindingStatus",
                 Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()), new IChoiceRenderer<HeatmeterBindingStatus>() {
@@ -213,9 +225,11 @@ public class HeatmeterList extends TemplatePage {
 
                 item.add(newTextLabels("ls"));
 
+                item.add(new Label("calculating", getString(heatmeter.getCalculating().toString())));
+
                 //building
                 List<String> building = new ArrayList<>();
-                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()) {
+                for (HeatmeterConnection hc : heatmeter.getConnections()) {
                     building.add(addressRendererBean.displayBuildingSimple(hc.getBuildingId(), getLocale()));
                 }
                 final String buildingLabel = Joiner.on("; ").join(building);
@@ -223,7 +237,7 @@ public class HeatmeterList extends TemplatePage {
 
                 //organization
                 List<String> organization = new ArrayList<>();
-                for (HeatmeterCode hc : heatmeter.getHeatmeterCodes()) {
+                for (HeatmeterConnection hc : heatmeter.getConnections()) {
                     organization.add(organizationStrategy.displayShortName(hc.getOrganizationId(), getLocale()));
                 }
                 item.add(new Label("organizationId", Joiner.on("; ").join(organization)));
@@ -270,7 +284,7 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "calculating", "status"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");

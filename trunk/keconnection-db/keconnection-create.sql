@@ -362,6 +362,7 @@ CREATE TABLE `heatmeter`(
   `ls` INT(7) NOT NULL COMMENT 'Номер л/с теплосчетчика',
   `organization_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на ПУ',
   `type_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип счетчика',
+  `calculating` TINYINT(1) COMMENT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `heatmeter_unique_id` (`ls`, `organization_id`),
   KEY `key_type_id` (`type_id`),
@@ -374,18 +375,19 @@ CREATE TABLE `heatmeter`(
 -- Heatmeter code
 -- ------------------------------
 
-DROP TABLE IF EXISTS `heatmeter_code`;
-CREATE TABLE `heatmeter_code`(
+DROP TABLE IF EXISTS `heatmeter_connection`;
+CREATE TABLE `heatmeter_connection`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Теплосчетчик',
   `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
   `begin_date` DATE COMMENT 'Дата подключения счетчика',
   `end_date` DATE COMMENT 'Дата отключения счетчика',
+  `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
   PRIMARY KEY (`id`),
-  KEY `key_heatmeater_id` (`heatmeter_id`),
-  KEY `key_heatmeter_building_code_id` (`building_code_id`),
-  CONSTRAINT `fk_heatmeter_code__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
-  CONSTRAINT `fk_heatmeter_code__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
+  KEY `key_heatmeater_connection_id` (`heatmeter_id`),
+  KEY `key_heatmeter_connection_building_code_id` (`building_code_id`),
+  CONSTRAINT `fk_heatmeter_connection__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
+  CONSTRAINT `fk_heatmeter_connection__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коды домов теплосчетчика';
 
 -- ------------------------------
@@ -451,8 +453,8 @@ CREATE TABLE `tablegram_record`(
 -- ------------------------------
 -- Payload
 -- ------------------------------
-DROP TABLE IF EXISTS `payload`;
-CREATE TABLE `payload`(
+DROP TABLE IF EXISTS `heatmeter_payload`;
+CREATE TABLE `heatmeter_payload`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
     `tablegram_record_id` BIGINT(20) COMMENT 'Идентификатор записи файла табуляграммы',
     `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
@@ -469,9 +471,30 @@ CREATE TABLE `payload`(
     KEY `key_parent_id` (`parent_id`),
     KEY `key_heatmeter_id` (`heatmeter_id`),
     KEY `key_operating_month` (`operating_month`),
-    CONSTRAINT `fk_payload__tablegram_record` FOREIGN KEY (`tablegram_record_id`) REFERENCES `tablegram_record` (`id`),
-    CONSTRAINT `fk_payload__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
+    CONSTRAINT `fk_heatmeter_payload__tablegram_record` FOREIGN KEY (`tablegram_record_id`) REFERENCES `tablegram_record` (`id`),
+    CONSTRAINT `fk_heatmeter_payload__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
+
+-- ------------------------------
+-- Consumption
+-- ------------------------------
+DROP TABLE IF EXISTS `heatmeter_consumption`;
+CREATE TABLE `heatmeter_consumption`(
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+    `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
+    `readout_date` DATE NOT NULL COMMENT 'Дата снятия',
+    `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
+    `consumption` DECIMAL(5, 2) COMMENT 'Расход',
+    `consumption1` DECIMAL(5, 2) COMMENT 'Расхода для тарифной группы 1',
+    `consumption2` DECIMAL(5, 2) COMMENT 'Расхода для тарифной группы 2',
+    `consumption3` DECIMAL(5, 2) COMMENT 'Расхода для тарифной группы 3',
+    `status` INT COMMENT 'Статус',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `readout_date`, `operating_month`),
+    KEY `key_heatmeter_id` (`heatmeter_id`),
+    KEY `key_operating_month` (`operating_month`),
+    CONSTRAINT `fk_heatmeter_consumption__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Расходы';
 
 -- ------------------------------
 -- Corrections
