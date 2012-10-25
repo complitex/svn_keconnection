@@ -1,7 +1,5 @@
 package org.complitex.keconnection.heatmeter.entity;
 
-import org.complitex.dictionary.entity.ILongId;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,7 +7,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.09.12 18:27
  */
-public class HeatmeterPayload implements ILongId {
+public class HeatmeterPayload implements IHeatmeterEntity {
     private Long id;
     private Long tablegramRecordId;
     private Long parentId;

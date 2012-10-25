@@ -2,7 +2,6 @@ package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractListBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
 import javax.ejb.Stateless;
@@ -14,17 +13,9 @@ import java.util.List;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
-    public HeatmeterPayload getHeatmeterPayload(Long id){
+public class HeatmeterPayloadBean extends AbstractHeatmeterEntityBean<HeatmeterPayload> {
+    public HeatmeterPayload get(Long id){
         return sqlSession().selectOne("selectHeatmeterPayload", id);
-    }
-
-    public List<HeatmeterPayload> getHeatmeterPayloads(FilterWrapper<HeatmeterPayload> filterWrapper){
-        return sqlSession().selectList("selectHeatmeterPayloads", filterWrapper);
-    }
-
-    public int getPayloadsCount(FilterWrapper<HeatmeterPayload> filterWrapper){
-        return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
     }
 
     public void save(HeatmeterPayload heatmeterPayload){
@@ -33,6 +24,11 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
         }else {
             sqlSession().update("updateHeatmeterPayload", heatmeterPayload);
         }
+    }
+
+    @Override
+    public void delete(Long id) {
+        sqlSession().delete("deleteHeatmeterPayload", id);
     }
 
     public boolean isExist(Long heatmeterId){
@@ -45,11 +41,16 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
 
     @Override
     public List<HeatmeterPayload> getList(FilterWrapper<HeatmeterPayload> filterWrapper) {
-        return getHeatmeterPayloads(filterWrapper);
+        return sqlSession().selectList("selectHeatmeterPayloads", filterWrapper);
     }
 
     @Override
     public Integer getCount(FilterWrapper<HeatmeterPayload> filterWrapper) {
-        return getPayloadsCount(filterWrapper);
+        return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
+    }
+
+    @Override
+    public List<HeatmeterPayload> getList(Long heatmeterId) {
+        return sqlSession().selectList("selectHeatmeterPayloadsByHeatmeterId", heatmeterId);
     }
 }

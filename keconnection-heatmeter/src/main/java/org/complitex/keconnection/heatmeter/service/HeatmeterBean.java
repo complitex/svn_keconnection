@@ -5,15 +5,12 @@ import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.util.IdListUtil;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
+import org.complitex.keconnection.heatmeter.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -24,35 +21,43 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 public class HeatmeterBean extends AbstractBean {
 
     @EJB
+    private HeatmeterPeriodBean heatmeterPeriodBean;
+
+    @EJB
     private HeatmeterConnectionBean heatmeterConnectionBean;
+
+    @EJB
+    private HeatmeterPayloadBean heatmeterPayloadBean;
+
+    @EJB
+    private HeatmeterConsumptionBean heatmeterConsumptionBean;
 
     public void save(Heatmeter heatmeter) {
         if (heatmeter.getId() == null) {
             sqlSession().insert("insertHeatmeter", heatmeter);
-
-            //heatmeter codes
-            for (HeatmeterConnection heatmeterConnection : heatmeter.getConnections()) {
-                heatmeterConnection.setHeatmeterId(heatmeter.getId());
-
-                heatmeterConnectionBean.save(heatmeterConnection);
-            }
         } else {
             sqlSession().update("updateHeatmeter", heatmeter);
+        }
 
-            //heatmeter codes in db
-            List<HeatmeterConnection> db = heatmeterConnectionBean.getHeatmeterConnections(heatmeter.getId());
+        save(heatmeterPeriodBean, heatmeter.getId(), heatmeter.getPeriods());
+        save(heatmeterConnectionBean, heatmeter.getId(), heatmeter.getConnections());
+        save(heatmeterPayloadBean, heatmeter.getId(), heatmeter.getPayloads());
+        save(heatmeterConsumptionBean, heatmeter.getId(), heatmeter.getConsumptions());
+    }
 
-            //delete heatmeter codes
-            for (HeatmeterConnection heatmeterConnection : IdListUtil.getDiff(db, heatmeter.getConnections())) {
-                heatmeterConnectionBean.delete(heatmeterConnection.getId());
+    private <T extends IHeatmeterEntity> void save(IHeatmeterEntityBean<T> bean, Long heatmeterId, List<T> list){
+        if (heatmeterId != null) {
+            List<T> db = bean.getList(heatmeterId);
+
+            for (T object : IdListUtil.getDiff(db, list)) {
+                bean.delete(object.getId());
             }
+        }
 
-            //save heatmeter codes
-            for (HeatmeterConnection heatmeterConnection : heatmeter.getConnections()) {
-                heatmeterConnection.setHeatmeterId(heatmeter.getId());
+        for (T object : list) {
+            object.setHeatmeterId(heatmeterId);
 
-                heatmeterConnectionBean.save(heatmeterConnection);
-            }
+            bean.save(object);
         }
     }
 

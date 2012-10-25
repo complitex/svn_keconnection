@@ -31,6 +31,9 @@
         <collection property="payloads"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByHeatmeterId"
                     column="id"/>
+        <collection property="consumptions"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterId"
+                    column="id"/>
     </resultMap>
 
     <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"

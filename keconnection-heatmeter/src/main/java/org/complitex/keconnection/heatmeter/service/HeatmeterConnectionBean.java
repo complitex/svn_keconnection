@@ -1,7 +1,7 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 
 import javax.ejb.Stateless;
@@ -13,7 +13,12 @@ import java.util.List;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterConnectionBean extends AbstractBean{
+public class HeatmeterConnectionBean extends AbstractHeatmeterEntityBean<HeatmeterConnection>{
+    @Override
+    public HeatmeterConnection get(Long id) {
+        return null;
+    }
+
     public void save(HeatmeterConnection heatmeterConnection){
         if (heatmeterConnection.getId() == null){
             sqlSession().insert("insertHeatmeterConnection", heatmeterConnection);
@@ -22,11 +27,22 @@ public class HeatmeterConnectionBean extends AbstractBean{
         }
     }
 
-    public List<HeatmeterConnection> getHeatmeterConnections(Long heatmeterId){
+    public void delete(Long id){
+        sqlSession().delete("deleteHeatmeterConnection", id);
+    }
+
+    @Override
+    public List<HeatmeterConnection> getList(Long heatmeterId) {
         return sqlSession().selectList("selectHeatmeterConnectionsByHeatmeterId", heatmeterId);
     }
 
-    public void delete(Long id){
-        sqlSession().delete("deleteHeatmeterConnection", id);
+    @Override
+    public List<HeatmeterConnection> getList(FilterWrapper<HeatmeterConnection> filterWrapper) {
+        return null;
+    }
+
+    @Override
+    public Integer getCount(FilterWrapper<HeatmeterConnection> filterWrapper) {
+        return null;
     }
 }

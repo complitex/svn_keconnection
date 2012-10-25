@@ -1,11 +1,12 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 
 import javax.ejb.Stateless;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -13,13 +14,23 @@ import java.util.HashMap;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPeriodBean extends AbstractBean{
+public class HeatmeterPeriodBean extends AbstractHeatmeterEntityBean<HeatmeterPeriod>{
+    @Override
+    public HeatmeterPeriod get(Long id) {
+        return sqlSession().selectOne("selectHeatmeterPeriod", id);
+    }
+
     public void save(HeatmeterPeriod heatmeterPeriod){
         if (heatmeterPeriod.getId() == null){
             sqlSession().insert("insertHeatmeterPeriod", heatmeterPeriod);
         }else {
             sqlSession().update("updateHeatmeterPeriod", heatmeterPeriod);
         }
+    }
+
+    @Override
+    public void delete(Long id) {
+        sqlSession().delete("deleteHeatmeterPeriod", id);
     }
 
     public void updateParent(final Long id, final Long parentId){
@@ -29,7 +40,18 @@ public class HeatmeterPeriodBean extends AbstractBean{
         }});
     }
 
-    public HeatmeterPeriod getHeatmeterPeriod(Long id){
-        return sqlSession().selectOne("selectHeatmeterPeriod", id);
+    @Override
+    public List<HeatmeterPeriod> getList(Long heatmeterId) {
+        return sqlSession().selectList("selectHeatmeterPeriodsByHeatmeterId", heatmeterId);
+    }
+
+    @Override
+    public List<HeatmeterPeriod> getList(FilterWrapper<HeatmeterPeriod> filterWrapper) {
+        return null;
+    }
+
+    @Override
+    public Integer getCount(FilterWrapper<HeatmeterPeriod> filterWrapper) {
+        return null;
     }
 }

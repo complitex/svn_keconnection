@@ -39,7 +39,7 @@ public class PayloadEdit extends FormTemplatePage{
     public PayloadEdit(PageParameters pageParameters) {
         Long id = pageParameters.get("id").toOptionalLong();
 
-        HeatmeterPayload heatmeterPayload = id != null ? heatmeterPayloadBean.getHeatmeterPayload(id) : new HeatmeterPayload();
+        HeatmeterPayload heatmeterPayload = id != null ? heatmeterPayloadBean.get(id) : new HeatmeterPayload();
 
         add(new Label("title", new ResourceModel("title")));
         add(new FeedbackPanel("messages"));
