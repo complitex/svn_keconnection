@@ -142,7 +142,7 @@ public class HeatmeterList extends TemplatePage {
 
         //Filter Fields
         filterForm.add(newTextFields("object.", "ls"));
-        filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class));
+        filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class, true));
         filterForm.add(new DropDownChoice<>("object.calculating", Arrays.asList(true, false),
                 new IChoiceRenderer<Object>() {
                     @Override
@@ -155,7 +155,7 @@ public class HeatmeterList extends TemplatePage {
                         return object.toString();
                     }
                 }).setNullValid(true));
-        filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class));
+        filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class, true));
         filterForm.add(new DropDownChoice<>("object.bindingStatus",
                 Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()), new IChoiceRenderer<HeatmeterBindingStatus>() {
 

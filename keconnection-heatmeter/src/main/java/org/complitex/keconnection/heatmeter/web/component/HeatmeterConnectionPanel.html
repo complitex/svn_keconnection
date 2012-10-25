@@ -11,21 +11,18 @@
             <th><wicket:message key="code"/></th>
             <th><wicket:message key="address"/></th>
         </tr>
-        <tr wicket:id="connections">
+        <tr wicket:id="list_view">
             <td><input type="text" wicket:id="begin_date"/></td>
             <td><input type="text" wicket:id="end_date"/></td>
             <td><span wicket:id="organization"></span></td>
             <td><input type="text" wicket:id="code"/></td>
             <td><span wicket:id="address"></span></td>
-            <td><a wicket:id="remove_connection"><wicket:message key="remove"/></a></td>
+            <td><a wicket:id="remove"><wicket:message key="remove"/></a></td>
         </tr>
     </table>
     <div>
-        <a wicket:id="add_connection"><wicket:message key="add"/></a>
+        <a wicket:id="add"><wicket:message key="add"/></a>
     </div>
 </wicket:panel>
 </body>
 </html>
-
-
-

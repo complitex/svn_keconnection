@@ -26,10 +26,7 @@ import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
-import org.complitex.keconnection.heatmeter.web.component.HeatmeterCodePanel;
-import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
-import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
-import org.complitex.keconnection.heatmeter.web.component.HeatmeterPeriodPanel;
+import org.complitex.keconnection.heatmeter.web.component.*;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
@@ -101,10 +98,10 @@ public class HeatmeterEdit extends FormTemplatePage{
         add(form);
 
         //Ls
-        form.add(new TextField<>("ls").setRequired(true));
+        form.add(new TextField<>("ls"));
 
         //Type
-        form.add(new EnumDropDownChoice<>("type", HeatmeterType.class).setNullValid(false));
+        form.add(new EnumDropDownChoice<>("type", HeatmeterType.class, false));
 
         //Calculating
         form.add(new CheckBox("calculating"));
@@ -152,6 +149,9 @@ public class HeatmeterEdit extends FormTemplatePage{
 
         //Payloads
         container.add(new HeatmeterPayloadPanel("payloads", model, operatingMonthModel));
+
+        //Consumption
+        container.add(new HeatmeterConsumptionPanel("consumption", model, operatingMonthModel));
 
         //Heatmeter Code Panel
         form.add(new HeatmeterCodePanel("heatmeter_codes", new ListModel<>(heatmeter.getConnections())));

@@ -34,7 +34,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
 
         setOutputMarkupId(true);
 
-        final ListView<HeatmeterPayload> payloads = new ListView<HeatmeterPayload>("payloads",
+        final ListView<HeatmeterPayload> payloads = new ListView<HeatmeterPayload>("list_view",
                 new LoadableDetachableModel<List<HeatmeterPayload>>() {
             @Override
             protected List<HeatmeterPayload> load() {
@@ -77,7 +77,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
             }
         });
 
-        add(new AjaxSubmitLink("add_payload") {
+        add(new AjaxSubmitLink("add") {
             @Override
             public boolean isVisible() {
                 return isCurrentOperationMonth();
@@ -95,7 +95,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
             }
         });
 
-        add(new AjaxSubmitLink("remove_payload") {
+        add(new AjaxSubmitLink("remove") {
             @Override
             public boolean isVisible() {
                 return isCurrentOperationMonth() && !payloads.getModelObject().isEmpty();

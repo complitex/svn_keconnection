@@ -31,7 +31,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
         super(id, model, operatingMonthModel);
         setOutputMarkupId(true);
 
-        final ListView<HeatmeterPeriod> periods = new ListView<HeatmeterPeriod>("periods",
+        final ListView<HeatmeterPeriod> periods = new ListView<HeatmeterPeriod>("list_view",
                 new LoadableDetachableModel<List<HeatmeterPeriod>>() {
                     @Override
                     protected List<HeatmeterPeriod> load() {
@@ -55,7 +55,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                 item.add(new DatePicker<>("end_date", new PropertyModel<>(heatmeterPeriod, "endDate"))
                         .setEnabled(isCurrentOperationMonth()));
                 item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodType.class,
-                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"))
+                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false)
                         .setEnabled(isCurrentOperationMonth()));
             }
         };
@@ -68,7 +68,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
             }
         });
 
-        add(new AjaxSubmitLink("add_period") {
+        add(new AjaxSubmitLink("add") {
             @Override
             public boolean isVisible() {
                 return isCurrentOperationMonth();
@@ -86,7 +86,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
             }
         });
 
-        add(new AjaxSubmitLink("remove_period") {
+        add(new AjaxSubmitLink("remove") {
             @Override
             public boolean isVisible() {
                 return isCurrentOperationMonth() && !periods.getModelObject().isEmpty();

@@ -42,7 +42,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
         setOutputMarkupId(true);
 
-        final ListView<HeatmeterConnection> connections = new ListView<HeatmeterConnection>("connections",
+        final ListView<HeatmeterConnection> connections = new ListView<HeatmeterConnection>("list_view",
                 new LoadableDetachableModel<List<HeatmeterConnection>>() {
                     @Override
                     protected List<HeatmeterConnection> load() {
@@ -88,7 +88,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 item.add(new Label("address", address));
 
                 //remove
-                item.add(new AjaxSubmitLink("remove_connection") {
+                item.add(new AjaxSubmitLink("remove") {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         model.getObject().getConnections().remove(connection);
@@ -111,7 +111,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
             }
         });
 
-        add(new AjaxSubmitLink("add_connection") {
+        add(new AjaxSubmitLink("add") {
             @Override
             public boolean isVisible() {
                 return isCurrentOperationMonth();
