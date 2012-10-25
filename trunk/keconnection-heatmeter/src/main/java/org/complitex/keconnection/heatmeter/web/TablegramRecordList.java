@@ -104,7 +104,7 @@ public class TablegramRecordList extends TemplatePage{
 
         //Filter Fields
         filterForm.add(newTextFields("object.", properties));
-        filterForm.replace(new EnumDropDownChoice<>("object.status", TablegramRecordStatus.class));
+        filterForm.replace(new EnumDropDownChoice<>("object.status", TablegramRecordStatus.class, true));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();

@@ -16,13 +16,14 @@ import java.util.Set;
 public class Heatmeter implements ILongId {
 
     private Long id; //Идентификатор
-    private Integer ls = 0; //Номер л/с счетчика
+    private Integer ls; //Номер л/с счетчика
     private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
     private Boolean calculating; //Участвует в расчетах
     private List<HeatmeterConnection> connections = new ArrayList<>(); //Список кодов домов
     private List<HeatmeterPeriod> periods = new ArrayList<>(); //Список периодов
     private List<HeatmeterPayload> payloads = new ArrayList<>(); //Список распределений
+    private List<HeatmeterConsumption> consumptions = new ArrayList<>();// Список расходов
     private HeatmeterPeriodType status;
     private HeatmeterBindingStatus bindingStatus;
 
@@ -88,6 +89,14 @@ public class Heatmeter implements ILongId {
 
     public void setPayloads(List<HeatmeterPayload> payloads) {
         this.payloads = payloads;
+    }
+
+    public List<HeatmeterConsumption> getConsumptions() {
+        return consumptions;
+    }
+
+    public void setConsumptions(List<HeatmeterConsumption> consumptions) {
+        this.consumptions = consumptions;
     }
 
     public HeatmeterPeriodType getStatus() {

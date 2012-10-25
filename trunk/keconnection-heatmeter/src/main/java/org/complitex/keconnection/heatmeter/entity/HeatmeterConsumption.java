@@ -18,6 +18,13 @@ public class HeatmeterConsumption {
     private BigDecimal consumption3;
     private HeatmeterConsumptionStatus status;
 
+    public HeatmeterConsumption() {
+    }
+
+    public HeatmeterConsumption(Date operatingMonth) {
+        this.operatingMonth = operatingMonth;
+    }
+
     public Long getId() {
         return id;
     }
