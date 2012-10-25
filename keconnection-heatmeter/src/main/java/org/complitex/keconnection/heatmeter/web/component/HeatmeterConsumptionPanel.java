@@ -61,7 +61,7 @@ public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
                 item.add(new TextField<>("consumption2", new PropertyModel<>(consumption, "consumption2")));
                 item.add(new TextField<>("consumption3", new PropertyModel<>(consumption, "consumption3")));
                 item.add(new EnumDropDownChoice<>("status", HeatmeterConsumptionStatus.class,
-                        new PropertyModel<HeatmeterConsumptionStatus>(consumption, "status"), false));
+                        new PropertyModel<HeatmeterConsumptionStatus>(consumption, "status"), false).setRequired(true));
 
                 item.visitChildren(new IVisitor<Component, Object>() {
                     @Override
