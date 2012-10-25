@@ -72,4 +72,8 @@
     <select id="selectHeatmeterPayloadsByHeatmeterId" parameterType="long" resultMap="heatmeterPayloadResultMap">
         select * from `heatmeter_payload` where `heatmeter_id` = #{heatmeterId}
     </select>
+
+    <delete id="deleteHeatmeterPayload" parameterType="long">
+        delete from `heatmeter_payload` where `id` = #{id}
+    </delete>
 </mapper>

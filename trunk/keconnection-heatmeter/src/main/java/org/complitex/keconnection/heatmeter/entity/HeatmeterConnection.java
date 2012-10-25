@@ -1,14 +1,12 @@
 package org.complitex.keconnection.heatmeter.entity;
 
-import org.complitex.dictionary.entity.ILongId;
-
 import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 02.10.12 15:32
  */
-public class HeatmeterConnection implements ILongId{
+public class HeatmeterConnection implements IHeatmeterEntity{
     private Long id;
     private Long heatmeterId;
     private Long buildingCodeId;

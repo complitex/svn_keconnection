@@ -7,7 +7,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 18:31
  */
-public class HeatmeterConsumption {
+public class HeatmeterConsumption implements IHeatmeterEntity {
     private Long id;
     private Long heatmeterId;
     private Date readoutDate;

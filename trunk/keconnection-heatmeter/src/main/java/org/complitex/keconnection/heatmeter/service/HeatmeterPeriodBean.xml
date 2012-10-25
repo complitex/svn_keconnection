@@ -36,4 +36,8 @@
     <update id="updateHeatmeterPeriodParent" parameterType="map">
         update `heatmeter_period` set `parent_id` = #{parentId} where `id` = #{id}
     </update>
+
+    <delete id="deleteHeatmeterPeriod" parameterType="long">
+        delete from `heatmeter_period` where `id` = #{id}
+    </delete>
 </mapper>

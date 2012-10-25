@@ -13,7 +13,25 @@
         <result property="status"/>
     </resultMap>
 
-    <select id="selectHeatmeterConsumptionByHeatmeterId" parameterType="long" resultMap="heatmeterConsumptionResultMap">
+    <insert id="insertHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
+        insert into `heatmeter_consumption` (`heatmeter_id`, `readout_date`, `operating_month`, `consumption`,
+                                             `consumption1`, `consumption2`, `consumption3`, `status`)
+            values (#{heatmeterId}, #{readoutDate}, #{operatingMonth}, #{consumption}, #{consumption1}, #{consumption2},
+                    #{consumption3}, #{status})
+    </insert>
+
+    <update id="updateHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
+        update `heatmeter_consumption` set  `readout_date` = #{readoutDate}, `operating_month` = #{operatingMonth},
+            `consumption` = #{consumption}, `consumption1` = #{consumption1}, `consumption2` = #{consumption2},
+            `consumption3` = #{consumption3}, `status` = #{status}
+    </update>
+
+    <delete id="deleteHeatmeterConsumption" parameterType="long">
+        delete from `heatmeter_consumption` where `id` = #{id}
+    </delete>
+
+    <select id="selectHeatmeterConsumptionsByHeatmeterId" parameterType="long" resultMap="heatmeterConsumptionResultMap">
         select * from `heatmeter_consumption` where `heatmeter_id` = #{heatmeterId}
     </select>
+
 </mapper>
