@@ -15,7 +15,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
@@ -26,7 +25,10 @@ import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
-import org.complitex.keconnection.heatmeter.web.component.*;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterConsumptionPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterPeriodPanel;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
@@ -62,7 +64,6 @@ public class HeatmeterEdit extends FormTemplatePage{
 
     @EJB
     private CityStrategy cityStrategy;
-
 
 
     public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
@@ -152,9 +153,6 @@ public class HeatmeterEdit extends FormTemplatePage{
 
         //Consumption
         container.add(new HeatmeterConsumptionPanel("consumption", model, operatingMonthModel));
-
-        //Heatmeter Code Panel
-        form.add(new HeatmeterCodePanel("heatmeter_codes", new ListModel<>(heatmeter.getConnections())));
 
         //Save
         form.add(new Button("save"){

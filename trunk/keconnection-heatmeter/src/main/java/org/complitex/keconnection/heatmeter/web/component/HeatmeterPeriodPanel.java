@@ -55,7 +55,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                 item.add(new DatePicker<>("end_date", new PropertyModel<>(heatmeterPeriod, "endDate"))
                         .setEnabled(isCurrentOperationMonth()));
                 item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodType.class,
-                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false)
+                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false).setRequired(true)
                         .setEnabled(isCurrentOperationMonth()));
             }
         };
