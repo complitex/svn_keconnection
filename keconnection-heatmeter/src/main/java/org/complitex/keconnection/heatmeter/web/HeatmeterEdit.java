@@ -117,7 +117,7 @@ public class HeatmeterEdit extends FormTemplatePage{
 
             @Override
             public boolean isEnabled() {
-                return DEFAULT_BEGIN_DATE.before(operatingMonthModel.getObject());
+                return false;  //todo
             }
         });
 
@@ -131,7 +131,7 @@ public class HeatmeterEdit extends FormTemplatePage{
 
             @Override
             public boolean isEnabled() {
-                return getCurrentDate().after(operatingMonthModel.getObject());
+                return false; //todo
             }
         });
 
