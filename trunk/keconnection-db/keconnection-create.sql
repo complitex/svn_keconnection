@@ -380,7 +380,7 @@ CREATE TABLE `heatmeter_connection`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Теплосчетчик',
   `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
-  `begin_date` DATE COMMENT 'Дата подключения счетчика',
+  `begin_date` DATE NOT NULL COMMENT 'Дата подключения счетчика',
   `end_date` DATE COMMENT 'Дата отключения счетчика',
   `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
   PRIMARY KEY (`id`),
