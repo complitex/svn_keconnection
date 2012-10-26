@@ -221,7 +221,7 @@ public class HeatmeterImportService extends AbstractImportService{
             period.setOperatingMonth(DEFAULT_BEGIN_DATE);
 
             heatmeterPeriodBean.save(period);
-            heatmeterPeriodBean.updateParent(period.getId(), period.getId());
+            //heatmeterPeriodBean.updateParent(period.getId(), period.getId()); todo
         }
 
         //create heatmeter code

@@ -14,11 +14,10 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.dictionary.web.component.DatePicker;
-import org.complitex.dictionary.web.component.EnumDropDownChoice;
+import org.complitex.dictionary.web.component.TextLabel;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumptionStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,15 +52,14 @@ public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
                 }) {
             @Override
             protected void populateItem(ListItem<HeatmeterConsumption> item) {
-                HeatmeterConsumption consumption = item.getModelObject();
+                final HeatmeterConsumption consumption = item.getModelObject();
 
-                item.add(new DatePicker<>("readoutDate", new PropertyModel<>(consumption, "readoutDate")));
+                item.add(new MaskedDateInput("readoutDate", new PropertyModel<Date>(consumption, "readoutDate")));
                 item.add(new TextField<>("consumption", new PropertyModel<>(consumption, "consumption")));
-                item.add(new TextField<>("consumption1", new PropertyModel<>(consumption, "consumption1")));
-                item.add(new TextField<>("consumption2", new PropertyModel<>(consumption, "consumption2")));
-                item.add(new TextField<>("consumption3", new PropertyModel<>(consumption, "consumption3")));
-                item.add(new EnumDropDownChoice<>("status", HeatmeterConsumptionStatus.class,
-                        new PropertyModel<HeatmeterConsumptionStatus>(consumption, "status"), false).setRequired(true));
+                item.add(new TextLabel("consumption1", consumption.getConsumption1()));
+                item.add(new TextLabel("consumption2", consumption.getConsumption2()));
+                item.add(new TextLabel("consumption3", consumption.getConsumption3()));
+                item.add(new TextLabel("status", consumption.getStatus()));
 
                 item.visitChildren(new IVisitor<Component, Object>() {
                     @Override

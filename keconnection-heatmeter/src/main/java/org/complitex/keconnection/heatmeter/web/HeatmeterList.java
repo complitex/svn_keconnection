@@ -155,7 +155,7 @@ public class HeatmeterList extends TemplatePage {
                         return object.toString();
                     }
                 }).setNullValid(true));
-        filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterPeriodType.class, true));
+        filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterStatus.class, true));
         filterForm.add(new DropDownChoice<>("object.bindingStatus",
                 Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()), new IChoiceRenderer<HeatmeterBindingStatus>() {
 

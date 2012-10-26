@@ -67,9 +67,7 @@
     </sql>
 
     <sql id="selectHeatmeterSelectFrom">
-        select h.*,
-          IFNULL((select `type_id` from `heatmeter_period` where `end_date` is null
-            and `heatmeter_id` = h.`id` order by `begin_date` desc limit 1), 0) as `status`,
+        select h.*, (select heatmeter_status(h.`id`)) as `status`,
           hc.`binding_status`
         from `heatmeter` h
             LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
@@ -115,5 +113,15 @@
             LEFT JOIN `heatmeter_connection` hc ON hc.`heatmeter_id` = h.`id`
             LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
             WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId}
+    </select>
+    
+    <select id="selectMaxOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            resultType="date">
+
+    </select>
+
+    <select id="selectMinOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            resultType="date">
+        select min(`operating_month`) from `heatmeter_period` where `heatmeter_id` = #{id}
     </select>
 </mapper>

@@ -16,11 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.address.strategy.city.CityStrategy;
-import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
@@ -30,6 +27,7 @@ import org.complitex.keconnection.heatmeter.web.component.HeatmeterConsumptionPa
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPeriodPanel;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
@@ -56,15 +54,8 @@ public class HeatmeterEdit extends FormTemplatePage{
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
 
-    @EJB
-    private KeConnectionBuildingStrategy buildingStrategy;
-
-    @EJB
-    private StreetStrategy streetStrategy;
-
-    @EJB
-    private CityStrategy cityStrategy;
-
+    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
+    private IKeConnectionOrganizationStrategy organizationStrategy;
 
     public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
 
@@ -112,6 +103,8 @@ public class HeatmeterEdit extends FormTemplatePage{
         form.add(container);
 
         //Operating month
+
+
         container.add(new Label("current_operation_month", operatingMonthModel));
 
         container.add(new AjaxLink("previous_month") {
