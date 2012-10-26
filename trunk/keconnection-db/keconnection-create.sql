@@ -399,18 +399,18 @@ CREATE TABLE `heatmeter_period`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `parent_id` BIGINT(20) COMMENT 'Идентификатор объекта',
   `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
-  `type_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип теплосчетчика',
+  `type` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип теплосчетчика',
   `begin_date` DATE COMMENT 'Дата начала периода',
   `end_date` DATE COMMENT 'Дата окончания периода',
   `operating_month` DATE NOT NULL COMMENT  'Операционный месяц установки периода',
   PRIMARY KEY (`id`),
   KEY `key_object_id` (`parent_id`),
   KEY `key_heatmeter_id` (`heatmeter_id`),
-  KEY `key_type_id` (`type_id`),
+  KEY `key_type` (`type`),
   KEY `key_operating_month` (`operating_month`),
   CONSTRAINT `fk_heatmeter_period__heatmeter_period` FOREIGN KEY (`parent_id`) REFERENCES `heatmeter_period` (`id`),
   CONSTRAINT `fk_heatmeter_period__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
-  CONSTRAINT `fk_heatmeter_period__heatmeter_period_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeter_period_type` (`object_id`)
+  CONSTRAINT `fk_heatmeter_period__heatmeter_period_type` FOREIGN KEY (`type`) REFERENCES `heatmeter_period_type` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
 
 -- ------------------------------

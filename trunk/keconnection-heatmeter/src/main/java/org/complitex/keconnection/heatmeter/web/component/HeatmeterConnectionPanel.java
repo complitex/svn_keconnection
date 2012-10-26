@@ -1,5 +1,6 @@
 package org.complitex.keconnection.heatmeter.web.component;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -11,9 +12,11 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.address.service.AddressRendererBean;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.web.component.DatePicker;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
@@ -62,10 +65,8 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterConnection connection = item.getModelObject();
 
                 //date
-                item.add(new DatePicker<>("begin_date", new PropertyModel<>(connection, "beginDate"))
-                        .setEnabled(isCurrentOperationMonth()));
-                item.add(new DatePicker<>("end_date", new PropertyModel<>(connection, "endDate"))
-                        .setEnabled(isCurrentOperationMonth()));
+                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection, "beginDate")));
+                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection, "endDate")));
 
                 //organization
                 String organization = "";
@@ -98,6 +99,14 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
                     @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    }
+                });
+
+                item.visitChildren(new IVisitor<Component, Object>() {
+                    @Override
+                    public void component(Component object, IVisit<Object> visit) {
+                        object.setEnabled(isCurrentOperationMonth());
+                        visit.dontGoDeeper();
                     }
                 });
             }

@@ -24,7 +24,7 @@ public class Heatmeter implements ILongId {
     private List<HeatmeterPeriod> periods = new ArrayList<>(); //Список периодов
     private List<HeatmeterPayload> payloads = new ArrayList<>(); //Список распределений
     private List<HeatmeterConsumption> consumptions = new ArrayList<>();// Список расходов
-    private HeatmeterPeriodType status;
+    private HeatmeterStatus status;
     private HeatmeterBindingStatus bindingStatus;
 
     public Long getId() {
@@ -99,11 +99,11 @@ public class Heatmeter implements ILongId {
         this.consumptions = consumptions;
     }
 
-    public HeatmeterPeriodType getStatus() {
+    public HeatmeterStatus getStatus() {
         return status;
     }
 
-    public void setStatus(HeatmeterPeriodType status) {
+    public void setStatus(HeatmeterStatus status) {
         this.status = status;
     }
 

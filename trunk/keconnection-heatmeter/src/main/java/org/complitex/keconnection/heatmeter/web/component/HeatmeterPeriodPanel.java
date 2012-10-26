@@ -1,5 +1,6 @@
 package org.complitex.keconnection.heatmeter.web.component;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -9,8 +10,10 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.complitex.dictionary.web.component.DatePicker;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
@@ -50,13 +53,18 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
             protected void populateItem(ListItem<HeatmeterPeriod> item) {
                 HeatmeterPeriod heatmeterPeriod = item.getModelObject();
 
-                item.add(new DatePicker<>("begin_date", new PropertyModel<>(heatmeterPeriod, "beginDate"))
-                        .setEnabled(isCurrentOperationMonth()));
-                item.add(new DatePicker<>("end_date", new PropertyModel<>(heatmeterPeriod, "endDate"))
-                        .setEnabled(isCurrentOperationMonth()));
+                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(heatmeterPeriod, "beginDate")));
+                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(heatmeterPeriod, "endDate")));
                 item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodType.class,
-                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false).setRequired(true)
-                        .setEnabled(isCurrentOperationMonth()));
+                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false).setRequired(true));
+
+                item.visitChildren(new IVisitor<Component, Object>() {
+                    @Override
+                    public void component(Component object, IVisit<Object> visit) {
+                        object.setEnabled(isCurrentOperationMonth());
+                        visit.dontGoDeeper();
+                    }
+                });
             }
         };
         add(periods);

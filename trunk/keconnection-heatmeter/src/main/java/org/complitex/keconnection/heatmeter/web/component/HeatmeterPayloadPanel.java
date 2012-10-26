@@ -14,7 +14,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.dictionary.web.component.DatePicker;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
@@ -53,8 +53,8 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
             protected void populateItem(ListItem<HeatmeterPayload> item) {
                 HeatmeterPayload payload = item.getModelObject();
 
-                item.add(new DatePicker<>("begin_date", new PropertyModel<>(payload, "beginDate")));
-                item.add(new DatePicker<>("end_date", new PropertyModel<>(payload, "endDate")));
+                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(payload, "beginDate")));
+                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(payload, "endDate")));
                 item.add(new TextField<>("payload1", new PropertyModel<>(payload, "payload1")));
                 item.add(new TextField<>("payload2", new PropertyModel<>(payload, "payload2")));
                 item.add(new TextField<>("payload3", new PropertyModel<>(payload, "payload3")));

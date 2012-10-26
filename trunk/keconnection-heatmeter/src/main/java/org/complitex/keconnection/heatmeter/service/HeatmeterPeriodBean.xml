@@ -5,7 +5,7 @@
         <id property="id"/>
         <result property="parentId"/>
         <result property="heatmeterId"/>
-        <result property="type" column="type_id"/>
+        <result property="type"/>
         <result property="beginDate"/>
         <result property="endDate"/>
         <result property="operatingMonth"/>
@@ -14,13 +14,13 @@
     <insert id="insertHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod"
         useGeneratedKeys="true" keyProperty="id">
         insert into `heatmeter_period`
-          (`parent_id`, `heatmeter_id`, `type_id`, `begin_date`, `end_date`, `operating_month`)
+          (`parent_id`, `heatmeter_id`, `type`, `begin_date`, `end_date`, `operating_month`)
         values
           (#{parentId}, #{heatmeterId}, #{type}, #{beginDate}, #{endDate}, #{operatingMonth})
     </insert>
 
     <update id="updateHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
-        update `heatmeter_period` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `type_id` = #{type},
+        update `heatmeter_period` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `type` = #{type},
           `begin_date` = #{beginDate}, `end_date` = #{endDate}, `operating_month` = #{operatingMonth}
         where `id` = #{id}
     </update>

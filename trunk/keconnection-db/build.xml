@@ -14,6 +14,13 @@
             <transaction src="keconnection-create.sql"/>
         </sql>
 
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}" delimiter="$$">
+            <classpath>
+                <pathelement location="${jdbc}"/>
+            </classpath>
+            <transaction src="keconnection-function.sql"/>
+        </sql>
+
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="${jdbc}"/>
