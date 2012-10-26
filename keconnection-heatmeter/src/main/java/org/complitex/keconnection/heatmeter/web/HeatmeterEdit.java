@@ -158,6 +158,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                     for (HeatmeterConnection code : heatmeter.getConnections()){
                         if (code.getBuildingCodeId() == null){
                             error(getString("error_code_not_found"));
+                            return;
                         }
                     }
 

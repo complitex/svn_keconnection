@@ -17,6 +17,7 @@ public class HeatmeterConnection implements IHeatmeterEntity{
     private Long buildingId;
     private Long organizationId;
     private Integer code;
+    private String organizationCode;
 
     public HeatmeterConnection() {
     }
@@ -95,5 +96,13 @@ public class HeatmeterConnection implements IHeatmeterEntity{
 
     public void setCode(Integer code) {
         this.code = code;
+    }
+
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
     }
 }
