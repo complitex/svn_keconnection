@@ -1,5 +1,5 @@
 DROP FUNCTION IF EXISTS `keconnection`.`heatmeter_status` $$
-CREATE FUNCTION `keconnection`.`heatmeter_status` (pHeatmeterId BIGINT) RETURNS INT
+CREATE FUNCTION `keconnection`.`heatmeter_status` (pHeatmeterId BIGINT) RETURNS INT DETERMINISTIC
   BEGIN
     declare connections_count int;
     declare period_operation_count int;
