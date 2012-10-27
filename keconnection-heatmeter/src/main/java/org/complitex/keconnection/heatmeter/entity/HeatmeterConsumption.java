@@ -13,10 +13,10 @@ public class HeatmeterConsumption implements IHeatmeterEntity {
     private Date readoutDate;
     private Date operatingMonth;
     private BigDecimal consumption;
-    private BigDecimal consumption1;
-    private BigDecimal consumption2;
-    private BigDecimal consumption3;
-    private HeatmeterConsumptionStatus status;
+    private BigDecimal consumption1 = new BigDecimal(0);
+    private BigDecimal consumption2 = new BigDecimal(0);
+    private BigDecimal consumption3 = new BigDecimal(0);
+    private HeatmeterConsumptionStatus status = HeatmeterConsumptionStatus.NOT_LOADED;
 
     public HeatmeterConsumption() {
     }

@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.complitex.dictionary.util.DateUtil.add;
 import static org.complitex.dictionary.util.DateUtil.getFirstDayOfCurrentMonth;
 import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 
@@ -56,7 +58,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                 item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(heatmeterPeriod, "beginDate")));
                 item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(heatmeterPeriod, "endDate")));
                 item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodType.class,
-                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false).setRequired(true));
+                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false));
 
                 item.visitChildren(new IVisitor<Component, Object>() {
                     @Override

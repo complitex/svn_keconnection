@@ -72,7 +72,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterConnection connection = item.getModelObject();
 
                 //date
-                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection, "beginDate")).setRequired(true));
+                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection, "beginDate")));
                 item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection, "endDate")));
 
                 //organization
