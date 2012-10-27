@@ -154,10 +154,54 @@ public class HeatmeterEdit extends FormTemplatePage{
                 try {
                     Heatmeter heatmeter = model.getObject();
 
-                    //validate
-                    for (HeatmeterConnection code : heatmeter.getConnections()){
-                        if (code.getBuildingCodeId() == null){
-                            error(getString("error_code_not_found"));
+                    //validate period
+                    for (HeatmeterPeriod period : heatmeter.getPeriods()){
+                        if (period.getBeginDate() == null){
+                            error(getString("error_period_begin_date_required"));
+                            return;
+                        }
+
+                        if (period.getType() == null){
+                            error(getString("error_period_type_required"));
+                            return;
+                        }
+                    }
+
+                    //validate connection
+                    for (HeatmeterConnection connection : heatmeter.getConnections()){
+                        if (connection.getBeginDate() == null){
+                            error(getString("error_connection_begin_date_required"));
+                            return;
+                        }
+
+                        if (connection.getBuildingCodeId() == null){
+                            error(getString("error_connection_not_found"));
+                            return;
+                        }
+                    }
+
+                    //validate payload
+                    for (HeatmeterPayload payload : heatmeter.getPayloads()){
+                        if (payload.getBeginDate() == null){
+                            error(getString("error_payload_begin_date_required"));
+                            return;
+                        }
+
+                        if (payload.getPayload1() == null || payload.getPayload2() == null || payload.getPayload3() == null){
+                            error(getString("error_payload_values_required"));
+                            return;
+                        }
+                    }
+
+                    //validate consumption
+                    for(HeatmeterConsumption consumption : heatmeter.getConsumptions()){
+                        if (consumption.getReadoutDate() == null) {
+                            error(getString("error_consumption_readout_date_required"));
+                            return;
+                        }
+
+                        if (consumption.getConsumption() == null){
+                            error(getString("error_consumption_value_required"));
                             return;
                         }
                     }

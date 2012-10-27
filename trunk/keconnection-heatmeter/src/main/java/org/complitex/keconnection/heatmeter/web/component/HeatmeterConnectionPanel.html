@@ -7,17 +7,15 @@
         <tr wicket:id="header">
             <th><wicket:message key="begin_date"/></th>
             <th><wicket:message key="end_date"/></th>
-            <th><wicket:message key="organization_code"/></th>
-            <th><wicket:message key="organization"/></th>
-            <th><wicket:message key="code"/></th>
-            <th><wicket:message key="address"/></th>
+            <th colspan="2"><wicket:message key="organization_code"/></th>
+            <th colspan="2"><wicket:message key="code"/></th>
         </tr>
         <tr wicket:id="list_view">
-            <td><input type="text" wicket:id="begin_date"/></td>
-            <td><input type="text" wicket:id="end_date"/></td>
-            <td><input type="text" wicket:id="organization_code"/></td>
+            <td><input type="text" wicket:id="begin_date" size="8"/></td>
+            <td><input type="text" wicket:id="end_date" size="8"/></td>
+            <td><input type="text" wicket:id="organization_code" size="4"/></td>
             <td><span wicket:id="organization"></span></td>
-            <td><input type="text" wicket:id="code"/></td>
+            <td><input type="text" wicket:id="code" size="3"/></td>
             <td><span wicket:id="address"></span></td>
             <td><a wicket:id="remove"><wicket:message key="remove"/></a></td>
         </tr>
