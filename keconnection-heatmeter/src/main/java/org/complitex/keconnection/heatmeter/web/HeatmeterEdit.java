@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import com.google.common.collect.Range;
+import com.google.common.collect.Ranges;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -36,8 +38,11 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.complitex.dictionary.util.DateUtil.*;
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.ADJUSTMENT;
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
@@ -154,56 +159,9 @@ public class HeatmeterEdit extends FormTemplatePage{
                 try {
                     Heatmeter heatmeter = model.getObject();
 
-                    //validate period
-                    for (HeatmeterPeriod period : heatmeter.getPeriods()){
-                        if (period.getBeginDate() == null){
-                            error(getString("error_period_begin_date_required"));
-                            return;
-                        }
-
-                        if (period.getType() == null){
-                            error(getString("error_period_type_required"));
-                            return;
-                        }
-                    }
-
-                    //validate connection
-                    for (HeatmeterConnection connection : heatmeter.getConnections()){
-                        if (connection.getBeginDate() == null){
-                            error(getString("error_connection_begin_date_required"));
-                            return;
-                        }
-
-                        if (connection.getBuildingCodeId() == null){
-                            error(getString("error_connection_not_found"));
-                            return;
-                        }
-                    }
-
-                    //validate payload
-                    for (HeatmeterPayload payload : heatmeter.getPayloads()){
-                        if (payload.getBeginDate() == null){
-                            error(getString("error_payload_begin_date_required"));
-                            return;
-                        }
-
-                        if (payload.getPayload1() == null || payload.getPayload2() == null || payload.getPayload3() == null){
-                            error(getString("error_payload_values_required"));
-                            return;
-                        }
-                    }
-
-                    //validate consumption
-                    for(HeatmeterConsumption consumption : heatmeter.getConsumptions()){
-                        if (consumption.getReadoutDate() == null) {
-                            error(getString("error_consumption_readout_date_required"));
-                            return;
-                        }
-
-                        if (consumption.getConsumption() == null){
-                            error(getString("error_consumption_value_required"));
-                            return;
-                        }
+                    //validate
+                    if (!validateHeatmeter(heatmeter)){
+                        return;
                     }
 
                     //save
@@ -215,7 +173,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                         //create period
                         HeatmeterPeriod period = new HeatmeterPeriod();
                         period.setHeatmeterId(heatmeter.getId());
-                        period.setType(HeatmeterPeriodType.OPERATION);
+                        period.setType(OPERATION);
                         period.setBeginDate(HeatmeterImportService.DEFAULT_BEGIN_DATE);
                         period.setOperatingMonth(HeatmeterImportService.DEFAULT_BEGIN_DATE);
 
@@ -252,5 +210,119 @@ public class HeatmeterEdit extends FormTemplatePage{
         };
         correctionsLink.setVisible(heatmeterCorrectionDialog.isVisible());
         form.add(correctionsLink);
+    }
+
+    private boolean validateHeatmeter(Heatmeter heatmeter){
+        //validate period
+        /*Периодов как функционирования, так и юстировки может быть
+        несколько, но однотипные периоды не могут пересекаться, а периоды юстировки должны полностью принадлежать
+        периоду функционирования*/
+
+        boolean hasOpenOperation = false;
+        boolean hasOpenAdjustment = false;
+
+        for (HeatmeterPeriod period : heatmeter.getPeriods()){
+            if (period.getBeginDate() != null && period.getEndDate() != null && period.getBeginDate().after(period.getEndDate())){
+                error(getStringFormat("error_period_begin_date_after_end_date", period.getBeginDate(), period.getEndDate()));
+                return false;
+            }
+
+            if (period.getBeginDate() == null){
+                error(getString("error_period_begin_date_required"));
+                return false;
+            }
+
+            if (period.getType() == null){
+                error(getString("error_period_type_required"));
+                return false;
+            }else {
+                if (period.getEndDate() == null){
+                    //Одновременно без даты окончания может быть не более двух периодов: один период функционирования
+                    //и какой либо другой (пока возможен только период юстировки).
+                    if (OPERATION.equals(period.getType())){
+                        if (hasOpenOperation){
+                            error(getStringFormat("error_period_more_than_two_open_operation", period.getBeginDate()));
+                            return false;
+                        }
+
+                        hasOpenOperation = true;
+                    }else if (ADJUSTMENT.equals(period.getType())){
+                        if (hasOpenAdjustment){
+                            error(getStringFormat("error_period_more_than_two_open_adjustment", period.getBeginDate()));
+                            return false;
+                        }
+                        hasOpenAdjustment = true;
+                    }
+                }
+            }
+        }
+
+        //однотипные периоды не могут пересекаться
+        List<HeatmeterPeriod> periods = heatmeter.getPeriods();
+        for (int i = 0; i < periods.size() - 1 ; i++) {
+            HeatmeterPeriod p1 = periods.get(i);
+
+            for (int j = i+1; j < periods.size(); j++) {
+                HeatmeterPeriod p2 = periods.get(j);
+
+                if (p1.getType() != null && p1.getType().equals(p2.getType())){
+                    Range<Date> r1 = p1.getEndDate() != null
+                            ? Ranges.closed(p1.getBeginDate(), p1.getEndDate())
+                            : Ranges.atLeast(p1.getBeginDate());
+
+                    Range<Date> r2 = p2.getEndDate() != null
+                            ? Ranges.closed(p2.getBeginDate(), p2.getEndDate())
+                            : Ranges.atLeast(p2.getBeginDate());
+
+                    if (r1.isConnected(r2)){
+                        error(getStringFormat("error_period_intersection",
+                                format(p1.getBeginDate()), format(p1.getEndDate()),
+                                format(p2.getBeginDate()), format(p2.getEndDate())));
+                        return false;
+                    }
+                }
+            }
+        }
+
+        //validate connection
+        for (HeatmeterConnection connection : heatmeter.getConnections()){
+            if (connection.getBeginDate() == null){
+                error(getString("error_connection_begin_date_required"));
+                return false;
+            }
+
+            if (connection.getBuildingCodeId() == null){
+                error(getString("error_connection_not_found"));
+                return false;
+            }
+        }
+
+        //validate payload
+        for (HeatmeterPayload payload : heatmeter.getPayloads()){
+            if (payload.getBeginDate() == null){
+                error(getString("error_payload_begin_date_required"));
+                return false;
+            }
+
+            if (payload.getPayload1() == null || payload.getPayload2() == null || payload.getPayload3() == null){
+                error(getString("error_payload_values_required"));
+                return false;
+            }
+        }
+
+        //validate consumption
+        for(HeatmeterConsumption consumption : heatmeter.getConsumptions()){
+            if (consumption.getReadoutDate() == null) {
+                error(getString("error_consumption_readout_date_required"));
+                return false;
+            }
+
+            if (consumption.getConsumption() == null){
+                error(getString("error_consumption_value_required"));
+                return false;
+            }
+        }
+
+        return true;
     }
 }
