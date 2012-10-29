@@ -4,6 +4,9 @@
         <main-user-organization-picker-component>
             org.complitex.keconnection.web.template.KeConnectionMainUserOrganizationPicker
         </main-user-organization-picker-component>
+        <domain-object-permission-panel>
+            org.complitex.keconnection.organization.web.component.KeConnectionDomainObjectPermissionPanel
+        </domain-object-permission-panel>
     </web-components>
     <sidebar>
         <menu class="org.complitex.keconnection.web.admin.AdminMenu"/>
