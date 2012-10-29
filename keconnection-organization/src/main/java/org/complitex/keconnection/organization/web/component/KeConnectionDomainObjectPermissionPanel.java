@@ -40,41 +40,48 @@ import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
  * @author Artem
  */
 public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjectPermissionPanel {
-
+    
     private enum PermissionMode {
-
+        
         ALL, SELECT
     }
     @EJB
     private StrategyFactory strategyFactory;
-
+    
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         response.renderCSSReference(new PackageResourceReference(KeConnectionDomainObjectPermissionPanel.class,
                 KeConnectionDomainObjectPermissionPanel.class.getSimpleName() + ".css"));
     }
-
+    
     public KeConnectionDomainObjectPermissionPanel(String id, final DomainObjectPermissionParameters parameters) {
         super(id, parameters);
-
+    }
+    
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        
+        final DomainObjectPermissionParameters parameters = getParameters();
+        
         final Set<Long> organizationSubjectIds = parameters.getSubjectIds();
-
+        
         Set<Long> selectedSubjectIds =
                 parameters.getParentSubjectIds() != null && !parameters.getParentSubjectIds().isEmpty()
                 ? parameters.getParentSubjectIds() : organizationSubjectIds;
-
+        
         CollapsibleFieldset permissionsFieldset = new CollapsibleFieldset("permissionsFieldset",
                 new ResourceModel("permissions"));
         add(permissionsFieldset);
-
+        
         boolean visibleByAll = selectedSubjectIds.size() == 1
                 && selectedSubjectIds.contains(PermissionBean.VISIBLE_BY_ALL_PERMISSION_ID);
         final IModel<PermissionMode> permissionModeModel =
                 new Model<PermissionMode>(visibleByAll ? PermissionMode.ALL : PermissionMode.SELECT);
-
+        
         final WebMarkupContainer organizationsContainer = new WebMarkupContainer("organizationsContainer") {
-
+            
             @Override
             public boolean isVisible() {
                 return permissionModeModel.getObject() == PermissionMode.SELECT;
@@ -82,15 +89,15 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
         };
         organizationsContainer.setOutputMarkupPlaceholderTag(true);
         permissionsFieldset.add(organizationsContainer);
-
+        
         RadioChoice<PermissionMode> permissionMode = new RadioChoice<PermissionMode>("permissionMode",
                 permissionModeModel, Arrays.asList(PermissionMode.values()),
                 new EnumChoiceRenderer<PermissionMode>(this));
-
+        
         final List<DomainObject> selectedSubjects = initializeSelectedSubjects(selectedSubjectIds);
-
+        
         permissionMode.add(new AjaxFormChoiceComponentUpdatingBehavior() {
-
+            
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 PermissionMode mode = permissionModeModel.getObject();
@@ -105,66 +112,69 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
         });
         permissionMode.setSuffix("");
         permissionsFieldset.add(permissionMode);
-
+        
         ListView<DomainObject> organizations = new AjaxRemovableListView<DomainObject>("organizations", selectedSubjects) {
-
+            
             @Override
             protected void populateItem(ListItem<DomainObject> item) {
                 final WebMarkupContainer fakeContainer = new WebMarkupContainer("fakeContainer");
                 item.add(fakeContainer);
-
+                
                 item.add(new Label("number", new AbstractReadOnlyModel<String>() {
-
+                    
                     @Override
                     public String getObject() {
                         return String.valueOf(getCurrentIndex(fakeContainer) + 1);
                     }
                 }));
-
+                
                 IModel<DomainObject> organizationModel = new Model<DomainObject>() {
-
+                    
                     @Override
                     public DomainObject getObject() {
                         int index = getCurrentIndex(fakeContainer);
                         return selectedSubjects.get(index);
                     }
-
+                    
                     @Override
                     public void setObject(DomainObject organization) {
                         int index = getCurrentIndex(fakeContainer);
                         selectedSubjects.set(index, organization);
-
+                        
                         setupSubjectIds(organizationSubjectIds, selectedSubjects);
                     }
                 };
-                organizationModel.setObject(item.getModelObject());
-
+                DomainObject organization = item.getModelObject();
+                organizationModel.setObject(organization);
+                
+                boolean allowModifyOrganization = isAllowModifyOrganization(getCurrentIndex(fakeContainer),
+                        organization != null ? organization.getId() : null);
                 OrganizationPicker organizationPicker = new OrganizationPicker("organizationPicker",
-                        organizationModel, false, null, parameters.isEnabled(),
+                        organizationModel, false, null, parameters.isEnabled() && allowModifyOrganization,
                         OrganizationTypeStrategy.USER_ORGANIZATION_TYPE);
                 item.add(organizationPicker);
-
+                
                 addRemoveLink("removeOrganization", item, null, organizationsContainer).
-                        setVisible(parameters.isEnabled());
+                        setVisible(parameters.isEnabled() && allowModifyOrganization);
             }
-
+            
             @Override
             protected AjaxLink<Void> getRemoveLink(String linkId, final Component toFocus, final Component... toUpdate) {
                 return new AjaxLink<Void>(linkId) {
-
+                    
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         updateListViewOnRemoval(this, target, toFocus, toUpdate);
-
+                        
                         setupSubjectIds(organizationSubjectIds, selectedSubjects);
                     }
                 };
             }
         };
         organizationsContainer.add(organizations);
-
+        
         AjaxLink<Void> addOrganization = new AjaxLink<Void>("addOrganization") {
-
+            
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DomainObject newSubject = null;
@@ -173,10 +183,13 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
             }
         };
         organizationsContainer.add(addOrganization);
-
     }
-
-    private List<DomainObject> initializeSelectedSubjects(Set<Long> selectedSubjectIds) {
+    
+    protected boolean isAllowModifyOrganization(int index, Long organizationId) {
+        return true;
+    }
+    
+    protected List<DomainObject> initializeSelectedSubjects(Set<Long> selectedSubjectIds) {
         List<DomainObject> selectedSubjects = new ArrayList<>();
         for (long selecetSubjectId : selectedSubjectIds) {
             if (selecetSubjectId > 0) {
@@ -188,12 +201,12 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
         }
         return selectedSubjects;
     }
-
-    private IKeConnectionOrganizationStrategy getOrganizationStrategy() {
+    
+    protected final IKeConnectionOrganizationStrategy getOrganizationStrategy() {
         return (IKeConnectionOrganizationStrategy) strategyFactory.getStrategy(
                 IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization");
     }
-
+    
     private void setupSubjectIds(Set<Long> subjectIds, List<DomainObject> selectedSubjects) {
         subjectIds.clear();
         for (DomainObject selectedSubject : selectedSubjects) {
