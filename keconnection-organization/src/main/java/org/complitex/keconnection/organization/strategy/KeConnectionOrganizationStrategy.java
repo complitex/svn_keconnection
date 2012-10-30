@@ -4,6 +4,7 @@
  */
 package org.complitex.keconnection.organization.strategy;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
@@ -251,5 +252,14 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
                 new BooleanConverter().toString(Boolean.TRUE),
                 localeBean.getSystemLocaleObject().getId());
         update(findById(organization.getId(), true), organization, DateUtil.getCurrentDate());
+    }
+
+    @Override
+    public String displayShortNameAndCode(DomainObject organization, Locale locale) {
+        final String fullName = AttributeUtil.getStringCultureValue(organization, NAME, locale);
+        final String shortName = AttributeUtil.getStringCultureValue(organization, SHORT_NAME, locale);
+        final String code = getUniqueCode(organization);
+        final String name = !Strings.isNullOrEmpty(shortName) ? shortName : fullName;
+        return name + " (" + code + ")";
     }
 }
