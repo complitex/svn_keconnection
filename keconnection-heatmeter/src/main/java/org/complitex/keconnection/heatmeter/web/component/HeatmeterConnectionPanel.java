@@ -144,7 +144,6 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                         target.add(address);
                     }
                 });
-                code.setRequired(true);
                 code.setOutputMarkupId(true);
                 item.add(code);
 
@@ -184,7 +183,6 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                         target.add(code);
                     }
                 });
-                organizationCode.setRequired(true);
                 item.add(organizationCode);
 
                 //remove
