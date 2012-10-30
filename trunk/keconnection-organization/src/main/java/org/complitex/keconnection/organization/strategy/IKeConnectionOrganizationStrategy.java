@@ -59,4 +59,6 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
     List<Organization> find(DomainObjectExample example);
 
     void setReadyCloseOperatingMonthFlag(Organization organization);
+
+    String displayShortNameAndCode(DomainObject organization, Locale locale);
 }

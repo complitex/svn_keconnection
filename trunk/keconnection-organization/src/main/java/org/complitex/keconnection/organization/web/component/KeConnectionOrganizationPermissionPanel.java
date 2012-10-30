@@ -31,14 +31,22 @@ public class KeConnectionOrganizationPermissionPanel extends KeConnectionDomainO
 
     @Override
     protected List<DomainObject> initializeSelectedSubjects(Set<Long> selectedSubjectIds) {
-        List<DomainObject> superSelectedSubjects = super.initializeSelectedSubjects(selectedSubjectIds);
-        if (organizationId != null && organizationId > 0 && !selectedSubjectIds.contains(organizationId)) {
-            List<DomainObject> selectedSubjects = new ArrayList<>(superSelectedSubjects);
-            //add organization itself at 0 position in list because organization must see themself.
-            selectedSubjects.add(0, getOrganizationStrategy().findById(organizationId, true));
-            return selectedSubjects;
-        } else {
-            return superSelectedSubjects;
+        final List<DomainObject> superSelectedSubjects = super.initializeSelectedSubjects(selectedSubjectIds);
+
+        DomainObject itself = getOrganizationStrategy().findById(organizationId, true);
+        if (getOrganizationStrategy().isUserOrganization(itself)) {
+            if (organizationId != null && organizationId > 0) {
+                List<DomainObject> selectedSubjects = new ArrayList<>();
+
+                for (DomainObject o : superSelectedSubjects) {
+                    if (!o.getId().equals(organizationId)) {
+                        selectedSubjects.add(o);
+                    }
+                }
+                selectedSubjects.add(0, itself);
+                return selectedSubjects;
+            }
         }
+        return superSelectedSubjects;
     }
 }

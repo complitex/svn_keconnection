@@ -83,7 +83,7 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
                     public String getObject() {
                         DomainObject organization = getModelObject();
                         if (organization != null) {
-                            return getOrganizationStrategy().displayDomainObject(organization, getLocale());
+                            return getOrganizationStrategy().displayShortNameAndCode(organization, getLocale());
                         } else {
                             return getString("organization_not_selected");
                         }
