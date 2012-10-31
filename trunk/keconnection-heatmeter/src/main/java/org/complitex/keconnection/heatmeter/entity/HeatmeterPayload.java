@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.entity;
 
+import org.complitex.dictionary.entity.IDateRange;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -7,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.09.12 18:27
  */
-public class HeatmeterPayload implements IHeatmeterEntity {
+public class HeatmeterPayload implements IHeatmeterEntity, IDateRange {
     private Long id;
     private Long tablegramRecordId;
     private Long parentId;

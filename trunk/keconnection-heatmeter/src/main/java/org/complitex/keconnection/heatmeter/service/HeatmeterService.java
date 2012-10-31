@@ -1,13 +1,14 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.*;
 
 import javax.ejb.Stateless;
-import java.util.Date;
 import java.util.List;
 
+import static org.complitex.dictionary.util.DateRangeUtil.encloses;
+import static org.complitex.dictionary.util.DateRangeUtil.isConnected;
+import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.ADJUSTMENT;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.*;
@@ -19,128 +20,189 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatu
 @Stateless
 public class HeatmeterService {
     public HeatmeterValidate validate(Heatmeter heatmeter){
-        //validate period
+        HeatmeterValidate heatmeterValidate;
+
+        //periods
+        heatmeterValidate = validatePeriods(heatmeter);
+        if (!VALID.equals(heatmeterValidate.getStatus())){
+            return heatmeterValidate;
+        }
+
+        //connection
+        heatmeterValidate = validateConnections(heatmeter);
+        if (!VALID.equals(heatmeterValidate.getStatus())){
+            return heatmeterValidate;
+        }
+
+        //payloads
+        heatmeterValidate = validatePayloads(heatmeter);
+        if (!VALID.equals(heatmeterValidate.getStatus())){
+            return heatmeterValidate;
+        }
+
+        //consumption
+        return validateConsumptions(heatmeter);
+    }
+
+    public HeatmeterValidate validatePeriods(Heatmeter heatmeter){
         boolean hasOpenOperation = false;
         boolean hasOpenAdjustment = false;
 
-        for (HeatmeterPeriod period : heatmeter.getPeriods()){
-            if (period.getBeginDate() != null && period.getEndDate() != null && period.getBeginDate().after(period.getEndDate())){
-                return new HeatmeterValidate(ERROR_PERIOD_BEGIN_DATE_AFTER_END_DATE,
-                        period.getBeginDate(), period.getEndDate());
+        List<HeatmeterPeriod> periods = heatmeter.getPeriods();
+        for (int i = 0; i < periods.size(); i++) {
+            HeatmeterPeriod p1 = periods.get(i);
+
+            if (p1.getBeginDate() != null && p1.getEndDate() != null && p1.getBeginDate().after(p1.getEndDate())){
+                return new HeatmeterValidate(ERROR_PERIOD_BEGIN_DATE_AFTER_END_DATE, p1);
             }
 
-            if (period.getBeginDate() == null){
+            if (p1.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_PERIOD_BEGIN_DATE_REQUIRED);
             }
 
-            if (period.getType() == null){
+            if (p1.getType() == null){
                 return new HeatmeterValidate(ERROR_PERIOD_TYPE_REQUIRED);
             }else {
-                if (period.getEndDate() == null){
+                if (p1.getEndDate() == null){
                     //Одновременно без даты окончания может быть не более двух периодов: один период функционирования
                     //и какой либо другой (пока возможен только период юстировки).
-                    if (OPERATION.equals(period.getType())){
+                    if (OPERATION.equals(p1.getType())){
                         if (hasOpenOperation){
-                            return new HeatmeterValidate(ERROR_PERIOD_MORE_THAN_TWO_OPEN_OPERATION,
-                                    period.getBeginDate());
+                            return new HeatmeterValidate(ERROR_PERIOD_MORE_THAN_TWO_OPEN_OPERATION, p1);
                         }
 
                         hasOpenOperation = true;
-                    }else if (ADJUSTMENT.equals(period.getType())){
+                    }else if (ADJUSTMENT.equals(p1.getType())){
                         if (hasOpenAdjustment){
-                            return new HeatmeterValidate(ERROR_PERIOD_MORE_THAN_TWO_OPEN_ADJUSTMENT,
-                                    period.getBeginDate());
+                            return new HeatmeterValidate(ERROR_PERIOD_MORE_THAN_TWO_OPEN_ADJUSTMENT, p1);
                         }
 
                         hasOpenAdjustment = true;
                     }
                 }
             }
-        }
 
-        //однотипные периоды не могут пересекаться
-        List<HeatmeterPeriod> periods = heatmeter.getPeriods();
-        for (int i = 0; i < periods.size() - 1 ; i++) {
-            HeatmeterPeriod p1 = periods.get(i);
-
-            for (int j = i+1; j < periods.size(); j++) {
-                HeatmeterPeriod p2 = periods.get(j);
-
-                if (p1.getType() != null && p1.getType().equals(p2.getType())){
-                    Range<Date> r1 = p1.getEndDate() != null
-                            ? Ranges.closed(p1.getBeginDate(), p1.getEndDate())
-                            : Ranges.atLeast(p1.getBeginDate());
-
-                    Range<Date> r2 = p2.getEndDate() != null
-                            ? Ranges.closed(p2.getBeginDate(), p2.getEndDate())
-                            : Ranges.atLeast(p2.getBeginDate());
-
-                    if (r1.isConnected(r2)){
-                        return new HeatmeterValidate(ERROR_PERIOD_INTERSECTION, p1.getBeginDate(), p1.getEndDate(),
-                                p2.getBeginDate(), p2.getEndDate());
-                    }
-                }
-            }
-        }
-
-        for (HeatmeterPeriod p1 : periods){
+            //период юстировки должен полностью принадлежать периоду функционирования
             if (ADJUSTMENT.equals(p1.getType())) {
                 boolean encloses = false;
 
-                Range<Date> r1 = p1.getEndDate() != null
-                        ? Ranges.closed(p1.getBeginDate(), p1.getEndDate())
-                        : Ranges.atLeast(p1.getBeginDate());
-
                 for (HeatmeterPeriod p2 : periods){
-                    if (OPERATION.equals(p2.getType())){
-                        Range<Date> r2 = p2.getEndDate() != null
-                                ? Ranges.closed(p2.getBeginDate(), p2.getEndDate())
-                                : Ranges.atLeast(p2.getBeginDate());
-
-                        if (r2.encloses(r1)){
-                            encloses = true;
-                            break;
-                        }
+                    if (OPERATION.equals(p2.getType())
+                            && isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+                            && encloses(p2, p1)){
+                        encloses = true;
+                        break;
                     }
                 }
 
                 if (!encloses){
-                    return new HeatmeterValidate(ERROR_PERIOD_OPERATION_MUST_ENCLOSES_ADJUSTMENT,
-                            p1.getBeginDate(), p1.getEndDate());
+                    return new HeatmeterValidate(ERROR_PERIOD_OPERATION_MUST_ENCLOSES_ADJUSTMENT, p1);
+                }
+            }
+
+            //однотипные периоды не могут пересекаться
+            if (i < periods.size() - 1) {
+                for (int j = i+1; j < periods.size(); j++) {
+                    HeatmeterPeriod p2 = periods.get(j);
+
+                    if (p1.getType() != null && p1.getType().equals(p2.getType())
+                            && isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+                            && isConnected(p1, p2)){
+
+                        return new HeatmeterValidate(ERROR_PERIOD_INTERSECTION, p1, p2);
+                    }
                 }
             }
         }
 
-        //validate connection
-        for (HeatmeterConnection connection : heatmeter.getConnections()){
-            if (connection.getBeginDate() == null){
+        return new HeatmeterValidate(VALID);
+    }
+
+    public HeatmeterValidate validateConnections(Heatmeter heatmeter){
+        List<HeatmeterConnection> connections = heatmeter.getConnections();
+        for (int i = 0; i < connections.size(); ++i){
+            HeatmeterConnection c1 = connections.get(i);
+
+            if (c1.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_CONNECTION_BEGIN_DATE_REQUIRED);
             }
 
-            if (connection.getBuildingCodeId() == null){
+            if (c1.getBuildingCodeId() == null){
                 return new HeatmeterValidate(ERROR_CONNECTION_NOT_FOUND);
+            }
+
+            //периоды подключений по одному адресу не должны пересекаться
+            if (i < connections.size() - 1) {
+                for (int j = i + 1; j < connections.size(); ++j){
+                    HeatmeterConnection c2 = connections.get(j);
+
+                    if(isSameMonth(c1.getOperatingMonth(), c2.getOperatingMonth())
+                            && c1.getBuildingCodeId().equals(c2.getBuildingCodeId())
+                            && isConnected(c1, c2)){
+                        return new HeatmeterValidate(ERROR_CONNECTION_INTERSECTION, c1, c2);
+                    }
+                }
             }
         }
 
-        //validate payload
-        for (HeatmeterPayload payload : heatmeter.getPayloads()){
-            if (payload.getBeginDate() == null){
+        return new HeatmeterValidate(VALID);
+    }
+
+    public HeatmeterValidate validatePayloads(Heatmeter heatmeter){
+        List<HeatmeterPayload> payloads = heatmeter.getPayloads();
+        for (int i = 0; i < payloads.size(); ++i){
+            HeatmeterPayload p1 = payloads.get(i);
+
+            if (p1.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_PAYLOAD_BEGIN_DATE_REQUIRED);
             }
 
-            if (payload.getPayload1() == null || payload.getPayload2() == null || payload.getPayload3() == null){
+            if (p1.getPayload1() == null || p1.getPayload2() == null || p1.getPayload3() == null){
                 return new HeatmeterValidate(ERROR_PAYLOAD_VALUES_REQUIRED);
+            }
+
+            if (p1.getPayload1().add(p1.getPayload2()).add(p1.getPayload3()).doubleValue() != 100){
+                return new HeatmeterValidate(ERROR_PAYLOAD_SUM_100, p1);
+            }
+
+            //периоды распределений не должны пересекаться
+            if (i < payloads.size() - 1) {
+                for (int j = i + 1; j < payloads.size(); ++j){
+                    HeatmeterPayload p2 = payloads.get(j);
+
+                    if(isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+                            && isConnected(p1, p2)){
+                        return new HeatmeterValidate(ERROR_PAYLOAD_INTERSECTION, p1, p2);
+                    }
+                }
             }
         }
 
-        //validate consumption
-        for(HeatmeterConsumption consumption : heatmeter.getConsumptions()){
-            if (consumption.getReadoutDate() == null) {
+        return new HeatmeterValidate(VALID);
+    }
+
+    public HeatmeterValidate validateConsumptions(Heatmeter heatmeter){
+        List<HeatmeterConsumption> consumptions = heatmeter.getConsumptions();
+        for (int i = 0; i < consumptions.size(); ++i){
+            HeatmeterConsumption c1 = consumptions.get(i);
+
+            if (c1.getReadoutDate() == null) {
                 return new HeatmeterValidate(ERROR_CONSUMPTION_READOUT_DATE_REQUIRED);
             }
 
-            if (consumption.getConsumption() == null){
+            if (c1.getConsumption() == null){
                 return new HeatmeterValidate(ERROR_CONSUMPTION_VALUE_REQUIRED);
+            }
+
+            if (i < consumptions.size() - 1) {
+                for (int j = i + 1; j < consumptions.size(); ++j){
+                    HeatmeterConsumption c2 = consumptions.get(j);
+
+                    if(isSameMonth(c1.getOperatingMonth(), c2.getOperatingMonth())
+                            && DateUtil.isTheSameDay(c1.getReadoutDate(), c2.getReadoutDate())){
+                        return new HeatmeterValidate(ERROR_CONSUMPTION_INTERSECTION, c1.getReadoutDate());
+                    }
+                }
             }
         }
 

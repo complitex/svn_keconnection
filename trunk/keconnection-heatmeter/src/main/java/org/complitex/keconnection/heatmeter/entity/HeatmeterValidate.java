@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.entity;
 
+import org.complitex.dictionary.entity.IDateRange;
+
 import java.util.Date;
 
 import static org.complitex.dictionary.util.DateUtil.format;
@@ -11,45 +13,45 @@ import static org.complitex.dictionary.util.DateUtil.format;
 public class HeatmeterValidate {
     private HeatmeterValidateStatus status;
 
-    private Date p1BeginDate;
-    private Date p1EndDate;
+    private IDateRange dr1;
+    private IDateRange dr2;
 
-    private Date p2BeginDate;
-    private Date p2EndDate;
+    private Date date;
 
     public HeatmeterValidate(HeatmeterValidateStatus status) {
         this.status = status;
     }
 
-    public HeatmeterValidate(HeatmeterValidateStatus status, Date p1BeginDate) {
+    public HeatmeterValidate(HeatmeterValidateStatus status, Date date) {
         this.status = status;
-        this.p1BeginDate = p1BeginDate;
+        this.date = date;
     }
 
-    public HeatmeterValidate(HeatmeterValidateStatus status, Date p1BeginDate, Date p1EndDate) {
+    public HeatmeterValidate(HeatmeterValidateStatus status, IDateRange dr1) {
         this.status = status;
-        this.p1BeginDate = p1BeginDate;
-        this.p1EndDate = p1EndDate;
+        this.dr1 = dr1;
     }
 
-    public HeatmeterValidate(HeatmeterValidateStatus status, Date p1BeginDate, Date p1EndDate, Date p2BeginDate, Date p2EndDate) {
+    public HeatmeterValidate(HeatmeterValidateStatus status, IDateRange dr1, IDateRange dr2) {
         this.status = status;
-        this.p1BeginDate = p1BeginDate;
-        this.p1EndDate = p1EndDate;
-        this.p2BeginDate = p2BeginDate;
-        this.p2EndDate = p2EndDate;
+        this.dr1 = dr1;
+        this.dr2 = dr2;
     }
 
     @Override
     public String toString() {
         String s = "";
 
-        if (p1BeginDate != null ){
-            s =  format(p1BeginDate, p1EndDate);
+        if (dr1 != null && dr1.getBeginDate() != null){
+            s =  format(dr1.getBeginDate(), dr1.getEndDate());
         }
 
-        if(p2BeginDate != null){
-            s += ", " + format(p2BeginDate, p2EndDate);
+        if(dr2 != null && dr2.getBeginDate() != null){
+            s += ", " + format(dr2.getBeginDate(), dr2.getEndDate());
+        }
+
+        if (date != null){
+            s = format(date);
         }
 
         return s;
@@ -59,19 +61,11 @@ public class HeatmeterValidate {
         return status;
     }
 
-    public Date getP1BeginDate() {
-        return p1BeginDate;
+    public IDateRange getDr1() {
+        return dr1;
     }
 
-    public Date getP1EndDate() {
-        return p1EndDate;
-    }
-
-    public Date getP2BeginDate() {
-        return p2BeginDate;
-    }
-
-    public Date getP2EndDate() {
-        return p2EndDate;
+    public IDateRange getDr2() {
+        return dr2;
     }
 }
