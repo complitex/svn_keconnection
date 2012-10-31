@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.getFirstDayOfCurrentMonth;
 import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 
 /**
@@ -225,7 +224,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getConnections().add(new HeatmeterConnection(getFirstDayOfCurrentMonth()));
+                model.getObject().getConnections().add(new HeatmeterConnection(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterConnectionPanel.this);
             }

@@ -65,7 +65,7 @@ public class HeatmeterEdit extends FormTemplatePage{
 
     public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
 
-    private IModel<Date> operatingMonthModel = Model.of(getFirstDayOfCurrentMonth());
+    private IModel<Date> operatingMonthModel = Model.of(DEFAULT_BEGIN_DATE);
 
     public HeatmeterEdit() {
         init(null);

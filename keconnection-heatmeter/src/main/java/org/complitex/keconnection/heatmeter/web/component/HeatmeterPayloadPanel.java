@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.getFirstDayOfCurrentMonth;
-
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 16:42
@@ -85,7 +83,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getPayloads().add(new HeatmeterPayload(getFirstDayOfCurrentMonth()));
+                model.getObject().getPayloads().add(new HeatmeterPayload(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterPayloadPanel.this);
             }
