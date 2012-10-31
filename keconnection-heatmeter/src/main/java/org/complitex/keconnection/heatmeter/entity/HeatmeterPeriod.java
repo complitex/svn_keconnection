@@ -1,12 +1,14 @@
 package org.complitex.keconnection.heatmeter.entity;
 
+import org.complitex.dictionary.entity.IDateRange;
+
 import java.util.Date;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.09.12 19:25
  */
-public class HeatmeterPeriod implements IHeatmeterEntity{
+public class HeatmeterPeriod implements IHeatmeterEntity, IDateRange{
     private Long id;
     private Long parentId;
     private Long heatmeterId;
