@@ -52,12 +52,12 @@ public class HeatmeterService {
         for (int i = 0; i < periods.size(); i++) {
             HeatmeterPeriod p1 = periods.get(i);
 
-            if (p1.getBeginDate() != null && p1.getEndDate() != null && p1.getBeginDate().after(p1.getEndDate())){
-                return new HeatmeterValidate(ERROR_PERIOD_BEGIN_DATE_AFTER_END_DATE, p1);
-            }
-
             if (p1.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_PERIOD_BEGIN_DATE_REQUIRED);
+            }
+
+            if (p1.getEndDate() != null && p1.getBeginDate().after(p1.getEndDate())){
+                return new HeatmeterValidate(ERROR_PERIOD_BEGIN_DATE_AFTER_END_DATE, p1);
             }
 
             if (p1.getType() == null){
@@ -127,6 +127,10 @@ public class HeatmeterService {
                 return new HeatmeterValidate(ERROR_CONNECTION_BEGIN_DATE_REQUIRED);
             }
 
+            if (c1.getEndDate() != null && c1.getBeginDate().after(c1.getEndDate())){
+                return new HeatmeterValidate(ERROR_CONNECTION_BEGIN_DATE_AFTER_END_DATE, c1);
+            }
+
             if (c1.getBuildingCodeId() == null){
                 return new HeatmeterValidate(ERROR_CONNECTION_NOT_FOUND);
             }
@@ -155,6 +159,10 @@ public class HeatmeterService {
 
             if (p1.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_PAYLOAD_BEGIN_DATE_REQUIRED);
+            }
+
+            if (p1.getEndDate() != null && p1.getBeginDate().after(p1.getEndDate())){
+                return new HeatmeterValidate(ERROR_PAYLOAD_BEGIN_DATE_AFTER_END_DATE, p1);
             }
 
             if (p1.getPayload1() == null || p1.getPayload2() == null || p1.getPayload3() == null){
