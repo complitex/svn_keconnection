@@ -109,8 +109,6 @@ public class HeatmeterEdit extends FormTemplatePage{
         form.add(container);
 
         //Operating month
-
-
         container.add(new Label("current_operation_month", operatingMonthModel));
 
         container.add(new AjaxLink("previous_month") {

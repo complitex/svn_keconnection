@@ -6,9 +6,6 @@ import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 
 import java.util.Date;
 
-import static org.complitex.dictionary.util.DateUtil.getFirstDayOfCurrentMonth;
-import static org.complitex.dictionary.util.DateUtil.isSameMonth;
-
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 16:25
@@ -25,7 +22,8 @@ public class AbstractHeatmeterEditPanel extends Panel{
     }
 
     protected boolean isCurrentOperationMonth(){
-        return isSameMonth(getFirstDayOfCurrentMonth(), operatingMonthModel.getObject());
+//        return isSameMonth(getFirstDayOfCurrentMonth(), operatingMonthModel.getObject());
+        return true;
     }
 
     public IModel<Heatmeter> getModel() {
