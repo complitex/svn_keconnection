@@ -107,6 +107,7 @@ public class HeatmeterService {
 
                     if (p1.getType() != null && p1.getType().equals(p2.getType())
                             && isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+                            && p2.getBeginDate() != null
                             && isConnected(p1, p2)){
 
                         return new HeatmeterValidate(ERROR_PERIOD_INTERSECTION, p1, p2);
@@ -142,6 +143,7 @@ public class HeatmeterService {
 
                     if(isSameMonth(c1.getOperatingMonth(), c2.getOperatingMonth())
                             && c1.getBuildingCodeId().equals(c2.getBuildingCodeId())
+                            && c2.getBeginDate() != null
                             && isConnected(c1, c2)){
                         return new HeatmeterValidate(ERROR_CONNECTION_INTERSECTION, c1, c2);
                     }
@@ -179,6 +181,7 @@ public class HeatmeterService {
                     HeatmeterPayload p2 = payloads.get(j);
 
                     if(isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+                            && p2.getBeginDate() != null
                             && isConnected(p1, p2)){
                         return new HeatmeterValidate(ERROR_PAYLOAD_INTERSECTION, p1, p2);
                     }
