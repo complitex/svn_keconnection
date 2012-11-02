@@ -1,6 +1,5 @@
 package org.complitex.keconnection.heatmeter.web;
 
-import com.google.common.base.Joiner;
 import com.google.common.io.ByteStreams;
 import org.apache.wicket.Component;
 import org.apache.wicket.ThreadContext;
@@ -11,6 +10,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -19,16 +19,12 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.address.service.AddressRendererBean;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.service.IProcessListener;
@@ -58,9 +54,13 @@ import javax.ejb.EJB;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.HeatmeterItemPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -71,14 +71,31 @@ import static org.complitex.dictionary.util.PageUtil.*;
 public class HeatmeterList extends TemplatePage {
 
     private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
-    private static final int IMPORT_AJAX_TIMER = 5;
+    private static final int IMPORT_AJAX_TIMER = 2;
     private static final int BIND_ALL_AJAX_TIMER = 10;
+
+    public static class HeatmeterListWrapper implements Serializable {
+
+        private final Heatmeter heatmeter;
+        private final Date operatingMonthDate;
+
+        public HeatmeterListWrapper(Heatmeter heatmeter, Date operatingMonthDate) {
+            this.heatmeter = heatmeter;
+            this.operatingMonthDate = operatingMonthDate;
+        }
+
+        public Heatmeter getHeatmeter() {
+            return heatmeter;
+        }
+
+        public Date getOperatingMonthDate() {
+            return operatingMonthDate;
+        }
+    }
     @EJB
     private HeatmeterBean heatmeterBean;
     @EJB
     private HeatmeterImportService heatmeterImportService;
-    @EJB
-    private AddressRendererBean addressRendererBean;
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
     @EJB
@@ -87,6 +104,13 @@ public class HeatmeterList extends TemplatePage {
     private HeatmeterBindService heatmeterBindService;
     private Dialog importDialog;
     private final AtomicBoolean stopBindingAllCondition = new AtomicBoolean(true);
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.renderCSSReference(new PackageResourceReference(HeatmeterList.class,
+                HeatmeterList.class.getSimpleName() + ".css"));
+    }
 
     public HeatmeterList() {
         //Title
@@ -143,18 +167,6 @@ public class HeatmeterList extends TemplatePage {
         //Filter Fields
         filterForm.add(newTextFields("object.", "ls"));
         filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class, true));
-        filterForm.add(new DropDownChoice<>("object.calculating", Arrays.asList(true, false),
-                new IChoiceRenderer<Object>() {
-                    @Override
-                    public Object getDisplayValue(Object object) {
-                        return getString(object.toString());
-                    }
-
-                    @Override
-                    public String getIdValue(Object object, int index) {
-                        return object.toString();
-                    }
-                }).setNullValid(true));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterStatus.class, true));
         filterForm.add(new DropDownChoice<>("object.bindingStatus",
                 Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()), new IChoiceRenderer<HeatmeterBindingStatus>() {
@@ -174,10 +186,10 @@ public class HeatmeterList extends TemplatePage {
         final Map<String, Long> selectedIds = new HashMap<>();
 
         //Data Provider
-        DataProvider<Heatmeter> dataProvider = new DataProvider<Heatmeter>() {
+        DataProvider<HeatmeterListWrapper> dataProvider = new DataProvider<HeatmeterListWrapper>() {
 
             @Override
-            protected Iterable<Heatmeter> getData(int first, int count) {
+            protected Iterable<HeatmeterListWrapper> getData(int first, int count) {
                 FilterWrapper<Heatmeter> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);
@@ -185,7 +197,23 @@ public class HeatmeterList extends TemplatePage {
                 filterWrapper.setSortProperty(getSort().getProperty());
                 filterWrapper.setAscending(getSort().isAscending());
 
-                return heatmeterBean.getHeatmeters(filterWrapper);
+                List<Heatmeter> heatmeters = heatmeterBean.getHeatmeters(filterWrapper);
+                List<HeatmeterListWrapper> results = new ArrayList<>();
+                for (Heatmeter heatmeter : heatmeters) {
+                    HeatmeterListWrapper wrapper = new HeatmeterListWrapper(heatmeter, getOperatingMonthDate(heatmeter));
+                    results.add(wrapper);
+
+                    //add new empty payload
+                    HeatmeterPayload p = new HeatmeterPayload(wrapper.getOperatingMonthDate());
+                    p.setHeatmeterId(heatmeter.getId());
+                    heatmeter.getPayloads().add(p);
+
+                    //add new empty consumption
+                    HeatmeterConsumption c = new HeatmeterConsumption(wrapper.getOperatingMonthDate());
+                    c.setHeatmeterId(heatmeter.getId());
+                    heatmeter.getConsumptions().add(c);
+                }
+                return results;
             }
 
             @Override
@@ -194,8 +222,8 @@ public class HeatmeterList extends TemplatePage {
             }
 
             @Override
-            public IModel<Heatmeter> model(Heatmeter object) {
-                return new CompoundPropertyModel<>(object);
+            public IModel<HeatmeterListWrapper> model(HeatmeterListWrapper object) {
+                return new Model<>(object);
             }
         };
         dataProvider.setSort("id", SortOrder.DESCENDING);
@@ -217,64 +245,24 @@ public class HeatmeterList extends TemplatePage {
         add(heatmeterBindPanel);
 
         //Data View
-        DataView<Heatmeter> dataView = new DataView<Heatmeter>("data_view", dataProvider) {
+        DataView<HeatmeterListWrapper> dataView = new DataView<HeatmeterListWrapper>("data_view", dataProvider) {
 
             @Override
-            protected void populateItem(Item<Heatmeter> item) {
-                final Heatmeter heatmeter = item.getModelObject();
+            protected void populateItem(Item<HeatmeterListWrapper> item) {
+                final HeatmeterListWrapper heatmeterListWrapper = item.getModelObject();
 
-                item.add(newTextLabels("ls"));
-
-                item.add(new Label("calculating", getString(heatmeter.getCalculating().toString())));
-
-                //building
-                List<String> building = new ArrayList<>();
-                for (HeatmeterConnection hc : heatmeter.getConnections()) {
-                    building.add(addressRendererBean.displayBuildingSimple(hc.getBuildingId(), getLocale()));
-                }
-                final String buildingLabel = Joiner.on("; ").join(building);
-                item.add(new Label("buildingId", buildingLabel));
-
-                //organization
-                List<String> organization = new ArrayList<>();
-                for (HeatmeterConnection hc : heatmeter.getConnections()) {
-                    organization.add(organizationStrategy.displayShortName(hc.getOrganizationId(), getLocale()));
-                }
-                item.add(new Label("organizationId", Joiner.on("; ").join(organization)));
-
-                item.add(new Label("type", getStringOrKey(heatmeter.getType())));
-
-                item.add(new Label("status", getStringOrKey(heatmeter.getStatus())));
-
-                item.add(new Label("bindingStatus", heatmeterBindingStatusRenderer.render(heatmeter.getBindingStatus(), getLocale())));
-
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.add("id", heatmeter.getId());
-                item.add(new BookmarkablePageLink<>("edit", HeatmeterEdit.class, pageParameters));
-
-                item.add(new Link("delete") {
+                item.add(new HeatmeterItemPanel("heatmeterItemPanel", heatmeterListWrapper) {
 
                     @Override
-                    public void onClick() {
-                        info(getString("info_deleted"));
-                        heatmeterBean.delete(heatmeter.getId());
-                    }
-                });
-
-                item.add(new AjaxLink<Void>("bindHeatmeterLink") {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        heatmeterBindPanel.open(heatmeter, buildingLabel, target);
-                    }
-
-                    @Override
-                    public boolean isEnabled() {
+                    protected boolean isEditable() {
                         return stopBindingAllCondition.get();
                     }
-                });
 
-                //todo add date updated
+                    @Override
+                    protected void onBindHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target) {
+                        heatmeterBindPanel.open(heatmeter, null, target);
+                    }
+                });
             }
         };
         dataContainer.add(dataView);
@@ -284,7 +272,7 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "calculating", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "status"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");
@@ -346,13 +334,14 @@ public class HeatmeterList extends TemplatePage {
                         }
                     };
 
-                    dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)){
+                    dataContainer.add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(IMPORT_AJAX_TIMER)) {
+
                         @Override
                         protected void onPostProcessTarget(AjaxRequestTarget target) {
                             target.add(messages);
                             target.add(paging);
 
-                            if (stopTimer.get()){
+                            if (stopTimer.get()) {
                                 stop();
                             }
                         }
@@ -466,6 +455,17 @@ public class HeatmeterList extends TemplatePage {
             bindAll.setOutputMarkupId(true);
             filterForm.add(bindAll);
         }
+    }
+
+    private Date getOperatingMonthDate(Heatmeter heatmeter) {
+        Long organizationId = null;
+        if (!heatmeter.getConnections().isEmpty()) {
+            organizationId = heatmeter.getConnections().get(0).getOrganizationId();
+        }
+        if (organizationId != null && organizationId > 0) {
+            return organizationStrategy.getOperatingMonthDate(organizationId);
+        }
+        return null;
     }
 
     @Override

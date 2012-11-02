@@ -1,0 +1,13 @@
+.errorStatus {
+    font-size: 11px;
+    color: #FF0000;
+    text-align: right;
+}
+
+table > tbody > tr.lastRow > td {
+    border-bottom: 1px solid #C2CBD3;
+}
+
+.save {
+    font-size: 11px;
+}

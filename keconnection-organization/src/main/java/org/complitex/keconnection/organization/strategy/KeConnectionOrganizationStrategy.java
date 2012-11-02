@@ -193,9 +193,12 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     }
 
     private void loadOperatingMonthDate(Organization organization) {
-        Date operatingMonthDate = sqlSession().selectOne(MAPPING_NAMESPACE + ".findOperatingMonthDate",
-                organization.getId());
-        organization.setOperatingMonthDate(operatingMonthDate);
+        organization.setOperatingMonthDate(getOperatingMonthDate(organization.getId()));
+    }
+
+    @Override
+    public Date getOperatingMonthDate(long organizationId) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findOperatingMonthDate", organizationId);
     }
 
     @Override

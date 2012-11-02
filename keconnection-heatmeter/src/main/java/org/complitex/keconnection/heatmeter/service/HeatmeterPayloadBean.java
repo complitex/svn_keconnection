@@ -6,6 +6,7 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,6 +19,7 @@ public class HeatmeterPayloadBean extends AbstractHeatmeterEntityBean<HeatmeterP
         return sqlSession().selectOne("selectHeatmeterPayload", id);
     }
 
+    @Transactional
     public void save(HeatmeterPayload heatmeterPayload){
         if (heatmeterPayload.getId() == null){
             sqlSession().insert("insertHeatmeterPayload", heatmeterPayload);

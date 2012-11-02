@@ -6,6 +6,7 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -20,6 +21,7 @@ public class HeatmeterConsumptionBean extends AbstractHeatmeterEntityBean<Heatme
         return null;
     }
 
+    @Transactional
     @Override
     public void save(HeatmeterConsumption consumption) {
         if (consumption.getId() == null){

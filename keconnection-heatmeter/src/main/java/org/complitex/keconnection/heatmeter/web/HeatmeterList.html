@@ -22,57 +22,109 @@
             </div>
 
             <form action="#" wicket:id="filter_form">
-                <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbColor no_border table_input">
                     <thead>
                         <tr>
                             <th></th>
-                            <th class="center" wicket:id="header.ls"><wicket:message key="ls"/></th>
-                            <th class="center" wicket:id="header.type_id"><wicket:message key="type"/></th>
-                            <th class="center" wicket:id="header.calculating"><wicket:message key="calculating"/></th>
-                            <th class="center"><wicket:message key="buildingId"/></th>
-                            <th class="center"><wicket:message key="organizationId"/></th>
-                            <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
-                            <th class="center"><wicket:message key="bindingStatus"/></th>
-
+                            <th class="center">
+                                <wicket:message key="organization"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="address"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="buildingCode"/>
+                            </th>
+                            <th class="center" wicket:id="header.ls">
+                                <wicket:message key="ls"/>
+                            </th>
+                            <th class="center" wicket:id="header.type_id">
+                                <wicket:message key="type"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="tg1"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="tg2"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="tg3"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="beginDate"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="consumption"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="consumption1"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="readoutDate"/>
+                            </th>
+                            <th class="center" wicket:id="header.status">
+                                <wicket:message key="status"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="bindingStatus"/>
+                            </th>
                             <th class="center">
                                 <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
                             </th>
                         </tr>
                         <tr>
                             <th></th>
-                            <th><input type="text" wicket:id="object.ls"/></th>
-                            <th><select wicket:id="object.type"></select></th>
-                            <th><select wicket:id="object.calculating"></select></th>
-                            <th><input type="text"/></th>
-                            <th><input type="text"/></th>
-                            <th><select wicket:id="object.status"></select></th>
-                            <th><select wicket:id="object.bindingStatus"></select></th>
-
+                            <th>
+                                <!-- organization filter -->
+                            </th>
+                            <th>
+                                <!-- address filter -->
+                            </th>
+                            <th>
+                                <!-- building code filter -->
+                            </th>
+                            <th>
+                                <input type="text" wicket:id="object.ls"/>
+                            </th>
+                            <th>
+                                <select wicket:id="object.type"></select>
+                            </th>
+                            <th>
+                                <!-- tg1 filter -->
+                            </th>
+                            <th>
+                                <!-- tg2 filter -->
+                            </th>
+                            <th>
+                                <!-- tg3 filter -->
+                            </th>
+                            <th>
+                                <!-- begin date filter -->
+                            </th>
+                            <th>
+                                <!-- consumption filter -->
+                            </th>
+                            <th>
+                                <!-- consumption1 filter -->
+                            </th>
+                            <th>
+                                <!-- readout date filter -->
+                            </th>
+                            <th>
+                                <select wicket:id="object.status"></select>
+                            </th>
+                            <th>
+                                <select wicket:id="object.bindingStatus"></select>
+                            </th>
                             <th class="center">
                                 <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
                             </th>
                         </tr>
                     </thead>
                     <tbody wicket:id="data_container">
-                        <tr wicket:id="data_view">
-                            <td></td>
-                            <td wicket:id="ls"></td>
-                            <td wicket:id="type"></td>
-                            <td wicket:id="calculating"></td>
-                            <td wicket:id="buildingId"></td>
-                            <td wicket:id="organizationId"></td>
-                            <td wicket:id="status"></td>
-                            <td wicket:id="bindingStatus"></td>
-                            <td>
-                                <a href="#" wicket:id="edit"><wicket:message key="edit"/></a>
-                                <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
-                                    <wicket:message key="delete"/>
-                                </a>
-                                <div>
-                                    <a href="#" wicket:id="bindHeatmeterLink"><wicket:message key="bindHeatmeter"/></a>
-                                </div>
-                            </td>
-                        </tr>
+                        <wicket:container wicket:id="data_view">
+                            <wicket:container wicket:id="heatmeterItemPanel"></wicket:container>
+                        </wicket:container>
                     </tbody>
                 </table>
 
