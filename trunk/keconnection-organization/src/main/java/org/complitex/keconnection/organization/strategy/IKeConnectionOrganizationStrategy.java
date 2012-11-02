@@ -4,6 +4,7 @@
  */
 package org.complitex.keconnection.organization.strategy;
 
+import java.util.Date;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 
@@ -61,4 +62,6 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
     void setReadyCloseOperatingMonthFlag(Organization organization);
 
     String displayShortNameAndCode(DomainObject organization, Locale locale);
+
+    Date getOperatingMonthDate(long organizationId);
 }
