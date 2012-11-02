@@ -23,6 +23,9 @@ import java.util.List;
 @XmlMapper
 @Stateless
 public class HeatmeterBean extends AbstractBean {
+    
+    public static final String PAYLOAD_BEGIN_DATE_FILTER_PARAM = "payloadBeginDate";
+    public static final String CONSUMPTION_READOUT_DATE = "consumptionReadoutDate";
 
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;

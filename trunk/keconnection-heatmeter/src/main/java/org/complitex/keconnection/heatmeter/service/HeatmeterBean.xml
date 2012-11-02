@@ -36,7 +36,7 @@
                     column="id"/>
     </resultMap>
     
-    <resultMap id="heatmeterResultMapFind" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+    <resultMap id="heatmeterResultMapSelectList" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
         <result property="type" column="type_id"/>
@@ -47,14 +47,11 @@
         <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
-        <collection property="periods"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
-                    column="id"/>
         <collection property="payloads"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByHeatmeterId"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectMaxHeatmeterPayload"
                     column="id"/>
         <collection property="consumptions"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterId"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectMaxHeatmeterConsumption"
                     column="id"/>
     </resultMap>
 
@@ -85,6 +82,12 @@
                     </otherwise>
                 </choose>
             </if>
+            <if test="map.payloadBeginDate != null">
+                AND hp.`begin_date` = #{map.payloadBeginDate}
+            </if>
+            <if test="map.consumptionReadoutDate != null">
+                AND hcons.`readout_date` = #{map.consumptionReadoutDate}
+            </if>
         </where>
     </sql>
 
@@ -94,21 +97,30 @@
         from `heatmeter` h
             LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
     </sql>
+    
+    <sql id="selectHeatmeterJoin">
+        LEFT JOIN `heatmeter_payload` hp ON (hp.`heatmeter_id` = h2.`id` AND hp.`begin_date` = 
+            (SELECT MAX(p.`begin_date`) FROM `heatmeter_payload` p WHERE p.`heatmeter_id` = h2.`id`))
+        LEFT JOIN `heatmeter_consumption` hcons ON (hcons.`heatmeter_id` = h2.`id` AND hcons.`readout_date` = 
+            (SELECT MAX(c.`readout_date`) FROM `heatmeter_consumption` c WHERE c.`heatmeter_id` = h2.`id`))
+    </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMapCollection">
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
 
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
-            resultMap="heatmeterResultMapFind">
-        select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>
+            resultMap="heatmeterResultMapSelectList">
+        select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+            <include refid="selectHeatmeterJoin"/> <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 
     <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultType="int">
-        select count(*) from
-        (select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 <include refid="selectHeatmetersWhere"/>) h3
+        select count(1) from
+        (select 1 from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+            <include refid="selectHeatmeterJoin"/> <include refid="selectHeatmetersWhere"/>) h3
     </select>
 
     <delete id="deleteHeatmeter" parameterType="long">

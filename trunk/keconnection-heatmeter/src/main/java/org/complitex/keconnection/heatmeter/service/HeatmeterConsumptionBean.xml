@@ -33,5 +33,10 @@
     <select id="selectHeatmeterConsumptionsByHeatmeterId" parameterType="long" resultMap="heatmeterConsumptionResultMap">
         select * from `heatmeter_consumption` where `heatmeter_id` = #{heatmeterId}
     </select>
+    
+    <select id="selectMaxHeatmeterConsumption" parameterType="long" resultMap="heatmeterConsumptionResultMap">
+        SELECT * FROM `heatmeter_consumption` WHERE `heatmeter_id` = #{heatmeterId} AND `readout_date` = 
+            (SELECT MAX(c.`readout_date`) FROM `heatmeter_consumption` c WHERE c.`heatmeter_id` = #{heatmeterId})
+    </select>
 
 </mapper>

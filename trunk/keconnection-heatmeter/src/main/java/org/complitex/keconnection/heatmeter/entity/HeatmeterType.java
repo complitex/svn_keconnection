@@ -22,4 +22,8 @@ public enum HeatmeterType implements IFixedIdType {
     public Long getId() {
         return id;
     }
+    
+    public String getShortName() {
+        return name() + "_SHORT";
+    }
 }
