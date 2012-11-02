@@ -60,6 +60,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.HeatmeterItemPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
 
@@ -181,6 +182,35 @@ public class HeatmeterList extends TemplatePage {
                 return String.valueOf(object.ordinal());
             }
         }).setNullValid(true));
+        IModel<Date> beginDateFilterModel = new Model<Date>() {
+
+            @Override
+            public Date getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (Date) map.get(HeatmeterBean.PAYLOAD_BEGIN_DATE_FILTER_PARAM) : null;
+            }
+
+            @Override
+            public void setObject(Date date) {
+                filterModel.getObject().add(HeatmeterBean.PAYLOAD_BEGIN_DATE_FILTER_PARAM, date);
+            }
+        };
+        filterForm.add(new MaskedDateInput("beginDateFilter", beginDateFilterModel));
+        
+        IModel<Date> readoutDateFilterModel = new Model<Date>() {
+
+            @Override
+            public Date getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (Date) map.get(HeatmeterBean.CONSUMPTION_READOUT_DATE) : null;
+            }
+
+            @Override
+            public void setObject(Date date) {
+                filterModel.getObject().add(HeatmeterBean.CONSUMPTION_READOUT_DATE, date);
+            }
+        };
+        filterForm.add(new MaskedDateInput("readoutDateFilter", readoutDateFilterModel));
 
         //Selected Heatmeaters Id Map
         final Map<String, Long> selectedIds = new HashMap<>();
@@ -226,7 +256,7 @@ public class HeatmeterList extends TemplatePage {
                 return new Model<>(object);
             }
         };
-        dataProvider.setSort("id", SortOrder.DESCENDING);
+        dataProvider.setSort("h2.id", SortOrder.DESCENDING);
 
         //Data Container
         final WebMarkupContainer dataContainer = new WebMarkupContainer("data_container");
@@ -272,7 +302,8 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "ls", "type_id", "status"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "h2.ls", "h2.type_id", "h2.status", 
+                "hp.begin_date", "hcons.readout_date"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");

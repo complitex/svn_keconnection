@@ -35,10 +35,10 @@
                             <th class="center">
                                 <wicket:message key="buildingCode"/>
                             </th>
-                            <th class="center" wicket:id="header.ls">
+                            <th class="center" wicket:id="header.h2.ls">
                                 <wicket:message key="ls"/>
                             </th>
-                            <th class="center" wicket:id="header.type_id">
+                            <th class="center" wicket:id="header.h2.type_id">
                                 <wicket:message key="type"/>
                             </th>
                             <th class="center">
@@ -50,7 +50,7 @@
                             <th class="center">
                                 <wicket:message key="tg3"/>
                             </th>
-                            <th class="center">
+                            <th class="center" wicket:id="header.hp.begin_date">
                                 <wicket:message key="beginDate"/>
                             </th>
                             <th class="center">
@@ -59,10 +59,10 @@
                             <th class="center">
                                 <wicket:message key="consumption1"/>
                             </th>
-                            <th class="center">
+                            <th class="center" wicket:id="header.hcons.readout_date">
                                 <wicket:message key="readoutDate"/>
                             </th>
-                            <th class="center" wicket:id="header.status">
+                            <th class="center" wicket:id="header.h2.status">
                                 <wicket:message key="status"/>
                             </th>
                             <th class="center">
@@ -98,8 +98,10 @@
                             <th>
                                 <!-- tg3 filter -->
                             </th>
-                            <th>
-                                <!-- begin date filter -->
+                            <th style="text-align: center;">
+                                <span style="white-space: nowrap;">
+                                    <input type="text" wicket:id="beginDateFilter" style="width: 80px;"/>
+                                </span>
                             </th>
                             <th>
                                 <!-- consumption filter -->
@@ -107,8 +109,10 @@
                             <th>
                                 <!-- consumption1 filter -->
                             </th>
-                            <th>
-                                <!-- readout date filter -->
+                            <th style="text-align: center;">
+                                <span style="white-space: nowrap;">
+                                    <input type="text" wicket:id="readoutDateFilter" style="width: 80px;"/>
+                                </span>
                             </th>
                             <th>
                                 <select wicket:id="object.status"></select>

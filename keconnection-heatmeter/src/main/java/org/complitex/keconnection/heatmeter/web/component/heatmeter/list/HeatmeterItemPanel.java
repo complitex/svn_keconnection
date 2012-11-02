@@ -181,7 +181,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 //type
                 {
                     HeatmeterType type = heatmeter.getType();
-                    add(new Label("type", type != null ? getString(type.name()) : null));
+                    add(new Label("type", type != null ? getString(type.getShortName()) : null));
                 }
 
                 //payload
