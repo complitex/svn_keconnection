@@ -58,6 +58,9 @@
                 <td wicket:id="status"></td>
                 <td wicket:id="bindingStatus"></td>
                 <td>
+                    <span wicket:id="calculating"></span>
+                </td>
+                <td>
                     <a href="#" wicket:id="bindHeatmeterLink">
                         <wicket:message key="bindHeatmeter"/>
                     </a>
@@ -105,7 +108,7 @@
                     </div>
                 </td>
 
-                <td colspan="3"></td>
+                <td colspan="4"></td>
             </tr>
             <tr wicket:id="errorStatusRow">
                 <td colspan="6"></td>
@@ -118,7 +121,7 @@
                     <div wicket:id="consumptionErrorStatus" class="errorStatus"></div>
                 </td>
 
-                <td colspan="3"></td>
+                <td colspan="4"></td>
             </tr>
         </wicket:panel>
     </body>

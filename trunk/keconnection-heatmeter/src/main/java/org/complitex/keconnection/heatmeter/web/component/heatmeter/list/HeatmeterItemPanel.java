@@ -214,6 +214,14 @@ public abstract class HeatmeterItemPanel extends Panel {
                             heatmeterBindingStatusRenderer.render(heatmeter.getBindingStatus(), getLocale())));
                 }
 
+                //calculating
+                {
+                    Boolean calculating = heatmeter.getCalculating();
+                    add(new Label("calculating", calculating != null
+                            ? getString(Boolean.class.getSimpleName() + "." + calculating.toString().toUpperCase())
+                            : null));
+                }
+
                 //bind heatmeter action
                 {
                     AjaxLink<Void> bindHeatmeterLink = new AjaxLink<Void>("bindHeatmeterLink") {

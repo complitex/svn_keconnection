@@ -68,6 +68,9 @@
                             <th class="center">
                                 <wicket:message key="bindingStatus"/>
                             </th>
+                            <th>
+                                <wicket:message key="calculating"/>
+                            </th>
                             <th class="center">
                                 <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
                             </th>
@@ -119,6 +122,9 @@
                             </th>
                             <th>
                                 <select wicket:id="object.bindingStatus"></select>
+                            </th>
+                            <th>
+                                <select wicket:id="object.calculating"></select>
                             </th>
                             <th class="center">
                                 <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
