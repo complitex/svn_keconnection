@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org">
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:extend>
+            <h2 style="margin-bottom: 20px;">
+                <span wicket:id="caption"></span>
+            </h2>
+
+            <div wicket:id="messages"></div>
+
+            <form wicket:id="form">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbForm">
+                    <tr>
+                        <th>
+                            <wicket:message key="ls"/>:
+                        </th>
+                        <td>
+                            <span wicket:id="ls"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <wicket:message key="externalHeatmeterId"/><b class="blue">*</b>:
+                        </th>
+                        <td>
+                            <input type="text" wicket:id="externalHeatmeterId"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <wicket:message key="heatmeterNumber"/><b class="blue">*</b>:
+                        </th>
+                        <td>
+                            <input type="text" wicket:id="heatmeterNumber"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="margin-top: 10px;">
+                    <a href="#" wicket:id="historyLink">
+                        <wicket:message key="history"/>
+                    </a>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <input type="button" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
+                    <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
+                    <input type="button" wicket:message="value:back" wicket:id="back" class="btnMiddle"/>
+                </div>
+            </form>
+            <div wicket:id="heatmeterHistoryCorrectionDialog"></div>
+        </wicket:extend>
+    </body>
+</html>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterBean">
+    <resultMap id="heatmeterResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <result property="bindingStatus" column="binding_status"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
+                    column="id"/>
+    </resultMap>
+
+    <resultMap id="heatmeterResultMapCollection" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <result property="bindingStatus" column="binding_status"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
+                    column="id"/>
+        <collection property="periods"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
+                    column="id"/>
+        <collection property="payloads"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByHeatmeterId"
+                    column="id"/>
+        <collection property="consumptions"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterId"
+                    column="id"/>
+    </resultMap>
+    
+    <resultMap id="heatmeterResultMapSelectList" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <result property="bindingStatus" column="binding_status"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
+                    column="id"/>
+        <collection property="periods"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
+                    column="id"/>
+        <collection property="payloads"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectMaxHeatmeterPayload"
+                    column="id"/>
+        <collection property="consumptions"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectMaxHeatmeterConsumption"
+                    column="id"/>
+    </resultMap>
+
+    <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter` (`ls`, `organization_id`, `type_id`, `calculating`)
+            values (#{ls}, #{organizationId}, #{type}, #{calculating})
+    </insert>
+
+    <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type_id` = #{type},
+          `calculating` = #{calculating} where `id` = #{id}
+    </update>
+
+    <sql id="selectHeatmetersWhere">
+        <where>
+            <if test="object.ls != null">`ls` = #{object.ls}</if>
+            <if test="object.type != null">and `type_id` = #{object.type}</if>
+            <if test="object.calculating != null">and `calculating` = #{object.calculating}</if>
+            <if test="object.status != null">and `status` = #{object.status}</if>
+            <if test="object.bindingStatus != null">
+                <choose>
+                    <when test="object.bindingStatus == map.unboundBindingStatus">
+                        AND (`binding_status` = #{object.bindingStatus} OR `binding_status` IS NULL)
+                    </when>
+                    <otherwise>
+                        AND `binding_status` = #{object.bindingStatus}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="map.payloadBeginDate != null">
+                AND hp.`begin_date` = #{map.payloadBeginDate}
+            </if>
+            <if test="map.consumptionReadoutDate != null">
+                AND hcons.`readout_date` = #{map.consumptionReadoutDate}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="selectHeatmeterSelectFrom">
+        select h.*, (select heatmeter_status(h.`id`)) as `status`,
+          hc.`binding_status`
+        from `heatmeter` h
+            LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
+    </sql>
+    
+    <sql id="selectHeatmeterJoin">
+        LEFT JOIN `heatmeter_payload` hp ON (hp.`heatmeter_id` = h2.`id` AND hp.`begin_date` = 
+            (SELECT MAX(p.`begin_date`) FROM `heatmeter_payload` p WHERE p.`heatmeter_id` = h2.`id`))
+        LEFT JOIN `heatmeter_consumption` hcons ON (hcons.`heatmeter_id` = h2.`id` AND hcons.`readout_date` = 
+            (SELECT MAX(c.`readout_date`) FROM `heatmeter_consumption` c WHERE c.`heatmeter_id` = h2.`id`))
+    </sql>
+
+    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMapCollection">
+        <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
+    </select>
+
+    <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="heatmeterResultMapSelectList">
+        select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+            <include refid="selectHeatmeterJoin"/> <include refid="selectHeatmetersWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(1) from
+        (select 1 from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+            <include refid="selectHeatmeterJoin"/> <include refid="selectHeatmetersWhere"/>) h3
+    </select>
+
+    <delete id="deleteHeatmeter" parameterType="long">
+        delete from `heatmeter` where `id` = #{id}
+    </delete>
+
+    <select id="isExistHeatmeter" parameterType="map" resultType="boolean">
+        select count(*) > 0 from `heatmeter` h
+          left join `heatmeter_connection` hc on hc.`heatmeter_id` = h.`id`
+          left join `building_code` bc on bc.`id` = hc.`building_code_id`
+        where h.`ls` = #{ls} and hc.`building_code_id` = #{buildingCodeId} and bc.`organization_id` = #{organizationId}
+    </select>
+
+    <select id="selectHeatmeterByLs" parameterType="map" resultMap="heatmeterResultMap">
+        select * from `heatmeter` where `ls` = #{ls} and `organization_id` = #{organizationId}
+    </select>
+
+    <update id="updateHeatmeterType" parameterType="map">
+        update `heatmeter` set `type_id` = #{type} where `id` = #{id}
+    </update>
+    
+    <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
+        SELECT COUNT(1) FROM `heatmeter` h 
+            LEFT JOIN `heatmeter_connection` hc ON hc.`heatmeter_id` = h.`id`
+            LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+            WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId}
+    </select>
+    
+    <select id="selectMaxOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            resultType="date">
+
+    </select>
+
+    <select id="selectMinOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            resultType="date">
+        select min(`operating_month`) from `heatmeter_period` where `heatmeter_id` = #{id}
+    </select>
+</mapper>

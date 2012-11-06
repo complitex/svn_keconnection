@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean">
+    <resultMap id="heatmeterPayloadResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
+        <id property="id"/>
+        <result property="tablegramRecordId"/>
+        <result property="parentId"/>
+        <result property="heatmeterId"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="operatingMonth"/>
+        <result property="payload1"/>
+        <result property="payload2"/>
+        <result property="payload3"/>
+        <result property="ls"/>
+    </resultMap>
+
+    <insert id="insertHeatmeterPayload" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter_payload` (`tablegram_record_id`, `parent_id`, `heatmeter_id`, `begin_date`, `end_date`, `operating_month`,
+          `payload1`, `payload2`, `payload3`)
+        values (#{tablegramRecordId}, #{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{operatingMonth},
+          #{payload1}, #{payload2}, #{payload3})
+    </insert>
+
+    <update id="updateHeatmeterPayload" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
+        update `heatmeter_payload` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `begin_date` = #{beginDate},
+          `end_date` = #{endDate}, `operating_month` = #{operatingMonth}, `payload1` = #{payload1},
+          `payload2` = #{payload2}, `payload3` = #{payload3}
+        where `id` = #{id}
+    </update>
+
+    <update id="updateHeatmeterPayloadParent" parameterType="map">
+        update `heatmeter_payload` set `parent_id` = #{parentId} where `id` = #{id}
+    </update>
+
+    <select id="selectHeatmeterPayload" parameterType="long" resultMap="heatmeterPayloadResultMap">
+        select p.*, h.`ls` as ls from `heatmeter_payload` p left join `heatmeter` h on p.`heatmeter_id` = h.`id` where p.`id` = #{id}
+    </select>
+
+    <sql id="selectHeatmeterPayloadFromWhere">
+        from `heatmeter_payload` p left join heatmeter h on p.`heatmeter_id` = h.`id`
+        <where>
+            <if test="object.beginDate != null">and p.`begin_date` = #{object.beginDate}</if>
+            <if test="object.endDate != null">and p.`end_date` = #{object.endDate}</if>
+            <if test="object.operatingMonth != null">and p.`operating_month` = #{object.operatingMonth}</if>
+            <if test="object.payload1 != null">and p.`payload1` = #{object.payload1}</if>
+            <if test="object.payload2 != null">and p.`payload2` = #{object.payload2}</if>
+            <if test="object.payload3 != null">and p.`payload3` = #{object.payload3}</if>
+        </where>
+    </sql>
+
+    <select id="selectHeatmeterPayloads" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="heatmeterPayloadResultMap">
+        select p.*, h.`ls` as ls <include refid="selectHeatmeterPayloadFromWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectHeatmeterPayloadsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) <include refid="selectHeatmeterPayloadFromWhere"/>
+    </select>
+
+    <select id="isExistHeatmeterPayload" parameterType="long" resultType="boolean">
+        select count(*) > 0 from `heatmeter_payload` where `heatmeter_id` = #{heatmeterId}
+    </select>
+
+    <delete id="deletePayloadByTablegramId" parameterType="long">
+        delete from `heatmeter_payload`
+          where `tablegram_record_id` in (select `id` from `tablegram_record` where `tablegram_id` = #{tablegramId})
+    </delete>
+
+    <select id="selectHeatmeterPayloadsByHeatmeterId" parameterType="long" resultMap="heatmeterPayloadResultMap">
+        select * from `heatmeter_payload` where `heatmeter_id` = #{heatmeterId}
+    </select>
+    
+     <select id="selectMaxHeatmeterPayload" parameterType="long" resultMap="heatmeterPayloadResultMap">
+        SELECT * FROM `heatmeter_payload` WHERE `heatmeter_id` = #{heatmeterId} AND `begin_date` = 
+            (SELECT MAX(p.`begin_date`) FROM `heatmeter_payload` p WHERE p.`heatmeter_id` = #{heatmeterId})
+    </select>
+
+    <delete id="deleteHeatmeterPayload" parameterType="long">
+        delete from `heatmeter_payload` where `id` = #{id}
+    </delete>
+</mapper>

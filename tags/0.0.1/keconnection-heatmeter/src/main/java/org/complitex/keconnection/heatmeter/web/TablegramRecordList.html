@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+<body>
+<wicket:extend>
+    <h1><wicket:message key="title"/></h1>
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="filter_form">
+        <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+            <thead>
+            <tr>
+                <th></th>
+                <th class="center" wicket:id="header.ls"><wicket:message key="ls"/></th>
+                <th class="center" wicket:id="header.name"><wicket:message key="name"/></th>
+                <th class="center" wicket:id="header.address"><wicket:message key="address"/></th>
+                <th class="center" wicket:id="header.payload1"><wicket:message key="payload1"/></th>
+                <th class="center" wicket:id="header.payload2"><wicket:message key="payload2"/></th>
+                <th class="center" wicket:id="header.payload3"><wicket:message key="payload3"/></th>
+                <th class="center" wicket:id="header.heatmeter_id"><wicket:message key="heatmeterId"/></th>
+                <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
+
+                <th class="center">
+                    <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                </th>
+            </tr>
+            <tr>
+                <th></th>
+                <th><input type="text" wicket:id="object.ls"/></th>
+                <th><input type="text" wicket:id="object.name"/></th>
+                <th><input type="text" wicket:id="object.address"/></th>
+                <th><input type="text" wicket:id="object.payload1"/></th>
+                <th><input type="text" wicket:id="object.payload2"/></th>
+                <th><input type="text" wicket:id="object.payload3"/></th>
+                <th><input type="text" wicket:id="object.heatmeterId"/></th>
+                <th><select wicket:id="object.status"></select></th>
+
+                <th class="center">
+                    <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
+                </th>
+            </tr>
+            </thead>
+            <tbody wicket:id="data_container">
+            <tr wicket:id="data_view">
+                <td></td>
+                <td wicket:id="ls"></td>
+                <td wicket:id="name"></td>
+                <td wicket:id="address"></td>
+                <td wicket:id="payload1"></td>
+                <td wicket:id="payload2"></td>
+                <td wicket:id="payload3"></td>
+                <td wicket:id="heatmeterId"></td>
+                <td wicket:id="status"></td>
+                <td>
+                    <a href="#" wicket:id="process"><wicket:message key="process"/></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div wicket:id="paging"></div>
+    </form>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.TablegramRecordBean">
+    <resultMap id="tablegramRecordResultMap" type="org.complitex.keconnection.heatmeter.entity.TablegramRecord">
+        <id property="id"/>
+        <result property="tablegramId"/>
+        <result property="heatmeterId"/>
+        <result property="ls"/>
+        <result property="name"/>
+        <result property="address"/>
+        <result property="payload1"/>
+        <result property="payload2"/>
+        <result property="payload3"/>
+        <result property="status"/>
+    </resultMap>
+
+    <insert id="insertTablegramRecord" parameterType="org.complitex.keconnection.heatmeter.entity.TablegramRecord"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `tablegram_record` (`tablegram_id`, `heatmeter_id`, `ls`, `name`, `address`, `payload1`, `payload2`,
+          `payload3`, `status`)
+        values (#{tablegramId}, #{heatmeterId}, #{ls}, #{name}, #{address}, #{payload1}, #{payload2},
+          #{payload3}, #{status});
+    </insert>
+
+    <update id="updateTablegramRecord" parameterType="org.complitex.keconnection.heatmeter.entity.TablegramRecord">
+        update `tablegram_record` set `heatmeter_id` = #{heatmeterId},`status` = #{status}
+          where `id` = #{id}
+    </update>
+
+    <sql id="selectTablegramRecordsWhere">
+        <where>
+            `tablegram_id` = #{object.tablegramId}
+
+            <if test="object.heatmeterId != null">and `heatmeter_id` = #{object.heatmeterId}</if>
+            <if test="object.ls != null">and `ls` = #{object.ls}</if>
+            <if test="object.name != null">and `name` = #{object.name}</if>
+            <if test="object.address != null">and `address` = #{object.address}</if>
+            <if test="object.payload1 != null">and `payload1` = #{object.payload1}</if>
+            <if test="object.payload2 != null">and `payload2` = #{object.payload2}</if>
+            <if test="object.payload3 != null">and `payload3` = #{object.payload3}</if>
+            <if test="object.status != null">and `status` = #{object.status}</if>
+        </where>
+    </sql>
+
+    <select id="selectTablegramRecords" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+        resultMap="tablegramRecordResultMap">
+        select * from `tablegram_record` <include refid="selectTablegramRecordsWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectTablegramRecordsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `tablegram_record` <include refid="selectTablegramRecordsWhere"/>
+    </select>
+
+    <select id="selectTablegramRecordIdByTablegramId" parameterType="long" resultMap="tablegramRecordResultMap">
+        select * from `tablegram_record` where `tablegram_id` = #{tablegramId}
+    </select>
+
+    <update id="rollbackTablegramStatus" parameterType="long">
+        update `tablegram_record` set `status` = 1 where `tablegram_id` = #{tablegramId} and `status` = 2
+    </update>
+</mapper>
