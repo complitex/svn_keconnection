@@ -7,6 +7,7 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
+import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -20,6 +21,7 @@ public class HeatmeterPeriodBean extends AbstractHeatmeterEntityBean<HeatmeterPe
         return sqlSession().selectOne("selectHeatmeterPeriod", id);
     }
 
+    @Transactional
     public void save(HeatmeterPeriod heatmeterPeriod){
         if (heatmeterPeriod.getId() == null){
             sqlSession().insert("insertHeatmeterPeriod", heatmeterPeriod);

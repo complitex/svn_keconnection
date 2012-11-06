@@ -15,6 +15,7 @@ import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -39,17 +40,23 @@ public class HeatmeterBean extends AbstractBean {
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
 
+    @Transactional
     public void save(Heatmeter heatmeter) {
-        if (heatmeter.getId() == null) {
-            sqlSession().insert("insertHeatmeter", heatmeter);
-        } else {
-            sqlSession().update("updateHeatmeter", heatmeter);
-        }
+        saveHeatmeterInfo(heatmeter);
 
         save(heatmeterPeriodBean, heatmeter.getId(), heatmeter.getPeriods());
         save(heatmeterConnectionBean, heatmeter.getId(), heatmeter.getConnections());
         save(heatmeterPayloadBean, heatmeter.getId(), heatmeter.getPayloads());
         save(heatmeterConsumptionBean, heatmeter.getId(), heatmeter.getConsumptions());
+    }
+    
+    @Transactional
+    public void saveHeatmeterInfo(Heatmeter heatmeter) {
+        if (heatmeter.getId() == null) {
+            sqlSession().insert("insertHeatmeter", heatmeter);
+        } else {
+            sqlSession().update("updateHeatmeter", heatmeter);
+        }
     }
 
     private <T extends IHeatmeterEntity> void save(IHeatmeterEntityBean<T> bean, Long heatmeterId, List<T> list){
