@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.entity;
 
+import org.complitex.dictionary.entity.IDateRange;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -7,7 +9,7 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 18:31
  */
-public class HeatmeterConsumption implements IHeatmeterEntity {
+public class HeatmeterConsumption implements IHeatmeterEntity, IDateRange {
     private Long id;
     private Long heatmeterId;
     private Date readoutDate;
@@ -17,6 +19,9 @@ public class HeatmeterConsumption implements IHeatmeterEntity {
     private BigDecimal consumption2 = new BigDecimal(0);
     private BigDecimal consumption3 = new BigDecimal(0);
     private HeatmeterConsumptionStatus status = HeatmeterConsumptionStatus.NOT_LOADED;
+
+    private Date beginDate;
+    private Date endDate;
 
     public HeatmeterConsumption() {
     }
@@ -95,5 +100,21 @@ public class HeatmeterConsumption implements IHeatmeterEntity {
 
     public void setStatus(HeatmeterConsumptionStatus status) {
         this.status = status;
+    }
+
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
