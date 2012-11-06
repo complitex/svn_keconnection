@@ -61,6 +61,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.ActivateHeatmeterDialog;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.DeactivateHeatmeterDialog;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.HeatmeterItemPanel;
 import static org.complitex.dictionary.util.PageUtil.*;
 
@@ -196,7 +198,7 @@ public class HeatmeterList extends TemplatePage {
             }
         };
         filterForm.add(new MaskedDateInput("beginDateFilter", beginDateFilterModel));
-        
+
         IModel<Date> readoutDateFilterModel = new Model<Date>() {
 
             @Override
@@ -274,6 +276,28 @@ public class HeatmeterList extends TemplatePage {
         };
         add(heatmeterBindPanel);
 
+        final ActivateHeatmeterDialog activateHeatmeterDialog = new ActivateHeatmeterDialog("activateHeatmeterDialog") {
+
+            @Override
+            protected void onActivate(Heatmeter heatmeter, AjaxRequestTarget target) {
+                if (stopBindingAllCondition.get()) {
+                    target.add(dataContainer);
+                }
+            }
+        };
+        add(activateHeatmeterDialog);
+
+        final DeactivateHeatmeterDialog deactivateHeatmeterDialog = new DeactivateHeatmeterDialog("deactivateHeatmeterDialog") {
+
+            @Override
+            protected void onDeactivate(Heatmeter heatmeter, AjaxRequestTarget target) {
+                if (stopBindingAllCondition.get()) {
+                    target.add(dataContainer);
+                }
+            }
+        };
+        add(deactivateHeatmeterDialog);
+
         //Data View
         DataView<HeatmeterListWrapper> dataView = new DataView<HeatmeterListWrapper>("data_view", dataProvider) {
 
@@ -292,6 +316,16 @@ public class HeatmeterList extends TemplatePage {
                     protected void onBindHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target) {
                         heatmeterBindPanel.open(heatmeter, null, target);
                     }
+
+                    @Override
+                    protected void onDeactivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
+                        deactivateHeatmeterDialog.open(heatmeterListWrapper, target);
+                    }
+
+                    @Override
+                    protected void onActivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
+                        activateHeatmeterDialog.open(heatmeterListWrapper, target);
+                    }
                 });
             }
         };
@@ -302,7 +336,7 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "h2.ls", "h2.type_id", "h2.status", 
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "h2.ls", "h2.type_id", "h2.status",
                 "hp.begin_date", "hcons.readout_date"));
 
         //Import Dialog

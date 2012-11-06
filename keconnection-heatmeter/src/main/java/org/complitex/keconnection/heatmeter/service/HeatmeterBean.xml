@@ -47,6 +47,9 @@
         <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
+        <collection property="periods"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
+                    column="id"/>
         <collection property="payloads"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectMaxHeatmeterPayload"
                     column="id"/>

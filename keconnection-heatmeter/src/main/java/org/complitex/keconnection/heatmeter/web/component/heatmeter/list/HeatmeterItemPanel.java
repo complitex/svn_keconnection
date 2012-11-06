@@ -226,6 +226,35 @@ public abstract class HeatmeterItemPanel extends Panel {
                     bindHeatmeterLink.setEnabled(HeatmeterItemPanel.this.isEditable());
                     add(bindHeatmeterLink);
                 }
+
+                //activate heatmeter
+                {
+                    AjaxLink<Void> activateHeatmeter = new AjaxLink<Void>("activateHeatmeter") {
+
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            HeatmeterItemPanel.this.onActivateHeatmeter(heatmeterListWrapper, target);
+                        }
+                    };
+                    activateHeatmeter.setEnabled(HeatmeterItemPanel.this.isEditable());
+                    activateHeatmeter.setVisible(heatmeter.getStatus() == HeatmeterStatus.OFF
+                            || heatmeter.getStatus() == HeatmeterStatus.ADJUSTMENT);
+                    add(activateHeatmeter);
+                }
+
+                //deactivate heatmeter
+                {
+                    AjaxLink<Void> deactivateHeatmeter = new AjaxLink<Void>("deactivateHeatmeter") {
+
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            HeatmeterItemPanel.this.onDeactivateHeatmeter(heatmeterListWrapper, target);
+                        }
+                    };
+                    deactivateHeatmeter.setEnabled(HeatmeterItemPanel.this.isEditable());
+                    deactivateHeatmeter.setVisible(heatmeter.getStatus() == HeatmeterStatus.OPERATION);
+                    add(deactivateHeatmeter);
+                }
             }
         });
 
@@ -288,11 +317,6 @@ public abstract class HeatmeterItemPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                log.info("Payload: {},{},{}, {}",
-                        new Object[]{payload.getPayload1(), payload.getPayload2(), payload.getPayload3(),
-                            payload.getBeginDate()});
-
-
                 //validate 
                 HeatmeterValidate validate = heatmeterService.validatePayloads(heatmeterListWrapper.getHeatmeter());
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
@@ -349,10 +373,6 @@ public abstract class HeatmeterItemPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                log.info("Consumption: {}, {}",
-                        new Object[]{consumption.getConsumption(), consumption.getReadoutDate()});
-
-
                 //validate 
                 HeatmeterValidate validate = heatmeterService.validateConsumptions(heatmeterListWrapper.getHeatmeter());
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
@@ -445,4 +465,8 @@ public abstract class HeatmeterItemPanel extends Panel {
     protected abstract boolean isEditable();
 
     protected abstract void onBindHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target);
+
+    protected abstract void onDeactivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target);
+
+    protected abstract void onActivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target);
 }
