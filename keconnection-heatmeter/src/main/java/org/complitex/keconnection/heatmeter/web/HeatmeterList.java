@@ -172,18 +172,33 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(new EnumDropDownChoice<>("object.type", HeatmeterType.class, true));
         filterForm.add(new EnumDropDownChoice<>("object.status", HeatmeterStatus.class, true));
         filterForm.add(new DropDownChoice<>("object.bindingStatus",
-                Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()), new IChoiceRenderer<HeatmeterBindingStatus>() {
+                Arrays.asList(HeatmeterBindingStatus.class.getEnumConstants()),
+                new IChoiceRenderer<HeatmeterBindingStatus>() {
 
-            @Override
-            public String getDisplayValue(HeatmeterBindingStatus status) {
-                return heatmeterBindingStatusRenderer.render(status, getLocale());
-            }
+                    @Override
+                    public String getDisplayValue(HeatmeterBindingStatus status) {
+                        return heatmeterBindingStatusRenderer.render(status, getLocale());
+                    }
 
-            @Override
-            public String getIdValue(HeatmeterBindingStatus object, int index) {
-                return String.valueOf(object.ordinal());
-            }
-        }).setNullValid(true));
+                    @Override
+                    public String getIdValue(HeatmeterBindingStatus object, int index) {
+                        return String.valueOf(object.ordinal());
+                    }
+                }).setNullValid(true));
+        filterForm.add(new DropDownChoice<>("object.calculating", Arrays.asList(Boolean.TRUE, Boolean.FALSE),
+                new IChoiceRenderer<Boolean>() {
+
+                    @Override
+                    public Object getDisplayValue(Boolean object) {
+                        return getString(Boolean.class.getSimpleName() + "." + object.toString().toUpperCase());
+                    }
+
+                    @Override
+                    public String getIdValue(Boolean object, int index) {
+                        return String.valueOf(object);
+                    }
+                }).setNullValid(true));
+
         IModel<Date> beginDateFilterModel = new Model<Date>() {
 
             @Override
