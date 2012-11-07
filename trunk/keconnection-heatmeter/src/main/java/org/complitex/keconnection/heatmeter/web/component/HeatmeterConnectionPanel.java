@@ -57,11 +57,11 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                     protected List<HeatmeterConnection> load() {
                         List<HeatmeterConnection> list = new ArrayList<>();
 
-                        for (HeatmeterConnection c : model.getObject().getConnections()){
-                            if (isSameMonth(c.getOperatingMonth(), operatingMonthModel.getObject())){
-                                list.add(c);
-                            }
-                        }
+//                        for (HeatmeterConnection c : model.getObject().getConnections()){
+//                            if (isSameMonth(c.getOperatingMonth(), operatingMonthModel.getObject())){
+//                                list.add(c);
+//                            }
+//                        }
 
                         return list;
                     }
@@ -224,7 +224,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getConnections().add(new HeatmeterConnection(operatingMonthModel.getObject()));
+//                model.getObject().getConnections().add(new HeatmeterConnection(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterConnectionPanel.this);
             }

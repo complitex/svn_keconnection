@@ -9,12 +9,12 @@ import org.complitex.keconnection.heatmeter.strategy.HeatmeterPeriodTypeStrategy
  *         Date: 14.09.12 19:25
  */
 @FixedIdTypeHandler
-public enum HeatmeterPeriodType implements IFixedIdType{
-    OPERATION(1L), CONNECTION(2L), PAYLOAD(3L), INPUT(4L);
+public enum HeatmeterPeriodSubType implements IFixedIdType{
+    OPERATING(HeatmeterPeriodTypeStrategy.OPERATING), ADJUSTMENT(HeatmeterPeriodTypeStrategy.ADJUSTMENT);
 
     private Long id;
 
-    private HeatmeterPeriodType(Long id) {
+    private HeatmeterPeriodSubType(Long id) {
         this.id = id;
     }
 

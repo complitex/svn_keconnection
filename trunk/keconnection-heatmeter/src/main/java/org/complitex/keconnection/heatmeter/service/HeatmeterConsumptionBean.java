@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
 
 import javax.ejb.Stateless;
@@ -14,15 +15,13 @@ import org.complitex.dictionary.mybatis.Transactional;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterConsumptionBean extends AbstractHeatmeterEntityBean<HeatmeterConsumption>{
+public class HeatmeterConsumptionBean extends AbstractBean{
 
-    @Override
     public HeatmeterConsumption get(Long id) {
         return null;
     }
 
     @Transactional
-    @Override
     public void save(HeatmeterConsumption consumption) {
         if (consumption.getId() == null){
             sqlSession().insert("insertHeatmeterConsumption", consumption);
@@ -31,22 +30,18 @@ public class HeatmeterConsumptionBean extends AbstractHeatmeterEntityBean<Heatme
         }
     }
 
-    @Override
     public void delete(Long id) {
         sqlSession().delete("deleteHeatmeterConsumption", id);
     }
 
-    @Override
     public List<HeatmeterConsumption> getList(Long heatmeterId) {
         return sqlSession().selectList("selectHeatmeterConsumptionsByHeatmeterId", heatmeterId);
     }
 
-    @Override
     public List<HeatmeterConsumption> getList(FilterWrapper<HeatmeterConsumption> filterWrapper) {
         return null;
     }
 
-    @Override
     public Integer getCount(FilterWrapper<HeatmeterConsumption> filterWrapper) {
         return null;
     }

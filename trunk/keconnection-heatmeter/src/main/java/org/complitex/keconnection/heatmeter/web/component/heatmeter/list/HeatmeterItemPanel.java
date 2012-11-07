@@ -5,13 +5,6 @@
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
 import com.google.common.collect.ImmutableList;
-import static com.google.common.collect.Iterables.*;
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import javax.ejb.EJB;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -32,16 +25,8 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.address.service.AddressRendererBean;
-import static org.complitex.dictionary.util.DateUtil.*;
 import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterStatus;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRenderer;
 import org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
@@ -51,6 +36,14 @@ import org.complitex.keconnection.heatmeter.web.HeatmeterList.HeatmeterListWrapp
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+
+import static com.google.common.collect.Iterables.toArray;
 
 /**
  *
@@ -326,35 +319,35 @@ public abstract class HeatmeterItemPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 //validate 
-                HeatmeterValidate validate = heatmeterService.validatePayloads(heatmeterListWrapper.getHeatmeter());
-                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
-                    savePayloadStatusModel.setObject(
-                            MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
-                } else {
-                    savePayloadStatusModel.setObject(null);
-
-                    try {
-
-                        //update end date of previous payload
-                        HeatmeterPayload previousPayload = getPreviousPayload(heatmeterListWrapper.getHeatmeter());
-                        if (previousPayload != null) {
-                            previousPayload.setEndDate(previousDay(payload.getBeginDate()));
-                            heatmeterPayloadBean.save(previousPayload);
-                        }
-
-                        //save new payload
-                        heatmeterPayloadBean.save(payload);
-
-                        //add new payload
-                        addNewPayload(heatmeterListWrapper);
-
-                        target.add(primaryRow);
-                        target.add(secondaryRow);
-                    } catch (Exception e) {
-                        log.error("Db error.", e);
-                        savePayloadStatusModel.setObject(getString("db_save_error"));
-                    }
-                }
+//                HeatmeterValidate validate = heatmeterService.validatePayloads(heatmeterListWrapper.getHeatmeter());
+//                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
+//                    savePayloadStatusModel.setObject(
+//                            MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
+//                } else {
+//                    savePayloadStatusModel.setObject(null);
+//
+//                    try {
+//
+//                        //update end date of previous payload
+//                        HeatmeterPayload previousPayload = getPreviousPayload(heatmeterListWrapper.getHeatmeter());
+//                        if (previousPayload != null) {
+//                            previousPayload.setEndDate(previousDay(payload.getBeginDate()));
+//                            heatmeterPayloadBean.save(previousPayload);
+//                        }
+//
+//                        //save new payload
+//                        heatmeterPayloadBean.save(payload);
+//
+//                        //add new payload
+//                        addNewPayload(heatmeterListWrapper);
+//
+//                        target.add(primaryRow);
+//                        target.add(secondaryRow);
+//                    } catch (Exception e) {
+//                        log.error("Db error.", e);
+//                        savePayloadStatusModel.setObject(getString("db_save_error"));
+//                    }
+//                }
                 target.add(errorStatusRow);
                 initializeCss(target);
             }
@@ -382,28 +375,28 @@ public abstract class HeatmeterItemPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 //validate 
-                HeatmeterValidate validate = heatmeterService.validateConsumptions(heatmeterListWrapper.getHeatmeter());
-                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
-                    saveConsumptionStatusModel.setObject(
-                            MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
-                } else {
-                    saveConsumptionStatusModel.setObject(null);
-
-                    try {
-                        heatmeterConsumptionBean.save(consumption);
-
-                        //add new consumption
-                        addNewConsumption(heatmeterListWrapper);
-
-                        target.add(primaryRow);
-                        target.add(secondaryRow);
-                    } catch (Exception e) {
-                        log.error("Db error.", e);
-                        savePayloadStatusModel.setObject(getString("db_save_error"));
-                    }
-                }
-                target.add(errorStatusRow);
-                initializeCss(target);
+//                HeatmeterValidate validate = heatmeterService.validateConsumptions(heatmeterListWrapper.getHeatmeter());
+//                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
+//                    saveConsumptionStatusModel.setObject(
+//                            MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
+//                } else {
+//                    saveConsumptionStatusModel.setObject(null);
+//
+//                    try {
+//                        heatmeterConsumptionBean.save(consumption);
+//
+//                        //add new consumption
+//                        addNewConsumption(heatmeterListWrapper);
+//
+//                        target.add(primaryRow);
+//                        target.add(secondaryRow);
+//                    } catch (Exception e) {
+//                        log.error("Db error.", e);
+//                        savePayloadStatusModel.setObject(getString("db_save_error"));
+//                    }
+//                }
+//                target.add(errorStatusRow);
+//                initializeCss(target);
             }
         };
         saveConsumption.setEnabled(HeatmeterItemPanel.this.isEditable());
@@ -419,17 +412,17 @@ public abstract class HeatmeterItemPanel extends Panel {
         return null;
     }
 
-    private void addNewPayload(HeatmeterListWrapper heatmeterListWrapper) {
-        HeatmeterPayload p = new HeatmeterPayload(heatmeterListWrapper.getOperatingMonthDate());
-        p.setHeatmeterId(heatmeterListWrapper.getHeatmeter().getId());
-        heatmeterListWrapper.getHeatmeter().getPayloads().add(p);
-    }
-
-    private void addNewConsumption(HeatmeterListWrapper heatmeterListWrapper) {
-        HeatmeterConsumption c = new HeatmeterConsumption(heatmeterListWrapper.getOperatingMonthDate());
-        c.setHeatmeterId(heatmeterListWrapper.getHeatmeter().getId());
-        heatmeterListWrapper.getHeatmeter().getConsumptions().add(c);
-    }
+//    private void addNewPayload(HeatmeterListWrapper heatmeterListWrapper) {
+//        HeatmeterPayload p = new HeatmeterPayload(heatmeterListWrapper.getOperatingMonthDate());
+//        p.setHeatmeterId(heatmeterListWrapper.getHeatmeter().getId());
+//        heatmeterListWrapper.getHeatmeter().getPayloads().add(p);
+//    }
+//
+//    private void addNewConsumption(HeatmeterListWrapper heatmeterListWrapper) {
+//        HeatmeterConsumption c = new HeatmeterConsumption(heatmeterListWrapper.getOperatingMonthDate());
+//        c.setHeatmeterId(heatmeterListWrapper.getHeatmeter().getId());
+//        heatmeterListWrapper.getHeatmeter().getConsumptions().add(c);
+//    }
 
     private Component determineLastRow() {
         return errorStatusRowVisibleModel.getObject() ? errorStatusRow

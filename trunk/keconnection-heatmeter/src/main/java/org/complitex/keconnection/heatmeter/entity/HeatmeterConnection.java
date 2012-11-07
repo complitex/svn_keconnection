@@ -1,32 +1,20 @@
 package org.complitex.keconnection.heatmeter.entity;
 
-import org.complitex.dictionary.entity.IDateRange;
-
-import java.util.Date;
+import org.complitex.dictionary.entity.ILongId;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 02.10.12 15:32
  */
-public class HeatmeterConnection implements IHeatmeterEntity, IDateRange {
+public class HeatmeterConnection implements ILongId {
     private Long id;
     private Long heatmeterId;
     private Long buildingCodeId;
-    private Date beginDate;
-    private Date endDate;
-    private Date operatingMonth;
 
     private Long buildingId;
     private Long organizationId;
     private Integer code;
     private String organizationCode;
-
-    public HeatmeterConnection() {
-    }
-
-    public HeatmeterConnection(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
-    }
 
     public Long getId() {
         return id;
@@ -50,30 +38,6 @@ public class HeatmeterConnection implements IHeatmeterEntity, IDateRange {
 
     public void setBuildingCodeId(Long buildingCodeId) {
         this.buildingCodeId = buildingCodeId;
-    }
-
-    public Date getBeginDate() {
-        return beginDate;
-    }
-
-    public void setBeginDate(Date beginDate) {
-        this.beginDate = beginDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Date getOperatingMonth() {
-        return operatingMonth;
-    }
-
-    public void setOperatingMonth(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
     }
 
     public Long getBuildingId() {

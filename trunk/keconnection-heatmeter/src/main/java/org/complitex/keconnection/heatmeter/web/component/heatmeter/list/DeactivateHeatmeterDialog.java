@@ -4,12 +4,6 @@
  */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.Date;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
@@ -25,16 +19,17 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.HeatmeterList.HeatmeterListWrapper;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -44,10 +39,10 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 
     private static class DeactivateHeatmeterEntity implements Serializable {
 
-        HeatmeterPeriodType deactivateType;
+        HeatmeterPeriodSubType deactivateType;
         Date deactivateDate;
 
-        DeactivateHeatmeterEntity(HeatmeterPeriodType deactivateType, Date deactivateDate) {
+        DeactivateHeatmeterEntity(HeatmeterPeriodSubType deactivateType, Date deactivateDate) {
             this.deactivateType = deactivateType;
             this.deactivateDate = deactivateDate;
         }
@@ -93,8 +88,8 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
             }
         }));
 
-        EnumDropDownChoice<HeatmeterPeriodType> deactivateType =
-                new EnumDropDownChoice<>("deactivateType", HeatmeterPeriodType.class, false);
+        EnumDropDownChoice<HeatmeterPeriodSubType> deactivateType =
+                new EnumDropDownChoice<>("deactivateType", HeatmeterPeriodSubType.class, false);
         deactivateType.setRequired(true);
         form.add(deactivateType);
 
@@ -108,26 +103,26 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
 
-                HeatmeterPeriod period = preparePeriod(model.getObject());
+//                HeatmeterPeriod period = preparePeriod(model.getObject());
 
-                HeatmeterValidate validate = heatmeterService.validatePeriods(heatmeter);
-                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
-                    error(MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
-                    target.add(messages);
-                } else {
-                    try {
-                        //save heatmeter period
-                        heatmeterPeriodBean.save(period);
-
-                        onDeactivate(heatmeter, target);
-
-                        dialog.close(target);
-                    } catch (Exception e) {
-                        log.error("Db error.", e);
-                        error(getString("db_save_error"));
-                        target.add(messages);
-                    }
-                }
+//                HeatmeterValidate validate = heatmeterService.validatePeriods(heatmeter);
+//                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
+//                    error(MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
+//                    target.add(messages);
+//                } else {
+//                    try {
+//                        //save heatmeter period
+//                        heatmeterPeriodBean.save(period);
+//
+//                        onDeactivate(heatmeter, target);
+//
+//                        dialog.close(target);
+//                    } catch (Exception e) {
+//                        log.error("Db error.", e);
+//                        error(getString("db_save_error"));
+//                        target.add(messages);
+//                    }
+//                }
             }
 
             @Override
@@ -137,35 +132,35 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
         });
     }
 
-    private HeatmeterPeriod preparePeriod(DeactivateHeatmeterEntity info) {
-        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
-        if (info.deactivateType == HeatmeterPeriodType.OPERATION) {
-            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getPeriods(),
-                    new Predicate<HeatmeterPeriod>() {
-
-                        @Override
-                        public boolean apply(HeatmeterPeriod period) {
-                            return (period.getEndDate() == null) && (period.getType() == HeatmeterPeriodType.OPERATION);
-                        }
-                    });
-            lastOperationalPeriod.setEndDate(info.deactivateDate);
-            return lastOperationalPeriod;
-        } else if (info.deactivateType == HeatmeterPeriodType.ADJUSTMENT) {
-            HeatmeterPeriod adjustmentPeriod = new HeatmeterPeriod(heatmeterListWrapper.getOperatingMonthDate());
-            adjustmentPeriod.setBeginDate(info.deactivateDate);
-            adjustmentPeriod.setType(HeatmeterPeriodType.ADJUSTMENT);
-            adjustmentPeriod.setHeatmeterId(heatmeter.getId());
-            heatmeter.getPeriods().add(adjustmentPeriod);
-            return adjustmentPeriod;
-        } else {
-            throw new IllegalStateException("Unknown heatmeter period type: " + info.deactivateType);
-        }
-    }
+//    private HeatmeterPeriod preparePeriod(DeactivateHeatmeterEntity info) {
+//        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
+//        if (info.deactivateType == HeatmeterPeriodSubType.OPERATING) {
+//            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getPeriods(),
+//                    new Predicate<HeatmeterPeriod>() {
+//
+//                        @Override
+//                        public boolean apply(HeatmeterPeriod period) {
+//                            return (period.getEndDate() == null) && (period.getType() == HeatmeterPeriodSubType.OPERATING);
+//                        }
+//                    });
+//            lastOperationalPeriod.setEndDate(info.deactivateDate);
+//            return lastOperationalPeriod;
+//        } else if (info.deactivateType == HeatmeterPeriodSubType.ADJUSTMENT) {
+//            HeatmeterPeriod adjustmentPeriod = new HeatmeterPeriod(heatmeterListWrapper.getOperatingMonthDate());
+//            adjustmentPeriod.setBeginDate(info.deactivateDate);
+//            adjustmentPeriod.setType(HeatmeterPeriodSubType.ADJUSTMENT);
+//            adjustmentPeriod.setHeatmeterId(heatmeter.getId());
+//            heatmeter.getPeriods().add(adjustmentPeriod);
+//            return adjustmentPeriod;
+//        } else {
+//            throw new IllegalStateException("Unknown heatmeter period type: " + info.deactivateType);
+//        }
+//    }
 
     public void open(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
         this.heatmeterListWrapper = heatmeterListWrapper;
 
-        model.setObject(new DeactivateHeatmeterEntity(HeatmeterPeriodType.ADJUSTMENT, DateUtil.getCurrentDate()));
+        model.setObject(new DeactivateHeatmeterEntity(HeatmeterPeriodSubType.ADJUSTMENT, DateUtil.getCurrentDate()));
 
         target.add(container);
         dialog.open(target);

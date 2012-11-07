@@ -214,13 +214,13 @@ public class HeatmeterImportService extends AbstractImportService{
             heatmeterBean.save(heatmeter);
 
             //create period
-            HeatmeterPeriod period = new HeatmeterPeriod();
-            period.setHeatmeterId(heatmeter.getId());
-            period.setType(HeatmeterPeriodType.OPERATION);
-            period.setBeginDate(DEFAULT_BEGIN_DATE);
-            period.setOperatingMonth(DEFAULT_BEGIN_DATE);
+//            HeatmeterPeriod period = new HeatmeterPeriod();
+//            period.setHeatmeterId(heatmeter.getId());
+//            period.setType(HeatmeterPeriodSubType.OPERATING);
+//            period.setBeginDate(DEFAULT_BEGIN_DATE);
+//            period.setOperatingMonth(DEFAULT_BEGIN_DATE);
 
-            heatmeterPeriodBean.save(period);
+//            heatmeterPeriodBean.save(period);
             //heatmeterPeriodBean.updateParent(period.getId(), period.getId()); todo
         }
 
@@ -228,8 +228,8 @@ public class HeatmeterImportService extends AbstractImportService{
         HeatmeterConnection heatmeterConnection = new HeatmeterConnection();
         heatmeterConnection.setHeatmeterId(heatmeter.getId());
         heatmeterConnection.setBuildingCodeId(buildingCodeId);
-        heatmeterConnection.setBeginDate(DEFAULT_BEGIN_DATE);
-        heatmeterConnection.setOperatingMonth(DEFAULT_BEGIN_DATE);
+//        heatmeterConnection.setBeginDate(DEFAULT_BEGIN_DATE);
+//        heatmeterConnection.setOperatingMonth(DEFAULT_BEGIN_DATE);
         heatmeterConnectionBean.save(heatmeterConnection);
     }
 

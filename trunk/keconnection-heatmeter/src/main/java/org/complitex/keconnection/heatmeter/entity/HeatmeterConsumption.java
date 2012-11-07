@@ -1,34 +1,28 @@
 package org.complitex.keconnection.heatmeter.entity;
 
-import org.complitex.dictionary.entity.IDateRange;
+import org.complitex.dictionary.entity.ILongId;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterConsumptionStatus.NOT_LOADED;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 18:31
  */
-public class HeatmeterConsumption implements IHeatmeterEntity, IDateRange {
+public class HeatmeterConsumption implements ILongId {
     private Long id;
     private Long heatmeterId;
-    private Date readoutDate;
+    private Long heatmeterInputId;
     private Date operatingMonth;
     private BigDecimal consumption;
-    private BigDecimal consumption1 = new BigDecimal(0);
-    private BigDecimal consumption2 = new BigDecimal(0);
-    private BigDecimal consumption3 = new BigDecimal(0);
-    private HeatmeterConsumptionStatus status = HeatmeterConsumptionStatus.NOT_LOADED;
-
+    private BigDecimal consumption1;
+    private BigDecimal consumption2;
+    private BigDecimal consumption3;
     private Date beginDate;
     private Date endDate;
-
-    public HeatmeterConsumption() {
-    }
-
-    public HeatmeterConsumption(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
-    }
+    private HeatmeterConsumptionStatus status = NOT_LOADED;
 
     public Long getId() {
         return id;
@@ -46,12 +40,12 @@ public class HeatmeterConsumption implements IHeatmeterEntity, IDateRange {
         this.heatmeterId = heatmeterId;
     }
 
-    public Date getReadoutDate() {
-        return readoutDate;
+    public Long getHeatmeterInputId() {
+        return heatmeterInputId;
     }
 
-    public void setReadoutDate(Date readoutDate) {
-        this.readoutDate = readoutDate;
+    public void setHeatmeterInputId(Long heatmeterInputId) {
+        this.heatmeterInputId = heatmeterInputId;
     }
 
     public Date getOperatingMonth() {

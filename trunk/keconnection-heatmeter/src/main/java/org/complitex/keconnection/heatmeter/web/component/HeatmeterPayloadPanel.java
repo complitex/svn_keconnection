@@ -13,7 +13,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
@@ -38,11 +37,11 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
             protected List<HeatmeterPayload> load() {
                 List<HeatmeterPayload> list = new ArrayList<>();
 
-                for (HeatmeterPayload p : model.getObject().getPayloads()){
-                    if (DateUtil.isSameMonth(p.getOperatingMonth(), operatingMonthModel.getObject())){
-                        list.add(p);
-                    }
-                }
+//                for (HeatmeterPayload p : model.getObject().getPayloads()){
+//                    if (DateUtil.isSameMonth(p.getOperatingMonth(), operatingMonthModel.getObject())){
+//                        list.add(p);
+//                    }
+//                }
 
                 return list;
             }
@@ -83,7 +82,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getPayloads().add(new HeatmeterPayload(operatingMonthModel.getObject()));
+//                model.getObject().getPayloads().add(new HeatmeterPayload(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterPayloadPanel.this);
             }

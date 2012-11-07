@@ -88,10 +88,10 @@ public class TablegramService {
 
                 heatmeterPayload.setTablegramRecordId(tablegramRecord.getId());
 
-                heatmeterPayload.setBeginDate(DEFAULT_BEGIN_DATE);
-                heatmeterPayload.setOperatingMonth(DEFAULT_BEGIN_DATE);
-
-                heatmeterPayload.setHeatmeterId(heatmeter.getId());
+//                heatmeterPayload.setBeginDate(DEFAULT_BEGIN_DATE);
+//                heatmeterPayload.setOperatingMonth(DEFAULT_BEGIN_DATE);
+//
+//                heatmeterPayload.setHeatmeterId(heatmeter.getId());
                 heatmeterPayload.setPayload1(tablegramRecord.getPayload1());
                 heatmeterPayload.setPayload2(tablegramRecord.getPayload2());
                 heatmeterPayload.setPayload3(tablegramRecord.getPayload3());

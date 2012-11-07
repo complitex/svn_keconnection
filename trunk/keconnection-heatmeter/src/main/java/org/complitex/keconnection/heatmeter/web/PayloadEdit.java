@@ -67,7 +67,7 @@ public class PayloadEdit extends FormTemplatePage{
                 }
 
                 //heatmeter
-                heatmeterPayload.setHeatmeterId(heatmeter.getId());
+//                heatmeterPayload.setHeatmeterId(heatmeter.getId());
 
                 heatmeterPayloadBean.save(heatmeterPayload);
 

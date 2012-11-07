@@ -85,7 +85,7 @@ public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getConsumptions().add(new HeatmeterConsumption(operatingMonthModel.getObject()));
+                //model.getObject().getConsumptions().add(new HeatmeterConsumption(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterConsumptionPanel.this);
             }
