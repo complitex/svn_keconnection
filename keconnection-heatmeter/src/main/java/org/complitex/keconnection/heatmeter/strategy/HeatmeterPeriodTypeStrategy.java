@@ -38,10 +38,10 @@ public class HeatmeterPeriodTypeStrategy extends TemplateStrategy {
     /**
      * Predefined heatmeter period type ids
      */
-    public static final long OPERATION = 1;
+    public static final long OPERATING = 1;
     public static final long ADJUSTMENT = 2;
     /* Reserved heatmeter period types */
-    private static final Set<Long> RESERVED_HEATMETER_PERIOD_TYPE_IDS = ImmutableSet.of(OPERATION, ADJUSTMENT);
+    private static final Set<Long> RESERVED_HEATMETER_PERIOD_TYPE_IDS = ImmutableSet.of(OPERATING, ADJUSTMENT);
 
     @Override
     public String getEntityTable() {

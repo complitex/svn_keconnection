@@ -1,12 +1,13 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
+import org.complitex.dictionary.service.AbstractListBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -14,7 +15,7 @@ import org.complitex.dictionary.mybatis.Transactional;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPayloadBean extends AbstractHeatmeterEntityBean<HeatmeterPayload> {
+public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
     public HeatmeterPayload get(Long id){
         return sqlSession().selectOne("selectHeatmeterPayload", id);
     }
@@ -28,7 +29,6 @@ public class HeatmeterPayloadBean extends AbstractHeatmeterEntityBean<HeatmeterP
         }
     }
 
-    @Override
     public void delete(Long id) {
         sqlSession().delete("deleteHeatmeterPayload", id);
     }
@@ -41,17 +41,14 @@ public class HeatmeterPayloadBean extends AbstractHeatmeterEntityBean<HeatmeterP
         sqlSession().delete("deletePayloadByTablegramId", tablegramId);
     }
 
-    @Override
     public List<HeatmeterPayload> getList(FilterWrapper<HeatmeterPayload> filterWrapper) {
         return sqlSession().selectList("selectHeatmeterPayloads", filterWrapper);
     }
 
-    @Override
     public Integer getCount(FilterWrapper<HeatmeterPayload> filterWrapper) {
         return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
     }
 
-    @Override
     public List<HeatmeterPayload> getList(Long heatmeterId) {
         return sqlSession().selectList("selectHeatmeterPayloadsByHeatmeterId", heatmeterId);
     }

@@ -18,9 +18,11 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
-import org.complitex.keconnection.heatmeter.entity.*;
+import org.complitex.keconnection.heatmeter.entity.Heatmeter;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
-import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
@@ -38,8 +40,8 @@ import javax.ejb.EJB;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static org.complitex.dictionary.util.DateUtil.*;
-import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
+import static org.complitex.dictionary.util.DateUtil.addMonth;
+import static org.complitex.dictionary.util.DateUtil.newDate;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.VALID;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
@@ -170,14 +172,14 @@ public class HeatmeterEdit extends FormTemplatePage{
                         heatmeter.setType(HeatmeterType.HEATING);
 
                         //create period
-                        HeatmeterPeriod period = new HeatmeterPeriod();
-                        period.setHeatmeterId(heatmeter.getId());
-                        period.setType(OPERATION);
-                        period.setBeginDate(HeatmeterImportService.DEFAULT_BEGIN_DATE);
-                        period.setOperatingMonth(HeatmeterImportService.DEFAULT_BEGIN_DATE);
+//                        HeatmeterPeriod period = new HeatmeterPeriod();
+//                        period.setHeatmeterId(heatmeter.getId());
+//                        period.setType(OPERATING);
+//                        period.setBeginDate(HeatmeterImportService.DEFAULT_BEGIN_DATE);
+//                        period.setOperatingMonth(HeatmeterImportService.DEFAULT_BEGIN_DATE);
 
-                        heatmeterPeriodBean.save(period);
-                        heatmeterPeriodBean.updateParent(period.getId(), period.getId());
+//                        heatmeterPeriodBean.save(period);
+//                        heatmeterPeriodBean.updateParent(period.getId(), period.getId());
                     }
 
                     getSession().info(getStringFormat("info_saved", heatmeter.getLs()));

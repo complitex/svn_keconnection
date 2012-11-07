@@ -16,13 +16,11 @@ import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -39,11 +37,11 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                     protected List<HeatmeterPeriod> load() {
                         List<HeatmeterPeriod> list = new ArrayList<>();
 
-                        for (HeatmeterPeriod p : model.getObject().getPeriods()){
-                            if (isSameMonth(operatingMonthModel.getObject(), p.getOperatingMonth())){
-                                list.add(p);
-                            }
-                        }
+//                        for (HeatmeterPeriod p : model.getObject().getPeriods()){
+//                            if (isSameMonth(operatingMonthModel.getObject(), p.getOperatingMonth())){
+//                                list.add(p);
+//                            }
+//                        }
 
                         return list;
                     }
@@ -54,8 +52,8 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
 
                 item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(heatmeterPeriod, "beginDate")));
                 item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(heatmeterPeriod, "endDate")));
-                item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodType.class,
-                        new PropertyModel<HeatmeterPeriodType>(heatmeterPeriod, "type"), false));
+                item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodSubType.class,
+                        new PropertyModel<HeatmeterPeriodSubType>(heatmeterPeriod, "type"), false));
 
                 item.visitChildren(new IVisitor<Component, Object>() {
                     @Override
@@ -83,7 +81,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getPeriods().add(new HeatmeterPeriod(operatingMonthModel.getObject()));
+               //model.getObject().getPeriods().add(new HeatmeterPeriod(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterPeriodPanel.this);
             }

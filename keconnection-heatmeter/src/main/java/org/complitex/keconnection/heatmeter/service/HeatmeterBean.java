@@ -44,10 +44,10 @@ public class HeatmeterBean extends AbstractBean {
     public void save(Heatmeter heatmeter) {
         saveHeatmeterInfo(heatmeter);
 
-        save(heatmeterPeriodBean, heatmeter.getId(), heatmeter.getPeriods());
-        save(heatmeterConnectionBean, heatmeter.getId(), heatmeter.getConnections());
-        save(heatmeterPayloadBean, heatmeter.getId(), heatmeter.getPayloads());
-        save(heatmeterConsumptionBean, heatmeter.getId(), heatmeter.getConsumptions());
+//        save(heatmeterPeriodBean, heatmeter.getId(), heatmeter.getPeriods());
+//        save(heatmeterConnectionBean, heatmeter.getId(), heatmeter.getConnections());
+//        save(heatmeterPayloadBean, heatmeter.getId(), heatmeter.getPayloads());
+//        save(heatmeterConsumptionBean, heatmeter.getId(), heatmeter.getConsumptions());
     }
     
     @Transactional

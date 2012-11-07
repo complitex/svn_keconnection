@@ -23,7 +23,9 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.ContextProcessListener;
@@ -31,6 +33,7 @@ import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.*;
@@ -40,6 +43,9 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRender
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindError;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.HeatmeterBindPanel;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.ActivateHeatmeterDialog;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.DeactivateHeatmeterDialog;
+import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.HeatmeterItemPanel;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -58,13 +64,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.PackageResourceReference;
-import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
-import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.ActivateHeatmeterDialog;
-import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.DeactivateHeatmeterDialog;
-import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.HeatmeterItemPanel;
-import static org.complitex.dictionary.util.PageUtil.*;
+import static org.complitex.dictionary.util.PageUtil.newSorting;
+import static org.complitex.dictionary.util.PageUtil.newTextFields;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -251,14 +252,14 @@ public class HeatmeterList extends TemplatePage {
                     results.add(wrapper);
 
                     //add new empty payload
-                    HeatmeterPayload p = new HeatmeterPayload(wrapper.getOperatingMonthDate());
-                    p.setHeatmeterId(heatmeter.getId());
-                    heatmeter.getPayloads().add(p);
-
-                    //add new empty consumption
-                    HeatmeterConsumption c = new HeatmeterConsumption(wrapper.getOperatingMonthDate());
-                    c.setHeatmeterId(heatmeter.getId());
-                    heatmeter.getConsumptions().add(c);
+//                    HeatmeterPayload p = new HeatmeterPayload(wrapper.getOperatingMonthDate());
+//                    p.setHeatmeterId(heatmeter.getId());
+//                    heatmeter.getPayloads().add(p);
+//
+//                    //add new empty consumption
+//                    HeatmeterConsumption c = new HeatmeterConsumption(wrapper.getOperatingMonthDate());
+//                    c.setHeatmeterId(heatmeter.getId());
+//                    heatmeter.getConsumptions().add(c);
                 }
                 return results;
             }
