@@ -1,14 +1,13 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 
 import javax.ejb.Stateless;
-import java.util.HashMap;
 import java.util.List;
-import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -32,13 +31,6 @@ public class HeatmeterPeriodBean extends AbstractBean{
 
     public void delete(Long id) {
         sqlSession().delete("deleteHeatmeterPeriod", id);
-    }
-
-    public void updateParent(final Long id, final Long parentId){
-        sqlSession().update("updateHeatmeterPeriodParent", new HashMap<String, Long>(){{
-            put("id", id);
-            put("parentId", parentId);
-        }});
     }
 
     public List<HeatmeterPeriod> getList(Long heatmeterId) {
