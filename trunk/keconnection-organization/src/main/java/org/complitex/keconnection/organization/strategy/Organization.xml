@@ -50,7 +50,7 @@
     </select>
     
     <select id="findOperatingMonthDate" parameterType="long" resultType="date">
-        SELECT MAX(`operating_month`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
+        SELECT MAX(`begin_om`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
     </select>
     
 </mapper>
