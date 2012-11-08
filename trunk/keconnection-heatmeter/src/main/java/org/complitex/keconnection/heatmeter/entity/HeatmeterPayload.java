@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.09.12 18:27
  */
-public class HeatmeterPayload implements IHeatmeterAttribute{
+public class HeatmeterPayload extends HeatmeterAttribute{
     private Long id;
     private Long tablegramRecordId;
     private BigDecimal payload1;
@@ -14,8 +14,6 @@ public class HeatmeterPayload implements IHeatmeterAttribute{
     private BigDecimal payload3;
 
     private Integer ls;
-
-    private HeatmeterPeriod period;
 
     public HeatmeterPayload() {
     }
@@ -66,13 +64,5 @@ public class HeatmeterPayload implements IHeatmeterAttribute{
 
     public void setLs(Integer ls) {
         this.ls = ls;
-    }
-
-    public HeatmeterPeriod getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(HeatmeterPeriod period) {
-        this.period = period;
     }
 }
