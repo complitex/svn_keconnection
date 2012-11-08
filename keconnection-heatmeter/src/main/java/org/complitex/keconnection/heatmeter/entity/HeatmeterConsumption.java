@@ -9,7 +9,7 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterConsumptionSt
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 18:31
  */
-public class HeatmeterConsumption implements IHeatmeterAttribute {
+public class HeatmeterConsumption extends HeatmeterAttribute {
     private Long id;
     private Long heatmeterId;
     private Long heatmeterInputId;
@@ -21,8 +21,6 @@ public class HeatmeterConsumption implements IHeatmeterAttribute {
     private Date beginDate;
     private Date endDate;
     private HeatmeterConsumptionStatus status = NOT_LOADED;
-
-    private HeatmeterPeriod period;
 
     public Long getId() {
         return id;
@@ -110,13 +108,5 @@ public class HeatmeterConsumption implements IHeatmeterAttribute {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public HeatmeterPeriod getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(HeatmeterPeriod period) {
-        this.period = period;
     }
 }

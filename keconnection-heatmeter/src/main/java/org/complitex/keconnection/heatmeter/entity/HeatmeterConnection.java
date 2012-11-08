@@ -4,7 +4,7 @@ package org.complitex.keconnection.heatmeter.entity;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 02.10.12 15:32
  */
-public class HeatmeterConnection implements IHeatmeterAttribute {
+public class HeatmeterConnection extends HeatmeterAttribute {
     private Long id;
     private Long heatmeterId;
     private Long buildingCodeId;
@@ -13,8 +13,6 @@ public class HeatmeterConnection implements IHeatmeterAttribute {
     private Long organizationId;
     private Integer code;
     private String organizationCode;
-
-    private HeatmeterPeriod period;
 
     public Long getId() {
         return id;
@@ -70,13 +68,5 @@ public class HeatmeterConnection implements IHeatmeterAttribute {
 
     public void setOrganizationCode(String organizationCode) {
         this.organizationCode = organizationCode;
-    }
-
-    public HeatmeterPeriod getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(HeatmeterPeriod period) {
-        this.period = period;
     }
 }
