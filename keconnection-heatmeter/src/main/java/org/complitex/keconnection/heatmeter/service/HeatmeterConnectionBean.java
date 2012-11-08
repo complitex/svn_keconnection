@@ -5,6 +5,7 @@ import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -15,6 +16,9 @@ import java.util.List;
 @XmlMapper
 @Stateless
 public class HeatmeterConnectionBean extends AbstractBean{
+    @EJB
+    private HeatmeterPeriodBean heatmeterPeriodBean;
+
     public HeatmeterConnection get(Long id) {
         return null;
     }
@@ -25,6 +29,9 @@ public class HeatmeterConnectionBean extends AbstractBean{
         }else {
             sqlSession().update("updateHeatmeterConnection", heatmeterConnection);
         }
+
+        heatmeterConnection.getPeriod().setAttributeId(heatmeterConnection.getId());
+        heatmeterPeriodBean.save(heatmeterConnection.getPeriod());
     }
 
     public void delete(Long id){

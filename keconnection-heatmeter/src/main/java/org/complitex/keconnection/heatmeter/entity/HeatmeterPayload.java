@@ -2,6 +2,8 @@ package org.complitex.keconnection.heatmeter.entity;
 
 import java.math.BigDecimal;
 
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.PAYLOAD;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.09.12 18:27
@@ -15,7 +17,9 @@ public class HeatmeterPayload extends HeatmeterAttribute{
 
     private Integer ls;
 
-    public HeatmeterPayload() {
+    @Override
+    public HeatmeterPeriodType getType() {
+        return PAYLOAD;
     }
 
     public Long getId() {
