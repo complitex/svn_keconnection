@@ -4,20 +4,42 @@ import org.complitex.dictionary.entity.ILongId;
 
 import java.util.Date;
 
+import static org.complitex.dictionary.util.DateUtil.newDate;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.09.12 19:25
  */
 public class HeatmeterPeriod implements ILongId{
+    public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
+    public final static Date DEFAULT_END_DATE = newDate(31, 12, 2054);
+
+    public final static Date DEFAULT_BEGIN_OM = newDate(1, 10, 2012);
+    public final static Date DEFAULT_END_OM = newDate(1, 12, 2054);
+
     private Long id;
     private Long heatmeterId;
     private Long attributeId;
     private HeatmeterPeriodType type;
     private HeatmeterPeriodSubType subType;
-    private Date beginDate;
-    private Date endDate;
-    private Date beginOm;
-    private Date endOm;
+    private Date beginDate = DEFAULT_BEGIN_DATE;
+    private Date endDate = DEFAULT_END_DATE;
+    private Date beginOm = DEFAULT_BEGIN_OM;
+    private Date endOm = DEFAULT_END_OM;
+
+    public HeatmeterPeriod() {
+    }
+
+    public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type) {
+        this.heatmeterId = heatmeterId;
+        this.type = type;
+    }
+
+    public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type, HeatmeterPeriodSubType subType) {
+        this.heatmeterId = heatmeterId;
+        this.type = type;
+        this.subType = subType;
+    }
 
     public Long getId() {
         return id;

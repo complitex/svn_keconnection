@@ -132,9 +132,10 @@
 
     <select id="isExistHeatmeter" parameterType="map" resultType="boolean">
         select count(*) > 0 from `heatmeter` h
-          left join `heatmeter_connection` hc on hc.`heatmeter_id` = h.`id`
+          left join `heatmeter_period` p on p.`heatmeter_id` = h.`id` and p.`type` = 2
+          left join `heatmeter_connection` hc on hc.`id` = p.`attribute_id`
           left join `building_code` bc on bc.`id` = hc.`building_code_id`
-        where h.`ls` = #{ls} and hc.`building_code_id` = #{buildingCodeId} and bc.`organization_id` = #{organizationId}
+        where  h.`ls` = #{ls} and hc.`building_code_id` = #{buildingCodeId} and bc.`organization_id` = #{organizationId}
     </select>
 
     <select id="selectHeatmeterByLs" parameterType="map" resultMap="heatmeterResultMap">
@@ -146,19 +147,10 @@
     </update>
     
     <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
-        SELECT COUNT(1) FROM `heatmeter` h 
-            LEFT JOIN `heatmeter_connection` hc ON hc.`heatmeter_id` = h.`id`
+        SELECT COUNT(1) FROM `heatmeter` h
+            left join `heatmeter_period` p on p.`heatmeter_id` = h.`id` and p.`type` = 2
+            left join `heatmeter_connection` hc on hc.`id` = p.`attribute_id`
             LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
             WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId}
-    </select>
-    
-    <select id="selectMaxOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
-            resultType="date">
-
-    </select>
-
-    <select id="selectMinOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
-            resultType="date">
-        select min(`operating_month`) from `heatmeter_period` where `heatmeter_id` = #{id}
     </select>
 </mapper>

@@ -8,7 +8,7 @@
         <result property="heatmeterId"/>
         <result property="beginDate"/>
         <result property="endDate"/>
-        <result property="operatingMonth"/>
+        <result property="om"/>
         <result property="payload1"/>
         <result property="payload2"/>
         <result property="payload3"/>
@@ -19,13 +19,13 @@
         useGeneratedKeys="true" keyProperty="id">
         insert into `heatmeter_payload` (`tablegram_record_id`, `parent_id`, `heatmeter_id`, `begin_date`, `end_date`, `operating_month`,
           `payload1`, `payload2`, `payload3`)
-        values (#{tablegramRecordId}, #{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{operatingMonth},
+        values (#{tablegramRecordId}, #{parentId}, #{heatmeterId}, #{beginDate}, #{endDate}, #{om},
           #{payload1}, #{payload2}, #{payload3})
     </insert>
 
     <update id="updateHeatmeterPayload" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
         update `heatmeter_payload` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `begin_date` = #{beginDate},
-          `end_date` = #{endDate}, `operating_month` = #{operatingMonth}, `payload1` = #{payload1},
+          `end_date` = #{endDate}, `operating_month` = #{om}, `payload1` = #{payload1},
           `payload2` = #{payload2}, `payload3` = #{payload3}
         where `id` = #{id}
     </update>
@@ -43,7 +43,7 @@
         <where>
             <if test="object.beginDate != null">and p.`begin_date` = #{object.beginDate}</if>
             <if test="object.endDate != null">and p.`end_date` = #{object.endDate}</if>
-            <if test="object.operatingMonth != null">and p.`operating_month` = #{object.operatingMonth}</if>
+            <if test="object.om != null">and p.`operating_month` = #{object.om}</if>
             <if test="object.payload1 != null">and p.`payload1` = #{object.payload1}</if>
             <if test="object.payload2 != null">and p.`payload2` = #{object.payload2}</if>
             <if test="object.payload3 != null">and p.`payload3` = #{object.payload3}</if>

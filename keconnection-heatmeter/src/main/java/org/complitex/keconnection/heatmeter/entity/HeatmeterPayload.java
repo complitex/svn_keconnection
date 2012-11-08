@@ -17,6 +17,15 @@ public class HeatmeterPayload extends HeatmeterAttribute{
 
     private Integer ls;
 
+    public HeatmeterPayload() {
+    }
+
+    public HeatmeterPayload(Long heatmeterId, Long tablegramRecordId) {
+        this.tablegramRecordId = tablegramRecordId;
+
+        setPeriod(new HeatmeterPeriod(heatmeterId, PAYLOAD));
+    }
+
     @Override
     public HeatmeterPeriodType getType() {
         return PAYLOAD;

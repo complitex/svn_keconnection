@@ -38,7 +38,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
                 List<HeatmeterPayload> list = new ArrayList<>();
 
 //                for (HeatmeterPayload p : model.getObject().getPayloads()){
-//                    if (DateUtil.isSameMonth(p.getOperatingMonth(), operatingMonthModel.getObject())){
+//                    if (DateUtil.isSameMonth(p.getOm(), operatingMonthModel.getObject())){
 //                        list.add(p);
 //                    }
 //                }

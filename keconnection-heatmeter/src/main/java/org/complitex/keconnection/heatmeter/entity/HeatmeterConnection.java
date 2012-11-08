@@ -15,6 +15,15 @@ public class HeatmeterConnection extends HeatmeterAttribute {
     private Integer code;
     private String organizationCode;
 
+    public HeatmeterConnection() {
+    }
+
+    public HeatmeterConnection(Long heatmeterId, Long buildingCodeId) {
+        this.buildingCodeId = buildingCodeId;
+
+        setPeriod(new HeatmeterPeriod(heatmeterId, CONNECTION));
+    }
+
     @Override
     public HeatmeterPeriodType getType() {
         return CONNECTION;

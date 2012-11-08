@@ -4,8 +4,8 @@
     <resultMap id="operatingMonthResultMap" type="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
         <id property="id"/>
         <result property="organizationId"/>
-        <result property="operatingMonth"/>
-        <result property="operatingMonthEnd"/>
+        <result property="beginOm"/>
+        <result property="endOm"/>
         <result property="updated"/>
     </resultMap>
 
@@ -14,20 +14,20 @@
     </select>
 
     <insert id="insertOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
-        insert into `operating_month` (`organization_id`, `operating_month`, `operating_month_end`, `updated`)
-          values (#{organizationId}, #{operatingMonth}, #{operatingMonthEnd}, #{updated})
+        insert into `operating_month` (`organization_id`, `begin_om`, `end_om`, `updated`)
+          values (#{organizationId}, #{om}, #{endOm}, #{updated})
     </insert>
 
     <update id="updateOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
-        update `operating_month` set `organization_id` = #{organizationId}, `operating_month`  = #{operatingMonth},
-          `operating_month_end`  = #{operatingMonthEnd}, `updated`  = #{updated}
+        update `operating_month` set `organization_id` = #{organizationId}, `begin_om`  = #{beginOm},
+          `end_om`  = #{endOm}, `updated`  = #{updated}
     </update>
 
     <sql id="selectOperatingMonthWhere">
         <where>
             <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
-            <if test="object.operatingMonth != null">and `operating_month` = #{object.operatingMonth}</if>
-            <if test="object.operatingMonthEnd != null">and `operating_month_end` = #{object.operatingMonthEnd}</if>
+            <if test="object.beginOm != null">and `begin_om` = #{object.beginOm}</if>
+            <if test="object.endOm != null">and `end_om` = #{object.endOm}</if>
             <if test="object.updated != null">and `updated` = #{object.updated}</if>
         </where>
     </sql>

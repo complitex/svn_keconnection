@@ -176,7 +176,7 @@ public class HeatmeterEdit extends FormTemplatePage{
 //                        period.setHeatmeterId(heatmeter.getId());
 //                        period.setType(OPERATING);
 //                        period.setBeginDate(HeatmeterImportService.DEFAULT_BEGIN_DATE);
-//                        period.setOperatingMonth(HeatmeterImportService.DEFAULT_BEGIN_DATE);
+//                        period.setOm(HeatmeterImportService.DEFAULT_BEGIN_DATE);
 
 //                        heatmeterPeriodBean.save(period);
 //                        heatmeterPeriodBean.updateParent(period.getId(), period.getId());

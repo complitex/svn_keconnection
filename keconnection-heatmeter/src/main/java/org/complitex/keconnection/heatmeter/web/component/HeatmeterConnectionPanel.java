@@ -58,7 +58,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                         List<HeatmeterConnection> list = new ArrayList<>();
 
 //                        for (HeatmeterConnection c : model.getObject().getConnections()){
-//                            if (isSameMonth(c.getOperatingMonth(), operatingMonthModel.getObject())){
+//                            if (isSameMonth(c.getOm(), operatingMonthModel.getObject())){
 //                                list.add(c);
 //                            }
 //                        }

@@ -23,13 +23,11 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.getMonth;
-import static org.complitex.dictionary.util.DateUtil.newDate;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING_AND_WATER;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
@@ -57,9 +55,6 @@ public class HeatmeterImportService extends AbstractImportService{
 
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
-
-    public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
-    public final static Date DEFAULT_END_DATE = newDate(1, getMonth(new Date()) + 1, 2012);
 
     @Asynchronous
     public void asyncUploadHeatmeters(String fileName, InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
@@ -206,7 +201,7 @@ public class HeatmeterImportService extends AbstractImportService{
             heatmeter.setLs(ls);
 
             //default type
-            heatmeter.setType(HeatmeterType.HEATING_AND_WATER);
+            heatmeter.setType(HEATING_AND_WATER);
 
             //default organization
             heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);
@@ -218,23 +213,11 @@ public class HeatmeterImportService extends AbstractImportService{
             heatmeterBean.save(heatmeter);
 
             //create period
-            HeatmeterPeriod period = new HeatmeterPeriod();
-            period.setHeatmeterId(heatmeter.getId());
-            period.setType(OPERATION);
-            period.setSubType(OPERATING);
-            period.setBeginDate(DEFAULT_BEGIN_DATE);
-            period.setBeginOm(DEFAULT_BEGIN_DATE);
-            period.setEndOm(DEFAULT_END_DATE);
-
-            heatmeterPeriodBean.save(period);
+            heatmeterPeriodBean.save(new HeatmeterPeriod(heatmeter.getId(), OPERATION, OPERATING));
         }
 
         //create heatmeter connection
-        HeatmeterConnection heatmeterConnection = new HeatmeterConnection();
-        heatmeterConnection.setBuildingCodeId(buildingCodeId);
-        heatmeterConnection.setPeriod(heatmeter.getId(), DEFAULT_BEGIN_DATE, null, DEFAULT_BEGIN_DATE, DEFAULT_END_DATE);
-
-        heatmeterConnectionBean.save(heatmeterConnection);
+        heatmeterConnectionBean.save(new HeatmeterConnection(heatmeter.getId(), buildingCodeId));
     }
 
     public List<HeatmeterImportFile> getHeatmeterImportFiles(){

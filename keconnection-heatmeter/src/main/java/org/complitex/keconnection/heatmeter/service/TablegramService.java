@@ -1,7 +1,6 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.service.IProcessListener;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
@@ -9,7 +8,6 @@ import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.Date;
 import java.util.List;
 
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
@@ -22,8 +20,6 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
  */
 @Stateless
 public class TablegramService {
-    private final Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
-
     @EJB
     private TablegramBean tablegramBean;
 
@@ -84,14 +80,7 @@ public class TablegramService {
                 }
             }else {
                 //create heatmeterPayload
-                HeatmeterPayload heatmeterPayload = new HeatmeterPayload();
-
-                heatmeterPayload.setTablegramRecordId(tablegramRecord.getId());
-
-//                heatmeterPayload.setBeginDate(DEFAULT_BEGIN_DATE);
-//                heatmeterPayload.setOperatingMonth(DEFAULT_BEGIN_DATE);
-//
-//                heatmeterPayload.setHeatmeterId(heatmeter.getId());
+                HeatmeterPayload heatmeterPayload = new HeatmeterPayload(heatmeter.getId(), tablegramRecord.getId());
                 heatmeterPayload.setPayload1(tablegramRecord.getPayload1());
                 heatmeterPayload.setPayload2(tablegramRecord.getPayload2());
                 heatmeterPayload.setPayload3(tablegramRecord.getPayload3());
