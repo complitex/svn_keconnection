@@ -383,32 +383,17 @@ CREATE TABLE `heatmeter_period`(
   `begin_date` TIMESTAMP COMMENT 'Дата начала периода',
   `end_date` TIMESTAMP COMMENT 'Дата окончания периода',
   `attribute_id` BIGINT(20) NULL COMMENT 'Ссылка на атрибут',
+  `begin_om` TIMESTAMP NOT NULL COMMENT 'Опер.месяц начиная с которого действует данный параметр расчета',
+  `end_om` TIMESTAMP NOT NULL COMMENT 'Последний опер.месяц в котором действует данный параметр расчета',
   PRIMARY KEY (`id`),
   KEY `key_type` (`type`),
   KEY `key_sub_type` (`sub_type`),
   KEY `key_begin_date` (`begin_date`),
   KEY `key_end_date` (`end_date`),
-  KEY `key_attribute_id` (`attribute_id`)
+  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_begin_om` (`begin_om`),
+  KEY `key_end_om` (`end_om`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
-
--- ------------------------------
--- Dataset
--- ------------------------------
-DROP TABLE IF EXISTS `heatmeter_dataset`;
-CREATE TABLE `heatmeter_dataset`(
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
-  `period_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на период',
-  `begin_operating_month` TIMESTAMP NOT NULL COMMENT 'Опер.месяц начиная с которого действует данный параметр расчета',
-  `end_operating_month` TIMESTAMP NOT NULL COMMENT 'Последний опер.месяц в котором действует данный параметр расчета',
-  PRIMARY KEY (`id`),
-  KEY `key_heatmeter_id` (`heatmeter_id`),
-  KEY `key_period_id` (`period_id`),
-  KEY `key_begin_operating_month` (`begin_operating_month`),
-  KEY `key_end_operating_month` (`end_operating_month`),
-  CONSTRAINT `fk_heatmeter_dataset__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
-  CONSTRAINT `fk_heatmeter_dataset__heatmeter_period` FOREIGN KEY (`period_id`) REFERENCES `heatmeter_period` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Параметры расчета';
 
 -- ------------------------------
 -- Connection
@@ -462,7 +447,7 @@ CREATE TABLE `heatmeter_consumption`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
   `heatmeter_input_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на расход',
-  `operating_month` TIMESTAMP NOT NULL COMMENT  'Операционный месяц',
+  `om` TIMESTAMP NOT NULL COMMENT  'Операционный месяц',
   `consumption1` DECIMAL(15, 7) COMMENT 'Расхода для тарифной группы 1',
   `consumption2` DECIMAL(15, 7) COMMENT 'Расхода для тарифной группы 2',
   `consumption3` DECIMAL(15, 7) COMMENT 'Расхода для тарифной группы 3',
@@ -470,10 +455,10 @@ CREATE TABLE `heatmeter_consumption`(
   `end_date` TIMESTAMP NOT NULL COMMENT 'Дата окончания',
   `status` INT COMMENT 'Статус',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `end_date`, `operating_month`),
+  UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `end_date`, `om`),
   KEY `key_heatmeter_id` (`heatmeter_id`),
   KEY `key_heatmeter_input_id` (`heatmeter_input_id`),
-  KEY `key_operating_month` (`operating_month`),
+  KEY `key_om` (`om`),
   CONSTRAINT `fk_heatmeter_consumption__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
   CONSTRAINT `fk_heatmeter_consumption__heatmeter_input` FOREIGN KEY (`heatmeter_input_id`) REFERENCES `heatmeter_input` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Результаты расчета';
@@ -486,7 +471,7 @@ DROP TABLE IF EXISTS `tablegram`;
 CREATE TABLE `tablegram`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
     `file_name` VARCHAR (255) NOT NULL COMMENT 'Название файла',
-    `operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
+    `om` DATE NOT NULL COMMENT  'Операционный месяц',
     `uploaded` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT  'Дата загрузки',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы табуляграмм';
@@ -704,8 +689,8 @@ DROP TABLE IF EXISTS `operating_month`;
 CREATE TABLE `operating_month`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
     `organization_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на организацию',
-    `begin_operating_month` DATE NOT NULL COMMENT  'Операционный месяц',
-    `end_operating_month` DATE NULL COMMENT  'Конец операционного месяца',
+    `begin_om` DATE NOT NULL COMMENT  'Операционный месяц',
+    `end_om` DATE NULL COMMENT  'Конец операционного месяца',
     `updated` TIMESTAMP NULL COMMENT  'Время изменения опер. месяца',
     PRIMARY KEY (`id`),
     KEY `key_organization_id` (`organization_id`),

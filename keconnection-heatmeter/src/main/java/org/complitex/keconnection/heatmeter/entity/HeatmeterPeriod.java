@@ -10,11 +10,14 @@ import java.util.Date;
  */
 public class HeatmeterPeriod implements ILongId{
     private Long id;
+    private Long heatmeterId;
+    private Long attributeId;
     private HeatmeterPeriodType type;
     private HeatmeterPeriodSubType subType;
     private Date beginDate;
     private Date endDate;
-    private Long attributeId;
+    private Date beginOm;
+    private Date endOm;
 
     public Long getId() {
         return id;
@@ -22,6 +25,22 @@ public class HeatmeterPeriod implements ILongId{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getHeatmeterId() {
+        return heatmeterId;
+    }
+
+    public void setHeatmeterId(Long heatmeterId) {
+        this.heatmeterId = heatmeterId;
+    }
+
+    public Long getAttributeId() {
+        return attributeId;
+    }
+
+    public void setAttributeId(Long attributeId) {
+        this.attributeId = attributeId;
     }
 
     public HeatmeterPeriodType getType() {
@@ -56,11 +75,19 @@ public class HeatmeterPeriod implements ILongId{
         this.endDate = endDate;
     }
 
-    public Long getAttributeId() {
-        return attributeId;
+    public Date getBeginOm() {
+        return beginOm;
     }
 
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
+    public void setBeginOm(Date beginOm) {
+        this.beginOm = beginOm;
+    }
+
+    public Date getEndOm() {
+        return endOm;
+    }
+
+    public void setEndOm(Date endOm) {
+        this.endOm = endOm;
     }
 }
