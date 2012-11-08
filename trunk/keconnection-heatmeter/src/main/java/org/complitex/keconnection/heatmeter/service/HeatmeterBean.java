@@ -2,20 +2,18 @@ package org.complitex.keconnection.heatmeter.service;
 
 import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.dictionary.util.IdListUtil;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
-import org.complitex.keconnection.heatmeter.entity.IHeatmeterEntity;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -59,21 +57,21 @@ public class HeatmeterBean extends AbstractBean {
         }
     }
 
-    private <T extends IHeatmeterEntity> void save(IHeatmeterEntityBean<T> bean, Long heatmeterId, List<T> list){
-        if (heatmeterId != null) {
-            List<T> db = bean.getList(heatmeterId);
-
-            for (T object : IdListUtil.getDiff(db, list)) {
-                bean.delete(object.getId());
-            }
-        }
-
-        for (T object : list) {
-            object.setHeatmeterId(heatmeterId);
-
-            bean.save(object);
-        }
-    }
+//    private <T extends IHeatmeterEntity> void save(IHeatmeterEntityBean<T> bean, Long heatmeterId, List<T> list){
+//        if (heatmeterId != null) {
+//            List<T> db = bean.getList(heatmeterId);
+//
+//            for (T object : IdListUtil.getDiff(db, list)) {
+//                bean.delete(object.getId());
+//            }
+//        }
+//
+//        for (T object : list) {
+//            object.setHeatmeterId(heatmeterId);
+//
+//            bean.save(object);
+//        }
+//    }
 
     public Heatmeter getHeatmeter(Long id) {
         return sqlSession().selectOne("selectHeatmeter", id);
