@@ -11,7 +11,7 @@ import java.util.Date;
 public class Tablegram implements ILongId{
     private Long id;
     private String fileName;
-    private Date operatingMonth;
+    private Date om;
     private Date uploaded;
     private Integer count;
     private Integer processedCount;
@@ -32,12 +32,12 @@ public class Tablegram implements ILongId{
         this.fileName = fileName;
     }
 
-    public Date getOperatingMonth() {
-        return operatingMonth;
+    public Date getOm() {
+        return om;
     }
 
-    public void setOperatingMonth(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
+    public void setOm(Date om) {
+        this.om = om;
     }
 
     public Date getUploaded() {

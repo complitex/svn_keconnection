@@ -82,7 +82,7 @@ public class HeatmeterService {
 //
 //                for (HeatmeterPeriod p2 : periods){
 //                    if (OPERATING.equals(p2.getType())
-//                            && isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+//                            && isSameMonth(p1.getOm(), p2.getOm())
 //                            && encloses(p2, p1)){
 //                        encloses = true;
 //                        break;
@@ -100,7 +100,7 @@ public class HeatmeterService {
 //                    HeatmeterPeriod p2 = periods.get(j);
 //
 //                    if (p1.getType() != null && p1.getType().equals(p2.getType())
-//                            && isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+//                            && isSameMonth(p1.getOm(), p2.getOm())
 //                            && p2.getBeginDate() != null
 //                            && isConnected(p1, p2)){
 //
@@ -135,7 +135,7 @@ public class HeatmeterService {
 //                for (int j = i + 1; j < connections.size(); ++j){
 //                    HeatmeterConnection c2 = connections.get(j);
 //
-//                    if(isSameMonth(c1.getOperatingMonth(), c2.getOperatingMonth())
+//                    if(isSameMonth(c1.getOm(), c2.getOm())
 //                            && c1.getBuildingCodeId().equals(c2.getBuildingCodeId())
 //                            && c2.getBeginDate() != null
 //                            && isConnected(c1, c2)){
@@ -174,7 +174,7 @@ public class HeatmeterService {
 //                for (int j = i + 1; j < payloads.size(); ++j){
 //                    HeatmeterPayload p2 = payloads.get(j);
 //
-//                    if(isSameMonth(p1.getOperatingMonth(), p2.getOperatingMonth())
+//                    if(isSameMonth(p1.getOm(), p2.getOm())
 //                            && p2.getBeginDate() != null
 //                            && isConnected(p1, p2)){
 //                        return new HeatmeterValidate(ERROR_PAYLOAD_INTERSECTION, p1, p2);
@@ -203,7 +203,7 @@ public class HeatmeterService {
 //                for (int j = i + 1; j < consumptions.size(); ++j){
 //                    HeatmeterConsumption c2 = consumptions.get(j);
 //
-//                    if(isSameMonth(c1.getOperatingMonth(), c2.getOperatingMonth())
+//                    if(isSameMonth(c1.getOm(), c2.getOm())
 //                            && DateUtil.isTheSameDay(c1.getReadoutDate(), c2.getReadoutDate())){
 //                        return new HeatmeterValidate(ERROR_CONSUMPTION_INTERSECTION, c1.getReadoutDate());
 //                    }
@@ -232,7 +232,7 @@ public class HeatmeterService {
 //        for (HeatmeterConsumption c : heatmeter.getConsumptions()){
 //            if (!c.equals(consumption) && c.getReadoutDate() != null
 //                    && isSameMonth(consumption.getReadoutDate(), c.getReadoutDate())
-//                    && isSameMonth(consumption.getOperatingMonth(), c.getOperatingMonth())){
+//                    && isSameMonth(consumption.getOm(), c.getOm())){
 //                consumptions.add(c);
 //            }
 //        }

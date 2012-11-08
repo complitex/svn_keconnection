@@ -60,7 +60,7 @@ public class TablegramImportService extends AbstractImportService{
         Tablegram tablegram = new Tablegram();
 
         tablegram.setFileName(importFile.getFileName());
-        tablegram.setOperatingMonth(DEFAULT_BEGIN_DATE);
+        tablegram.setOm(DEFAULT_BEGIN_DATE);
 
         int processed = 0;
 

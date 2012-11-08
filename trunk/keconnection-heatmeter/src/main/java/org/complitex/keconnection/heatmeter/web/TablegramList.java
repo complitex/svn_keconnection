@@ -40,7 +40,7 @@ import static org.complitex.dictionary.util.PageUtil.*;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class TablegramList extends TemplatePage{
-    final String[] properties = new String[]{"id", "fileName", "operatingMonth", "uploaded", "count",  "processedCount"};
+    final String[] properties = new String[]{"id", "fileName", "om", "uploaded", "count",  "processedCount"};
 
     private final static Logger log = LoggerFactory.getLogger(TablegramList.class);
 

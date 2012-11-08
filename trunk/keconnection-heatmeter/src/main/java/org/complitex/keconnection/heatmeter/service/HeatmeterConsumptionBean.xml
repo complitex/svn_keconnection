@@ -5,7 +5,7 @@
         <id property="id"/>
         <result property="heatmeterId"/>
         <result property="readoutDate"/>
-        <result property="operatingMonth"/>
+        <result property="om"/>
         <result property="consumption"/>
         <result property="consumption1"/>
         <result property="consumption2"/>
@@ -16,12 +16,12 @@
     <insert id="insertHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
         insert into `heatmeter_consumption` (`heatmeter_id`, `readout_date`, `operating_month`, `consumption`,
                                              `consumption1`, `consumption2`, `consumption3`, `status`)
-            values (#{heatmeterId}, #{readoutDate}, #{operatingMonth}, #{consumption}, #{consumption1}, #{consumption2},
+            values (#{heatmeterId}, #{readoutDate}, #{om}, #{consumption}, #{consumption1}, #{consumption2},
                     #{consumption3}, #{status})
     </insert>
 
     <update id="updateHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
-        update `heatmeter_consumption` set  `readout_date` = #{readoutDate}, `operating_month` = #{operatingMonth},
+        update `heatmeter_consumption` set  `readout_date` = #{readoutDate}, `operating_month` = #{om},
             `consumption` = #{consumption}, `consumption1` = #{consumption1}, `consumption2` = #{consumption2},
             `consumption3` = #{consumption3}, `status` = #{status}
     </update>

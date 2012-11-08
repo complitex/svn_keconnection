@@ -11,8 +11,8 @@ import java.util.Date;
 public class OperatingMonth implements ILongId{
     private Long id;
     private Long organizationId;
-    private Date operatingMonth;
-    private Date operatingMonthEnd;
+    private Date beginOm;
+    private Date endOm;
     private Date updated;
 
     public Long getId() {
@@ -31,20 +31,20 @@ public class OperatingMonth implements ILongId{
         this.organizationId = organizationId;
     }
 
-    public Date getOperatingMonth() {
-        return operatingMonth;
+    public Date getBeginOm() {
+        return beginOm;
     }
 
-    public void setOperatingMonth(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
+    public void setBeginOm(Date beginOm) {
+        this.beginOm = beginOm;
     }
 
-    public Date getOperatingMonthEnd() {
-        return operatingMonthEnd;
+    public Date getEndOm() {
+        return endOm;
     }
 
-    public void setOperatingMonthEnd(Date operatingMonthEnd) {
-        this.operatingMonthEnd = operatingMonthEnd;
+    public void setEndOm(Date endOm) {
+        this.endOm = endOm;
     }
 
     public Date getUpdated() {
