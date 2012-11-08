@@ -3,25 +3,27 @@
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean">
     <resultMap id="heatmeterPeriodResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
         <id property="id"/>
-        <result property="parentId"/>
         <result property="heatmeterId"/>
+        <result property="attributeId"/>
         <result property="type"/>
+        <result property="subType"/>
         <result property="beginDate"/>
         <result property="endDate"/>
-        <result property="operatingMonth"/>
+        <result property="beginOm"/>
+        <result property="endOm"/>
     </resultMap>
 
     <insert id="insertHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod"
         useGeneratedKeys="true" keyProperty="id">
         insert into `heatmeter_period`
-          (`parent_id`, `heatmeter_id`, `type`, `begin_date`, `end_date`, `operating_month`)
+          (`heatmeter_id`, `attribute_id`, `type`, `sub_type`, `begin_date`, `end_date`, `begin_om`, `end_om`)
         values
-          (#{parentId}, #{heatmeterId}, #{type}, #{beginDate}, #{endDate}, #{operatingMonth})
+          (#{heatmeterId}, #{attributeId}, #{type}, #{subType}, #{beginDate}, #{endDate}, #{beginOm}, #{endOm})
     </insert>
 
     <update id="updateHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
-        update `heatmeter_period` set `parent_id` = #{parentId}, `heatmeter_id` = #{heatmeterId}, `type` = #{type},
-          `begin_date` = #{beginDate}, `end_date` = #{endDate}, `operating_month` = #{operatingMonth}
+        update `heatmeter_period`
+          set `begin_date` = #{beginDate}, `end_date` = #{endDate}, `begin_om` = #{beginOm}, `end_om` = #{endOm}
         where `id` = #{id}
     </update>
 
@@ -32,10 +34,6 @@
     <select id="selectHeatmeterPeriodsByHeatmeterId" parameterType="long" resultMap="heatmeterPeriodResultMap">
         select * from `heatmeter_period` where `heatmeter_id` = #{heatmeterId} order by `begin_date`
     </select>
-
-    <update id="updateHeatmeterPeriodParent" parameterType="map">
-        update `heatmeter_period` set `parent_id` = #{parentId} where `id` = #{id}
-    </update>
 
     <delete id="deleteHeatmeterPeriod" parameterType="long">
         delete from `heatmeter_period` where `id` = #{id}

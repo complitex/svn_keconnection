@@ -378,6 +378,7 @@ CREATE TABLE `heatmeter`(
 DROP TABLE IF EXISTS `heatmeter_period`;
 CREATE TABLE `heatmeter_period`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Теплосчетчик',
   `type` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип теплосчетчика',
   `sub_type` BIGINT(20) NULL COMMENT 'Ссылка на подтип',
   `begin_date` TIMESTAMP COMMENT 'Дата начала периода',
@@ -386,13 +387,15 @@ CREATE TABLE `heatmeter_period`(
   `begin_om` TIMESTAMP NOT NULL COMMENT 'Опер.месяц начиная с которого действует данный параметр расчета',
   `end_om` TIMESTAMP NOT NULL COMMENT 'Последний опер.месяц в котором действует данный параметр расчета',
   PRIMARY KEY (`id`),
+  KEY `key_heatmeater_connection_id` (`heatmeter_id`),
   KEY `key_type` (`type`),
   KEY `key_sub_type` (`sub_type`),
   KEY `key_begin_date` (`begin_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_attribute_id` (`attribute_id`),
   KEY `key_begin_om` (`begin_om`),
-  KEY `key_end_om` (`end_om`)
+  KEY `key_end_om` (`end_om`),
+  CONSTRAINT `fk_heatmeter_period__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
 
 -- ------------------------------
@@ -402,12 +405,9 @@ CREATE TABLE `heatmeter_period`(
 DROP TABLE IF EXISTS `heatmeter_connection`;
 CREATE TABLE `heatmeter_connection`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Теплосчетчик',
   `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
   PRIMARY KEY (`id`),
-  KEY `key_heatmeater_connection_id` (`heatmeter_id`),
   KEY `key_heatmeter_connection_building_code_id` (`building_code_id`),
-  CONSTRAINT `fk_heatmeter_connection__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
   CONSTRAINT `fk_heatmeter_connection__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коды домов теплосчетчика';
 
