@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 07.11.12 18:43
  */
-public class HeatmeterInput extends HeatmeterParameter {
+public class HeatmeterInput extends HeatmeterAttribute {
     private Long id;
     private BigDecimal value;
 
