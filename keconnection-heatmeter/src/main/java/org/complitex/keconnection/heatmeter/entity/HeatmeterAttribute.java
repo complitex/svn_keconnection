@@ -4,7 +4,7 @@ package org.complitex.keconnection.heatmeter.entity;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 08.11.12 14:23
  */
-public abstract class HeatmeterAttribute implements IHeatmeterAttribute {
+public abstract class HeatmeterAttribute {
     private HeatmeterPeriod period;
 
     public HeatmeterPeriod getPeriod() {
