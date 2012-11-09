@@ -1,6 +1,7 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Date;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
@@ -13,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -21,21 +23,19 @@ import java.util.List;
 @XmlMapper
 @Stateless
 public class HeatmeterBean extends AbstractBean {
-    
+
     public static final String PAYLOAD_BEGIN_DATE_FILTER_PARAM = "payloadBeginDate";
     public static final String CONSUMPTION_READOUT_DATE = "consumptionReadoutDate";
-
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
-
     @EJB
     private HeatmeterConnectionBean heatmeterConnectionBean;
-
     @EJB
     private HeatmeterPayloadBean heatmeterPayloadBean;
-
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
+    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
+    private IKeConnectionOrganizationStrategy organizationStrategy;
 
     @Transactional
     public void save(Heatmeter heatmeter) {
@@ -46,7 +46,7 @@ public class HeatmeterBean extends AbstractBean {
 //        save(heatmeterPayloadBean, heatmeter.getId(), heatmeter.getPayloads());
 //        save(heatmeterConsumptionBean, heatmeter.getId(), heatmeter.getConsumptions());
     }
-    
+
     @Transactional
     public void saveHeatmeterInfo(Heatmeter heatmeter) {
         if (heatmeter.getId() == null) {
@@ -71,7 +71,6 @@ public class HeatmeterBean extends AbstractBean {
 //            bean.save(object);
 //        }
 //    }
-
     public Heatmeter getHeatmeter(Long id) {
         return sqlSession().selectOne("selectHeatmeter", id);
     }
@@ -82,7 +81,27 @@ public class HeatmeterBean extends AbstractBean {
 
     public List<Heatmeter> getHeatmeters(FilterWrapper<Heatmeter> filterWrapper) {
         addUnboundStatusParameter(filterWrapper);
-        return sqlSession().selectList("selectHeatmeters", filterWrapper);
+        List<Heatmeter> heatmeters = sqlSession().selectList("selectHeatmeters", filterWrapper);
+        for (Heatmeter h : heatmeters) {
+            h.setOperatingMonth(getOperatingMonthDate(h));
+            loadPayloads(h);
+        }
+        return heatmeters;
+    }
+
+    private Date getOperatingMonthDate(Heatmeter heatmeter) {
+        Long organizationId = null;
+        if (!heatmeter.getConnections().isEmpty()) {
+            organizationId = heatmeter.getConnections().get(0).getOrganizationId();
+        }
+        if (organizationId != null && organizationId > 0) {
+            return organizationStrategy.getOperatingMonthDate(organizationId);
+        }
+        return null;
+    }
+
+    private void loadPayloads(Heatmeter heatmeter) {
+        heatmeter.setPayloads(heatmeterPayloadBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
     }
 
     public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper) {

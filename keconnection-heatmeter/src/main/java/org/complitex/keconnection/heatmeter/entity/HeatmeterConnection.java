@@ -9,7 +9,6 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.CO
 public class HeatmeterConnection extends HeatmeterAttribute {
     private Long id;
     private Long buildingCodeId;
-
     private Long buildingId;
     private Long organizationId;
     private Integer code;

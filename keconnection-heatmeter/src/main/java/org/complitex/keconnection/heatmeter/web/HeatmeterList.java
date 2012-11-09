@@ -60,7 +60,6 @@ import javax.ejb.EJB;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -78,24 +77,6 @@ public class HeatmeterList extends TemplatePage {
     private static final int IMPORT_AJAX_TIMER = 2;
     private static final int BIND_ALL_AJAX_TIMER = 10;
 
-    public static class HeatmeterListWrapper implements Serializable {
-
-        private final Heatmeter heatmeter;
-        private final Date operatingMonthDate;
-
-        public HeatmeterListWrapper(Heatmeter heatmeter, Date operatingMonthDate) {
-            this.heatmeter = heatmeter;
-            this.operatingMonthDate = operatingMonthDate;
-        }
-
-        public Heatmeter getHeatmeter() {
-            return heatmeter;
-        }
-
-        public Date getOperatingMonthDate() {
-            return operatingMonthDate;
-        }
-    }
     @EJB
     private HeatmeterBean heatmeterBean;
     @EJB
@@ -234,10 +215,10 @@ public class HeatmeterList extends TemplatePage {
         final Map<String, Long> selectedIds = new HashMap<>();
 
         //Data Provider
-        DataProvider<HeatmeterListWrapper> dataProvider = new DataProvider<HeatmeterListWrapper>() {
+        DataProvider<Heatmeter> dataProvider = new DataProvider<Heatmeter>() {
 
             @Override
-            protected Iterable<HeatmeterListWrapper> getData(int first, int count) {
+            protected Iterable<Heatmeter> getData(int first, int count) {
                 FilterWrapper<Heatmeter> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);
@@ -246,22 +227,17 @@ public class HeatmeterList extends TemplatePage {
                 filterWrapper.setAscending(getSort().isAscending());
 
                 List<Heatmeter> heatmeters = heatmeterBean.getHeatmeters(filterWrapper);
-                List<HeatmeterListWrapper> results = new ArrayList<>();
                 for (Heatmeter heatmeter : heatmeters) {
-                    HeatmeterListWrapper wrapper = new HeatmeterListWrapper(heatmeter, getOperatingMonthDate(heatmeter));
-                    results.add(wrapper);
-
                     //add new empty payload
-//                    HeatmeterPayload p = new HeatmeterPayload(wrapper.getOperatingMonthDate());
-//                    p.setHeatmeterId(heatmeter.getId());
-//                    heatmeter.getPayloads().add(p);
-//
-//                    //add new empty consumption
-//                    HeatmeterConsumption c = new HeatmeterConsumption(wrapper.getOperatingMonthDate());
+                    HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOperatingMonth());
+                    heatmeter.getPayloads().add(p);
+
+                    //add new empty consumption
+//                    HeatmeterConsumption c = new HeatmeterConsumption();
 //                    c.setHeatmeterId(heatmeter.getId());
 //                    heatmeter.getConsumptions().add(c);
                 }
-                return results;
+                return heatmeters;
             }
 
             @Override
@@ -270,7 +246,7 @@ public class HeatmeterList extends TemplatePage {
             }
 
             @Override
-            public IModel<HeatmeterListWrapper> model(HeatmeterListWrapper object) {
+            public IModel<Heatmeter> model(Heatmeter object) {
                 return new Model<>(object);
             }
         };
@@ -315,13 +291,13 @@ public class HeatmeterList extends TemplatePage {
         add(deactivateHeatmeterDialog);
 
         //Data View
-        DataView<HeatmeterListWrapper> dataView = new DataView<HeatmeterListWrapper>("data_view", dataProvider) {
+        DataView<Heatmeter> dataView = new DataView<Heatmeter>("data_view", dataProvider) {
 
             @Override
-            protected void populateItem(Item<HeatmeterListWrapper> item) {
-                final HeatmeterListWrapper heatmeterListWrapper = item.getModelObject();
+            protected void populateItem(Item<Heatmeter> item) {
+                final Heatmeter heatmeter = item.getModelObject();
 
-                item.add(new HeatmeterItemPanel("heatmeterItemPanel", heatmeterListWrapper) {
+                item.add(new HeatmeterItemPanel("heatmeterItemPanel", heatmeter) {
 
                     @Override
                     protected boolean isEditable() {
@@ -334,13 +310,13 @@ public class HeatmeterList extends TemplatePage {
                     }
 
                     @Override
-                    protected void onDeactivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
-                        deactivateHeatmeterDialog.open(heatmeterListWrapper, target);
+                    protected void onDeactivateHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target) {
+                        deactivateHeatmeterDialog.open(heatmeter, target);
                     }
 
                     @Override
-                    protected void onActivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
-                        activateHeatmeterDialog.open(heatmeterListWrapper, target);
+                    protected void onActivateHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target) {
+                        activateHeatmeterDialog.open(heatmeter, target);
                     }
                 });
             }

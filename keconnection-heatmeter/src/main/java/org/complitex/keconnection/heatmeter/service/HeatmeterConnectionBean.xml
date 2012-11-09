@@ -2,12 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean">
     <resultMap id="heatmeterConnectionResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterConnection">
-        <id property="id"/>
-        <result property="buildingCodeId"/>
-
-        <result property="buildingId"/>
-        <result property="organizationId"/>
-        <result property="code"/>
+        <id column="connection_id" property="id"/>
+        <result property="buildingCodeId" column="building_code_id"/>
+        <result property="buildingId" column="building_id"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="code" column="code"/>
+        <association property="period" javaType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
+            <id column="period_id" property="id"/>
+            <result property="heatmeterId" column="heatmeter_id"/>
+            <result property="type" column="type"/>
+            <result property="subType" column="sub_type"/>
+            <result property="attributeId" column="attribute_id"/>
+            <result property="beginDate" column="begin_date"/>
+            <result property="endDate" column="end_date"/>
+            <result property="beginOm" column="begin_om"/>
+            <result property="endOm" column="end_om"/>
+        </association>
     </resultMap>
 
     <insert id="insertHeatmeterConnection" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConnection"
@@ -24,10 +34,13 @@
     </select>
 
     <select id="selectHeatmeterConnectionsByHeatmeterId" parameterType="long" resultMap="heatmeterConnectionResultMap">
-        select hc.*, bc.`building_id`, bc.`organization_id`, bc.`code` from `heatmeter_connection` hc
+        select hc.`id` connection_id, hc.*, p.`id` period_id, p.*, 
+            bc.`building_id`, bc.`organization_id`, bc.`code` 
+        from `heatmeter_connection` hc
           left join `building_code` bc on bc.`id` = hc.`building_code_id`
-          left join `heatmeter_period` p on p.`attribute_id` =  hc.`id`
-        where p.`heatmeter_id` = #{heatmeterId}
+          left join `heatmeter_period` p on (p.`attribute_id` =  hc.`id` and p.`type` = 2)
+          left join `operating_month` om on om.`organization_id` = bc.`organization_id`
+        where p.`heatmeter_id` = #{heatmeterId} and (om.`begin_om` between p.`begin_om` and p.`end_om`)
     </select>
 
     <delete id="deleteHeatmeterConnection" parameterType="long">
