@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeter.entity;
 
 import java.math.BigDecimal;
 
+import java.util.Date;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.PAYLOAD;
 
 /**
@@ -18,6 +19,12 @@ public class HeatmeterPayload extends HeatmeterAttribute{
     private Integer ls;
 
     public HeatmeterPayload() {
+    }
+    
+    public HeatmeterPayload(long heatmeterId, Date beginOm){
+        HeatmeterPeriod period = new HeatmeterPeriod(heatmeterId, PAYLOAD);
+        period.setBeginOm(beginOm);
+        setPeriod(period);
     }
 
     public HeatmeterPayload(Long heatmeterId, Long tablegramRecordId) {

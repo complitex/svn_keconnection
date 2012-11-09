@@ -2,17 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean">
     <resultMap id="heatmeterPayloadResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
-        <id property="id"/>
+        <id column="payload_id" property="id"/>
         <result property="tablegramRecordId"/>
         <result property="parentId"/>
         <result property="heatmeterId"/>
-        <result property="beginDate"/>
-        <result property="endDate"/>
-        <result property="om"/>
         <result property="payload1"/>
         <result property="payload2"/>
         <result property="payload3"/>
         <result property="ls"/>
+        <association property="period" javaType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
+            <id column="period_id" property="id"/>
+            <result property="heatmeterId" column="heatmeter_id"/>
+            <result property="type" column="type"/>
+            <result property="subType" column="sub_type"/>
+            <result property="attributeId" column="attribute_id"/>
+            <result property="beginDate" column="begin_date"/>
+            <result property="endDate" column="end_date"/>
+            <result property="beginOm" column="begin_om"/>
+            <result property="endOm" column="end_om"/>
+        </association>
     </resultMap>
 
     <insert id="insertHeatmeterPayload" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload"
@@ -69,8 +77,11 @@
           where `tablegram_record_id` in (select `id` from `tablegram_record` where `tablegram_id` = #{tablegramId})
     </delete>
 
-    <select id="selectHeatmeterPayloadsByHeatmeterId" parameterType="long" resultMap="heatmeterPayloadResultMap">
-        select * from `heatmeter_payload` where `heatmeter_id` = #{heatmeterId}
+    <select id="selectHeatmeterPayloadsByHeatmeterId" parameterType="map" resultMap="heatmeterPayloadResultMap">
+        select hp.`id` payload_id, hp.*, p.`id` period_id, p.* 
+        from `heatmeter_payload` hp
+          left join `heatmeter_period` p on (p.`attribute_id` =  hp.`id` and p.`type` = 3)
+        where p.`heatmeter_id` = #{heatmeterId} and (#{operatingMonth} between p.`begin_om` and p.`end_om`)
     </select>
     
      <select id="selectMaxHeatmeterPayload" parameterType="long" resultMap="heatmeterPayloadResultMap">

@@ -9,9 +9,6 @@
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
-        <collection property="connections"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
-                    column="id"/>
     </resultMap>
 
     <resultMap id="heatmeterResultMapCollection" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
@@ -44,18 +41,9 @@
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
-<!--        <collection property="connections"
+        <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
-        <collection property="periods"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
-                    column="id"/>
-        <collection property="payloads"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectMaxHeatmeterPayload"
-                    column="id"/>
-        <collection property="consumptions"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectMaxHeatmeterConsumption"
-                    column="id"/>-->
     </resultMap>
 
     <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"

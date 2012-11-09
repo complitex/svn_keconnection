@@ -22,7 +22,6 @@ import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
-import org.complitex.keconnection.heatmeter.web.HeatmeterList.HeatmeterListWrapper;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
     private final Dialog dialog;
     private final WebMarkupContainer container;
     private final IModel<DeactivateHeatmeterEntity> model;
-    private HeatmeterListWrapper heatmeterListWrapper;
+    private Heatmeter heatmeter;
 
     public DeactivateHeatmeterDialog(String id) {
         super(id);
@@ -84,7 +83,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 
             @Override
             public String getObject() {
-                return heatmeterListWrapper != null ? String.valueOf(heatmeterListWrapper.getHeatmeter().getLs()) : null;
+                return heatmeter != null ? String.valueOf(heatmeter.getLs()) : null;
             }
         }));
 
@@ -101,8 +100,6 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
-
 //                HeatmeterPeriod period = preparePeriod(model.getObject());
 
 //                HeatmeterValidate validate = heatmeterService.validatePeriods(heatmeter);
@@ -157,8 +154,8 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 //        }
 //    }
 
-    public void open(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
-        this.heatmeterListWrapper = heatmeterListWrapper;
+    public void open(Heatmeter heatmeter, AjaxRequestTarget target) {
+        this.heatmeter = heatmeter;
 
         model.setObject(new DeactivateHeatmeterEntity(HeatmeterPeriodSubType.ADJUSTMENT, DateUtil.getCurrentDate()));
 

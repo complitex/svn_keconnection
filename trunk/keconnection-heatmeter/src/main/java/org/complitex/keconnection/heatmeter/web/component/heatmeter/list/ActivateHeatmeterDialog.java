@@ -4,9 +4,6 @@
  */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -27,11 +24,9 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.*;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
-import org.complitex.keconnection.heatmeter.web.HeatmeterList.HeatmeterListWrapper;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +62,7 @@ public abstract class ActivateHeatmeterDialog extends Panel {
     private final Dialog dialog;
     private final WebMarkupContainer container;
     private final IModel<ActivateHeatmeterEntity> model;
-    private HeatmeterListWrapper heatmeterListWrapper;
+    private Heatmeter heatmeter;
 
     public ActivateHeatmeterDialog(String id) {
         super(id);
@@ -93,7 +88,7 @@ public abstract class ActivateHeatmeterDialog extends Panel {
 
             @Override
             public String getObject() {
-                return heatmeterListWrapper != null ? String.valueOf(heatmeterListWrapper.getHeatmeter().getLs()) : null;
+                return heatmeter != null ? String.valueOf(heatmeter.getLs()) : null;
             }
         }));
 
@@ -112,8 +107,6 @@ public abstract class ActivateHeatmeterDialog extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
-
                 HeatmeterPeriod period = preparePeriod(model.getObject().activateDate);
 
 //                HeatmeterValidate validate = heatmeterService.validatePeriods(heatmeter);
@@ -149,14 +142,11 @@ public abstract class ActivateHeatmeterDialog extends Panel {
     }
 
     private void copyHeatmeterInfo(ActivateHeatmeterEntity info) {
-        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
         heatmeter.setCalculating(info.calculating);
         heatmeter.setType(info.heatmeterType);
     }
 
     private HeatmeterPeriod preparePeriod(Date beginDate) {
-        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
-
         //try find open ADJUSTMENT period
 //        Optional<HeatmeterPeriod> openAdjustmentPeriod = Iterables.tryFind(heatmeter.getPeriods(),
 //                new Predicate<HeatmeterPeriod>() {
@@ -183,10 +173,9 @@ public abstract class ActivateHeatmeterDialog extends Panel {
         return null;
     }
 
-    public void open(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target) {
-        this.heatmeterListWrapper = heatmeterListWrapper;
+    public void open(Heatmeter heatmeter, AjaxRequestTarget target) {
+        this.heatmeter = heatmeter;
 
-        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
         model.setObject(new ActivateHeatmeterEntity(heatmeter.getType(), heatmeter.getCalculating(),
                 DateUtil.getCurrentDate()));
 

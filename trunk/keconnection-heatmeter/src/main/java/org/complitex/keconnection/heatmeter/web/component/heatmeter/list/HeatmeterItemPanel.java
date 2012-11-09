@@ -32,7 +32,6 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.HeatmeterEdit;
-import org.complitex.keconnection.heatmeter.web.HeatmeterList.HeatmeterListWrapper;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,10 +110,8 @@ public abstract class HeatmeterItemPanel extends Panel {
                 HeatmeterItemPanel.class.getSimpleName() + ".css"));
     }
 
-    public HeatmeterItemPanel(String id, final HeatmeterListWrapper heatmeterListWrapper) {
+    public HeatmeterItemPanel(String id, final Heatmeter heatmeter) {
         super(id);
-
-        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
 
         setRenderBodyOnly(true);
 
@@ -123,7 +120,7 @@ public abstract class HeatmeterItemPanel extends Panel {
             @Override
             public Boolean getObject() {
                 return (heatmeter.getPayloads().size() > 1 || heatmeter.getConsumptions().size() > 1)
-                        && heatmeterListWrapper.getOperatingMonthDate() != null;
+                        && heatmeter.getOperatingMonth() != null;
             }
         };
 
@@ -182,17 +179,17 @@ public abstract class HeatmeterItemPanel extends Panel {
                     boolean isNewPayload = heatmeter.getPayloads().size() == 1;
                     HeatmeterPayload payload = isNewPayload ? heatmeter.getPayloads().get(0)
                             : heatmeter.getPayloads().get(heatmeter.getPayloads().size() - 2);
-                    addPayload(this, heatmeterListWrapper,
-                            payload, isNewPayload && heatmeterListWrapper.getOperatingMonthDate() != null, true);
+                    addPayload(this, heatmeter,
+                            payload, isNewPayload && heatmeter.getOperatingMonth() != null, true);
                 }
 
                 //consumption
                 {
-                    boolean isNewConsumption = heatmeter.getConsumptions().size() == 1;
-                    HeatmeterConsumption consumption = isNewConsumption ? heatmeter.getConsumptions().get(0)
-                            : heatmeter.getConsumptions().get(heatmeter.getConsumptions().size() - 2);
-                    addConsumption(this, heatmeterListWrapper,
-                            consumption, isNewConsumption && heatmeterListWrapper.getOperatingMonthDate() != null, true);
+//                    boolean isNewConsumption = heatmeter.getConsumptions().size() == 1;
+//                    HeatmeterConsumption consumption = isNewConsumption ? heatmeter.getConsumptions().get(0)
+//                            : heatmeter.getConsumptions().get(heatmeter.getConsumptions().size() - 2);
+//                    addConsumption(this, heatmeter,
+//                            consumption, isNewConsumption && heatmeter.getOperatingMonthDate() != null, true);
                 }
 
                 //status
@@ -234,7 +231,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            HeatmeterItemPanel.this.onActivateHeatmeter(heatmeterListWrapper, target);
+                            HeatmeterItemPanel.this.onActivateHeatmeter(heatmeter, target);
                         }
                     };
                     activateHeatmeter.setEnabled(HeatmeterItemPanel.this.isEditable());
@@ -249,7 +246,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            HeatmeterItemPanel.this.onDeactivateHeatmeter(heatmeterListWrapper, target);
+                            HeatmeterItemPanel.this.onDeactivateHeatmeter(heatmeter, target);
                         }
                     };
                     deactivateHeatmeter.setEnabled(HeatmeterItemPanel.this.isEditable());
@@ -266,12 +263,12 @@ public abstract class HeatmeterItemPanel extends Panel {
                 //payload
                 boolean payloadDataVisible = heatmeter.getPayloads().size() > 1;
                 HeatmeterPayload payload = heatmeter.getPayloads().get(heatmeter.getPayloads().size() - 1);
-                addPayload(this, heatmeterListWrapper, payload, true, payloadDataVisible);
+                addPayload(this, heatmeter, payload, true, payloadDataVisible);
 
                 //consumption
-                boolean consumptionDataVisible = heatmeter.getConsumptions().size() > 1;
-                HeatmeterConsumption consumption = heatmeter.getConsumptions().get(heatmeter.getConsumptions().size() - 1);
-                addConsumption(this, heatmeterListWrapper, consumption, true, consumptionDataVisible);
+//                boolean consumptionDataVisible = heatmeter.getConsumptions().size() > 1;
+//                HeatmeterConsumption consumption = heatmeter.getConsumptions().get(heatmeter.getConsumptions().size() - 1);
+//                addConsumption(this, heatmeter, consumption, true, consumptionDataVisible);
             }
 
             @Override
@@ -297,7 +294,7 @@ public abstract class HeatmeterItemPanel extends Panel {
         initializeCss();
     }
 
-    private void addPayload(MarkupContainer container, final HeatmeterListWrapper heatmeterListWrapper,
+    private void addPayload(MarkupContainer container, final Heatmeter heatmeter,
             final HeatmeterPayload payload, boolean editable, boolean payloadDataVisible) {
 
         container.add(
@@ -311,7 +308,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 editable).setVisible(payloadDataVisible));
 
         container.add(new HeatmeterDateItem("beginDate",
-                new PropertyModel<Date>(payload, "beginDate"),
+                new PropertyModel<Date>(payload, "period.beginDate"),
                 editable).setVisible(payloadDataVisible));
 
         AjaxLink<Void> savePayload = new AjaxLink<Void>("savePayload") {
@@ -357,7 +354,7 @@ public abstract class HeatmeterItemPanel extends Panel {
         container.add(savePayload);
     }
 
-    private void addConsumption(MarkupContainer container, final HeatmeterListWrapper heatmeterListWrapper,
+    private void addConsumption(MarkupContainer container, final Heatmeter heatmeter,
             final HeatmeterConsumption consumption, boolean editable, boolean consumptionDataVisible) {
 
         container.add(new HeatmeterConsumptionItem("consumption",
@@ -467,7 +464,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
     protected abstract void onBindHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target);
 
-    protected abstract void onDeactivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target);
+    protected abstract void onDeactivateHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target);
 
-    protected abstract void onActivateHeatmeter(HeatmeterListWrapper heatmeterListWrapper, AjaxRequestTarget target);
+    protected abstract void onActivateHeatmeter(Heatmeter heatmeter, AjaxRequestTarget target);
 }

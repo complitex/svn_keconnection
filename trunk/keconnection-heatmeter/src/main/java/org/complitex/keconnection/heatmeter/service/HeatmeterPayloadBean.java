@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.Date;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
@@ -16,15 +18,16 @@ import java.util.List;
 @XmlMapper
 @Stateless
 public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
-    public HeatmeterPayload get(Long id){
+
+    public HeatmeterPayload get(Long id) {
         return sqlSession().selectOne("selectHeatmeterPayload", id);
     }
 
     @Transactional
-    public void save(HeatmeterPayload heatmeterPayload){
-        if (heatmeterPayload.getId() == null){
+    public void save(HeatmeterPayload heatmeterPayload) {
+        if (heatmeterPayload.getId() == null) {
             sqlSession().insert("insertHeatmeterPayload", heatmeterPayload);
-        }else {
+        } else {
             sqlSession().update("updateHeatmeterPayload", heatmeterPayload);
         }
     }
@@ -33,11 +36,11 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
         sqlSession().delete("deleteHeatmeterPayload", id);
     }
 
-    public boolean isExist(Long heatmeterId){
+    public boolean isExist(Long heatmeterId) {
         return sqlSession().selectOne("isExistHeatmeterPayload", heatmeterId);
     }
 
-    public void deleteByTablegramId(Long tablegramId){
+    public void deleteByTablegramId(Long tablegramId) {
         sqlSession().delete("deletePayloadByTablegramId", tablegramId);
     }
 
@@ -49,7 +52,8 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
         return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
     }
 
-    public List<HeatmeterPayload> getList(Long heatmeterId) {
-        return sqlSession().selectList("selectHeatmeterPayloadsByHeatmeterId", heatmeterId);
+    public List<HeatmeterPayload> getList(long heatmeterId, Date operatingMonth) {
+        return sqlSession().selectList("selectHeatmeterPayloadsByHeatmeterId",
+                ImmutableMap.of("heatmeterId", heatmeterId, "operatingMonth", operatingMonth));
     }
 }
