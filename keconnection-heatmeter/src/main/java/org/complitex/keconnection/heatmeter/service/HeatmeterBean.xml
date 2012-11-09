@@ -44,7 +44,7 @@
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
-        <collection property="connections"
+<!--        <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
         <collection property="periods"
@@ -55,7 +55,7 @@
                     column="id"/>
         <collection property="consumptions"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectMaxHeatmeterConsumption"
-                    column="id"/>
+                    column="id"/>-->
     </resultMap>
 
     <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
@@ -85,12 +85,12 @@
                     </otherwise>
                 </choose>
             </if>
-            <if test="map.payloadBeginDate != null">
+<!--            <if test="map.payloadBeginDate != null">
                 AND hp.`begin_date` = #{map.payloadBeginDate}
             </if>
             <if test="map.consumptionReadoutDate != null">
                 AND hcons.`readout_date` = #{map.consumptionReadoutDate}
-            </if>
+            </if>-->
         </where>
     </sql>
 
@@ -115,7 +115,7 @@
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeterResultMapSelectList">
         select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 
-            <include refid="selectHeatmeterJoin"/> <include refid="selectHeatmetersWhere"/>
+            <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
 
@@ -123,7 +123,7 @@
             resultType="int">
         select count(1) from
         (select 1 from (<include refid="selectHeatmeterSelectFrom"/>) h2 
-            <include refid="selectHeatmeterJoin"/> <include refid="selectHeatmetersWhere"/>) h3
+            <include refid="selectHeatmetersWhere"/>) h3
     </select>
 
     <delete id="deleteHeatmeter" parameterType="long">
