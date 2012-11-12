@@ -76,7 +76,6 @@ public class HeatmeterList extends TemplatePage {
     private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
     private static final int IMPORT_AJAX_TIMER = 2;
     private static final int BIND_ALL_AJAX_TIMER = 10;
-
     @EJB
     private HeatmeterBean heatmeterBean;
     @EJB
@@ -232,10 +231,10 @@ public class HeatmeterList extends TemplatePage {
                     HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOperatingMonth());
                     heatmeter.getPayloads().add(p);
 
-                    //add new empty consumption
-//                    HeatmeterConsumption c = new HeatmeterConsumption();
-//                    c.setHeatmeterId(heatmeter.getId());
-//                    heatmeter.getConsumptions().add(c);
+                    //add new empty input
+                    HeatmeterInput i = new HeatmeterInput();
+                    i.addNewConsumption();
+                    heatmeter.getInputs().add(i);
                 }
                 return heatmeters;
             }

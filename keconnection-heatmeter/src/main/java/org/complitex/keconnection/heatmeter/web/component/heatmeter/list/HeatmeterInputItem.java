@@ -20,16 +20,16 @@ import org.apache.wicket.model.IModel;
  *
  * @author Artem
  */
-public final class HeatmeterConsumptionItem extends Panel {
+public final class HeatmeterInputItem extends Panel {
 
-    public HeatmeterConsumptionItem(String id, final IModel<BigDecimal> consumptionModel, boolean editable) {
+    public HeatmeterInputItem(String id, final IModel<BigDecimal> inputModel, boolean editable) {
         super(id);
 
         Label label = new Label("label", new AbstractReadOnlyModel<String>() {
 
             @Override
             public String getObject() {
-                BigDecimal value = consumptionModel.getObject();
+                BigDecimal value = inputModel.getObject();
                 if (value == null) {
                     value = BigDecimal.ZERO;
                 }
@@ -40,7 +40,7 @@ public final class HeatmeterConsumptionItem extends Panel {
         label.setVisible(!editable);
         add(label);
 
-        TextField<BigDecimal> input = new TextField<BigDecimal>("input", consumptionModel);
+        TextField<BigDecimal> input = new TextField<BigDecimal>("input", inputModel);
         input.setVisible(editable);
         input.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 

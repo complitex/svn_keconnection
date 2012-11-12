@@ -33,6 +33,8 @@ public class HeatmeterBean extends AbstractBean {
     @EJB
     private HeatmeterPayloadBean heatmeterPayloadBean;
     @EJB
+    private HeatmeterInputBean heatmeterInputBean;
+    @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
@@ -85,6 +87,7 @@ public class HeatmeterBean extends AbstractBean {
         for (Heatmeter h : heatmeters) {
             h.setOperatingMonth(getOperatingMonthDate(h));
             loadPayloads(h);
+            loadInputs(h);
         }
         return heatmeters;
     }
@@ -102,6 +105,10 @@ public class HeatmeterBean extends AbstractBean {
 
     private void loadPayloads(Heatmeter heatmeter) {
         heatmeter.setPayloads(heatmeterPayloadBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
+    }
+
+    private void loadInputs(Heatmeter heatmeter) {
+        heatmeter.setInputs(heatmeterInputBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
     }
 
     public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper) {

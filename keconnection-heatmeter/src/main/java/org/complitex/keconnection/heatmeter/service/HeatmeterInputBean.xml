@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterInputBean">
+    <resultMap id="heatmeterInputResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterInput">
+        <id column="input_id" property="id"/>
+        <result property="value" column="value"/>
+        <association property="period" javaType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
+            <id column="period_id" property="id"/>
+            <result property="heatmeterId" column="heatmeter_id"/>
+            <result property="type" column="type"/>
+            <result property="subType" column="sub_type"/>
+            <result property="attributeId" column="attribute_id"/>
+            <result property="beginDate" column="begin_date"/>
+            <result property="endDate" column="end_date"/>
+            <result property="beginOm" column="begin_om"/>
+            <result property="endOm" column="end_om"/>
+        </association>
+        <collection property="consumptions" column="input_id" 
+                select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterInputId"/>
+    </resultMap>
+
+    <select id="selectHeatmeterInputsByHeatmeterId" parameterType="map" resultMap="heatmeterInputResultMap">
+        select hp.`id` input_id, hp.*, p.`id` period_id, p.* 
+        from `heatmeter_input` hp
+          left join `heatmeter_period` p on (p.`attribute_id` =  hp.`id` and p.`type` = 4)
+        where p.`heatmeter_id` = #{heatmeterId} and (#{operatingMonth} between p.`begin_om` and p.`end_om`)
+    </select>
+</mapper>
