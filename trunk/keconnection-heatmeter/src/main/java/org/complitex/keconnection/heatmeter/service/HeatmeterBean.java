@@ -77,6 +77,10 @@ public class HeatmeterBean extends AbstractBean {
         return sqlSession().selectOne("selectHeatmeter", id);
     }
 
+    public Heatmeter getHeatmeterForBinding(long id) {
+        return sqlSession().selectOne("selectHeatmeterForBinding", id);
+    }
+
     private void addUnboundStatusParameter(FilterWrapper<Heatmeter> filter) {
         filter.addMapEntry("unboundBindingStatus", HeatmeterBindingStatus.UNBOUND);
     }

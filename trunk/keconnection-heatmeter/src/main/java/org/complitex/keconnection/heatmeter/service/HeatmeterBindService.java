@@ -82,7 +82,7 @@ public class HeatmeterBindService {
                     userTransaction.begin();
 
                     for (long heatmeterId : batch) {
-                        heatmeter = heatmeterBean.getHeatmeter(heatmeterId);
+                        heatmeter = heatmeterBean.getHeatmeterForBinding(heatmeterId);
 
                         if (heatmeter != null) {
                             if (heatmeter.isConnectedToSingleBuildingCode()) {
