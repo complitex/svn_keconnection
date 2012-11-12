@@ -10,7 +10,7 @@
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
     </resultMap>
-
+    
     <resultMap id="heatmeterResultMapCollection" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
@@ -30,6 +30,18 @@
                     column="id"/>
         <collection property="consumptions"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterId"
+                    column="id"/>
+    </resultMap>
+
+    <resultMap id="heatmeterForBindingResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type_id"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
     </resultMap>
     
@@ -99,6 +111,10 @@
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMapCollection">
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
+    
+    <select id="selectHeatmeterForBinding" parameterType="long" resultMap="heatmeterForBindingResultMap">
+        SELECT * FROM `heatmeter` WHERE `id` = #{id}
+    </select>
 
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeterResultMapSelectList">
@@ -136,9 +152,10 @@
     
     <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
         SELECT COUNT(1) FROM `heatmeter` h
-            left join `heatmeter_period` p on p.`heatmeter_id` = h.`id` and p.`type` = 2
-            left join `heatmeter_connection` hc on hc.`id` = p.`attribute_id`
+            LEFT JOIN `heatmeter_period` p ON (p.`heatmeter_id` = h.`id` and p.`type` = 2)
+            LEFT JOIN `heatmeter_connection` hc ON hc.`id` = p.`attribute_id`
             LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
-            WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId}
+            LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
+            WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId} AND (om.`begin_om` BETWEEN p.`begin_om` AND p.`end_om`)
     </select>
 </mapper>

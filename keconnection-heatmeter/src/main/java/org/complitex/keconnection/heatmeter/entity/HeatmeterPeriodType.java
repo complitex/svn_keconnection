@@ -2,7 +2,6 @@ package org.complitex.keconnection.heatmeter.entity;
 
 import org.complitex.dictionary.mybatis.FixedIdTypeHandler;
 import org.complitex.dictionary.mybatis.IFixedIdType;
-import org.complitex.keconnection.heatmeter.strategy.HeatmeterPeriodTypeStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
