@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
 import static com.google.common.collect.Iterables.toArray;
 
 /**
@@ -88,17 +89,19 @@ public abstract class HeatmeterItemPanel extends Panel {
     private HeatmeterPayloadBean heatmeterPayloadBean;
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
+    @EJB
+    private HeatmeterInputBean heatmeterInputBean;
     private final UpdatableContainer primaryRow;
     private final UpdatableContainer secondaryRow;
     private final UpdatableContainer errorStatusRow;
     private final IModel<String> savePayloadStatusModel = new Model<>();
-    private final IModel<String> saveConsumptionStatusModel = new Model<>();
+    private final IModel<String> saveInputStatusModel = new Model<>();
     private final IModel<Boolean> errorStatusRowVisibleModel = new AbstractReadOnlyModel<Boolean>() {
 
         @Override
         public Boolean getObject() {
             return !Strings.isEmpty(savePayloadStatusModel.getObject())
-                    || !Strings.isEmpty(saveConsumptionStatusModel.getObject());
+                    || !Strings.isEmpty(saveInputStatusModel.getObject());
         }
     };
     private final IModel<Boolean> secondaryRowVisibleModel;
@@ -183,13 +186,13 @@ public abstract class HeatmeterItemPanel extends Panel {
                             payload, isNewPayload && heatmeter.getOperatingMonth() != null, true);
                 }
 
-                //consumption
+                //input and consumption
                 {
-//                    boolean isNewConsumption = heatmeter.getConsumptions().size() == 1;
-//                    HeatmeterConsumption consumption = isNewConsumption ? heatmeter.getConsumptions().get(0)
-//                            : heatmeter.getConsumptions().get(heatmeter.getConsumptions().size() - 2);
-//                    addConsumption(this, heatmeter,
-//                            consumption, isNewConsumption && heatmeter.getOperatingMonthDate() != null, true);
+                    boolean isNewInput = heatmeter.getInputs().size() == 1;
+                    HeatmeterInput input = isNewInput ? heatmeter.getInputs().get(0)
+                            : heatmeter.getInputs().get(heatmeter.getInputs().size() - 2);
+                    addInputConsumption(this, heatmeter,
+                            input, isNewInput && heatmeter.getOperatingMonth() != null, true);
                 }
 
                 //status
@@ -265,10 +268,10 @@ public abstract class HeatmeterItemPanel extends Panel {
                 HeatmeterPayload payload = heatmeter.getPayloads().get(heatmeter.getPayloads().size() - 1);
                 addPayload(this, heatmeter, payload, true, payloadDataVisible);
 
-                //consumption
-//                boolean consumptionDataVisible = heatmeter.getConsumptions().size() > 1;
-//                HeatmeterConsumption consumption = heatmeter.getConsumptions().get(heatmeter.getConsumptions().size() - 1);
-//                addConsumption(this, heatmeter, consumption, true, consumptionDataVisible);
+                //input and consumption
+                boolean inputDataVisible = heatmeter.getInputs().size() > 1;
+                HeatmeterInput input = heatmeter.getInputs().get(heatmeter.getInputs().size() - 1);
+                addInputConsumption(this, heatmeter, input, true, inputDataVisible);
             }
 
             @Override
@@ -282,7 +285,7 @@ public abstract class HeatmeterItemPanel extends Panel {
             @Override
             protected void onPopulate() {
                 add(new Label("payloadErrorStatus", savePayloadStatusModel));
-                add(new Label("consumptionErrorStatus", saveConsumptionStatusModel));
+                add(new Label("inputErrorStatus", saveInputStatusModel));
             }
 
             @Override
@@ -354,20 +357,20 @@ public abstract class HeatmeterItemPanel extends Panel {
         container.add(savePayload);
     }
 
-    private void addConsumption(MarkupContainer container, final Heatmeter heatmeter,
-            final HeatmeterConsumption consumption, boolean editable, boolean consumptionDataVisible) {
+    private void addInputConsumption(MarkupContainer container, final Heatmeter heatmeter,
+            final HeatmeterInput input, boolean editable, boolean inputDataVisible) {
 
-        container.add(new HeatmeterConsumptionItem("consumption",
-                new PropertyModel<BigDecimal>(consumption, "consumption"),
-                editable).setVisible(consumptionDataVisible));
-        container.add(new HeatmeterConsumptionItem("consumption1",
-                new PropertyModel<BigDecimal>(consumption, "consumption1"),
-                false).setVisible(consumptionDataVisible));
+        container.add(new HeatmeterInputItem("input",
+                new PropertyModel<BigDecimal>(input, "value"),
+                editable).setVisible(inputDataVisible));
+        container.add(new HeatmeterInputItem("consumption1",
+                new PropertyModel<BigDecimal>(input, "firstConsumption.consumption1"),
+                false).setVisible(inputDataVisible));
         container.add(new HeatmeterDateItem("readoutDate",
-                new PropertyModel<Date>(consumption, "readoutDate"),
-                editable).setVisible(consumptionDataVisible));
+                new PropertyModel<Date>(input, "period.beginDate"),
+                editable).setVisible(inputDataVisible));
 
-        AjaxLink<Void> saveConsumption = new AjaxLink<Void>("saveConsumption") {
+        AjaxLink<Void> saveConsumption = new AjaxLink<Void>("saveInput") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -397,7 +400,7 @@ public abstract class HeatmeterItemPanel extends Panel {
             }
         };
         saveConsumption.setEnabled(HeatmeterItemPanel.this.isEditable());
-        saveConsumption.setVisible(consumptionDataVisible && editable);
+        saveConsumption.setVisible(inputDataVisible && editable);
         container.add(saveConsumption);
     }
 
