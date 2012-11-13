@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.Date;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
@@ -15,16 +17,17 @@ import java.util.List;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPeriodBean extends AbstractBean{
+public class HeatmeterPeriodBean extends AbstractBean {
+
     public HeatmeterPeriod get(Long id) {
         return sqlSession().selectOne("selectHeatmeterPeriod", id);
     }
 
     @Transactional
-    public void save(HeatmeterPeriod heatmeterPeriod){
-        if (heatmeterPeriod.getId() == null){
+    public void save(HeatmeterPeriod heatmeterPeriod) {
+        if (heatmeterPeriod.getId() == null) {
             sqlSession().insert("insertHeatmeterPeriod", heatmeterPeriod);
-        }else {
+        } else {
             sqlSession().update("updateHeatmeterPeriod", heatmeterPeriod);
         }
     }
@@ -33,8 +36,9 @@ public class HeatmeterPeriodBean extends AbstractBean{
         sqlSession().delete("deleteHeatmeterPeriod", id);
     }
 
-    public List<HeatmeterPeriod> getList(Long heatmeterId) {
-        return sqlSession().selectList("selectHeatmeterPeriodsByHeatmeterId", heatmeterId);
+    public List<HeatmeterPeriod> getList(long heatmeterId, Date operatingMonth) {
+        return sqlSession().selectList("selectHeatmeterPeriodsByHeatmeterId",
+                ImmutableMap.of("heatmeterId", heatmeterId, "operatingMonth", operatingMonth));
     }
 
     public List<HeatmeterPeriod> getList(FilterWrapper<HeatmeterPeriod> filterWrapper) {

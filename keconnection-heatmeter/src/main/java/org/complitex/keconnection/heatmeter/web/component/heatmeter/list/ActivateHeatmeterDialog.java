@@ -4,6 +4,9 @@
  */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -109,8 +112,8 @@ public abstract class ActivateHeatmeterDialog extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 HeatmeterPeriod period = preparePeriod(model.getObject().activateDate);
 
-//                HeatmeterValidate validate = heatmeterService.validatePeriods(heatmeter);
-                HeatmeterValidate validate = null;
+                //TODO: fix validation:
+                HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validatePeriods(heatmeter);
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
                     error(MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
                     target.add(messages);
@@ -148,29 +151,29 @@ public abstract class ActivateHeatmeterDialog extends Panel {
 
     private HeatmeterPeriod preparePeriod(Date beginDate) {
         //try find open ADJUSTMENT period
-//        Optional<HeatmeterPeriod> openAdjustmentPeriod = Iterables.tryFind(heatmeter.getPeriods(),
-//                new Predicate<HeatmeterPeriod>() {
-//
-//                    @Override
-//                    public boolean apply(HeatmeterPeriod period) {
-//                        return period.getEndDate() == null && period.getType() == HeatmeterPeriodSubType.ADJUSTMENT;
-//                    }
-//                });
-//        if (openAdjustmentPeriod.isPresent()) {
-//            HeatmeterPeriod adjustmentPeriod = openAdjustmentPeriod.get();
-//            adjustmentPeriod.setEndDate(beginDate);
-//            return adjustmentPeriod;
-//        } else {
-//            //add new operational period
-//            HeatmeterPeriod operationalPeriod = new HeatmeterPeriod(heatmeterListWrapper.getOperatingMonthDate());
-//            operationalPeriod.setBeginDate(beginDate);
-//            operationalPeriod.setType(HeatmeterPeriodSubType.OPERATING);
-//            operationalPeriod.setHeatmeterId(heatmeter.getId());
-//            heatmeter.getPeriods().add(operationalPeriod);
-//            return operationalPeriod;
-//        }
+        Optional<HeatmeterPeriod> openAdjustmentPeriod = Iterables.tryFind(heatmeter.getPeriods(),
+                new Predicate<HeatmeterPeriod>() {
 
-        return null;
+                    @Override
+                    public boolean apply(HeatmeterPeriod period) {
+                        return period.getSubType() == HeatmeterPeriodSubType.ADJUSTMENT
+                                && HeatmeterPeriod.DEFAULT_END_DATE.equals(period.getEndDate());
+                    }
+                });
+        if (openAdjustmentPeriod.isPresent()) {
+            HeatmeterPeriod adjustmentPeriod = openAdjustmentPeriod.get();
+            adjustmentPeriod.setEndDate(beginDate);
+            adjustmentPeriod.setEndOm(heatmeter.getOperatingMonth());
+            return adjustmentPeriod;
+        } else {
+            //add new operational period
+            HeatmeterPeriod operationalPeriod = new HeatmeterPeriod(heatmeter.getId(), HeatmeterPeriodType.OPERATION,
+                    HeatmeterPeriodSubType.OPERATING);
+            operationalPeriod.setBeginDate(beginDate);
+            operationalPeriod.setBeginOm(heatmeter.getOperatingMonth());
+            heatmeter.getPeriods().add(operationalPeriod);
+            return operationalPeriod;
+        }
     }
 
     public void open(Heatmeter heatmeter, AjaxRequestTarget target) {

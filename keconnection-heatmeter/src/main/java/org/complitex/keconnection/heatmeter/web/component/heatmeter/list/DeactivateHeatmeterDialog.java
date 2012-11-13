@@ -4,6 +4,8 @@
  */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
@@ -28,7 +30,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.Date;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus;
 
 /**
  *
@@ -100,26 +107,27 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-//                HeatmeterPeriod period = preparePeriod(model.getObject());
+                HeatmeterPeriod period = preparePeriod(model.getObject());
 
-//                HeatmeterValidate validate = heatmeterService.validatePeriods(heatmeter);
-//                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
-//                    error(MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
-//                    target.add(messages);
-//                } else {
-//                    try {
-//                        //save heatmeter period
-//                        heatmeterPeriodBean.save(period);
-//
-//                        onDeactivate(heatmeter, target);
-//
-//                        dialog.close(target);
-//                    } catch (Exception e) {
-//                        log.error("Db error.", e);
-//                        error(getString("db_save_error"));
-//                        target.add(messages);
-//                    }
-//                }
+                //TODO: fix validation:
+                HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validatePeriods(heatmeter);
+                if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
+                    error(MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
+                    target.add(messages);
+                } else {
+                    try {
+                        //save heatmeter period
+                        heatmeterPeriodBean.save(period);
+
+                        onDeactivate(heatmeter, target);
+
+                        dialog.close(target);
+                    } catch (Exception e) {
+                        log.error("Db error.", e);
+                        error(getString("db_save_error"));
+                        target.add(messages);
+                    }
+                }
             }
 
             @Override
@@ -129,30 +137,31 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
         });
     }
 
-//    private HeatmeterPeriod preparePeriod(DeactivateHeatmeterEntity info) {
-//        final Heatmeter heatmeter = heatmeterListWrapper.getHeatmeter();
-//        if (info.deactivateType == HeatmeterPeriodSubType.OPERATING) {
-//            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getPeriods(),
-//                    new Predicate<HeatmeterPeriod>() {
-//
-//                        @Override
-//                        public boolean apply(HeatmeterPeriod period) {
-//                            return (period.getEndDate() == null) && (period.getType() == HeatmeterPeriodSubType.OPERATING);
-//                        }
-//                    });
-//            lastOperationalPeriod.setEndDate(info.deactivateDate);
-//            return lastOperationalPeriod;
-//        } else if (info.deactivateType == HeatmeterPeriodSubType.ADJUSTMENT) {
-//            HeatmeterPeriod adjustmentPeriod = new HeatmeterPeriod(heatmeterListWrapper.getOperatingMonthDate());
-//            adjustmentPeriod.setBeginDate(info.deactivateDate);
-//            adjustmentPeriod.setType(HeatmeterPeriodSubType.ADJUSTMENT);
-//            adjustmentPeriod.setHeatmeterId(heatmeter.getId());
-//            heatmeter.getPeriods().add(adjustmentPeriod);
-//            return adjustmentPeriod;
-//        } else {
-//            throw new IllegalStateException("Unknown heatmeter period type: " + info.deactivateType);
-//        }
-//    }
+    private HeatmeterPeriod preparePeriod(DeactivateHeatmeterEntity info) {
+        if (info.deactivateType == HeatmeterPeriodSubType.OPERATING) {
+            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getPeriods(),
+                    new Predicate<HeatmeterPeriod>() {
+
+                        @Override
+                        public boolean apply(HeatmeterPeriod period) {
+                            return period.getSubType() == HeatmeterPeriodSubType.OPERATING
+                                    && HeatmeterPeriod.DEFAULT_END_DATE.equals(period.getEndDate());
+                        }
+                    });
+            lastOperationalPeriod.setEndDate(info.deactivateDate);
+            lastOperationalPeriod.setEndOm(heatmeter.getOperatingMonth());
+            return lastOperationalPeriod;
+        } else if (info.deactivateType == HeatmeterPeriodSubType.ADJUSTMENT) {
+            HeatmeterPeriod adjustmentPeriod =
+                    new HeatmeterPeriod(heatmeter.getId(), HeatmeterPeriodType.OPERATION, HeatmeterPeriodSubType.ADJUSTMENT);
+            adjustmentPeriod.setBeginDate(info.deactivateDate);
+            adjustmentPeriod.setBeginOm(heatmeter.getOperatingMonth());
+            heatmeter.getPeriods().add(adjustmentPeriod);
+            return adjustmentPeriod;
+        } else {
+            throw new IllegalStateException("Unknown heatmeter period type: " + info.deactivateType);
+        }
+    }
 
     public void open(Heatmeter heatmeter, AjaxRequestTarget target) {
         this.heatmeter = heatmeter;
