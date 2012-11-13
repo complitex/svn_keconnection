@@ -15,7 +15,6 @@ public class HeatmeterPayload extends HeatmeterAttribute{
     private BigDecimal payload1;
     private BigDecimal payload2;
     private BigDecimal payload3;
-
     private Integer ls;
 
     public HeatmeterPayload() {

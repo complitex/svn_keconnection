@@ -10,6 +10,7 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import javax.ejb.EJB;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,6 +19,9 @@ import java.util.List;
 @XmlMapper
 @Stateless
 public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
+    
+    @EJB
+    private HeatmeterPeriodBean heatmeterPeriodBean;
 
     public HeatmeterPayload get(Long id) {
         return sqlSession().selectOne("selectHeatmeterPayload", id);
@@ -30,6 +34,8 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
         } else {
             sqlSession().update("updateHeatmeterPayload", heatmeterPayload);
         }
+        heatmeterPayload.getPeriod().setAttributeId(heatmeterPayload.getId());
+        heatmeterPeriodBean.save(heatmeterPayload.getPeriod());
     }
 
     public void delete(Long id) {
