@@ -3,11 +3,11 @@
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean">
     <resultMap id="heatmeterPayloadResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
         <id column="payload_id" property="id"/>
-        <result property="tablegramRecordId"/>
+        <result property="tablegramRecordId" column="tablegram_record_id"/>
         <result property="heatmeterId"/>
-        <result property="payload1"/>
-        <result property="payload2"/>
-        <result property="payload3"/>
+        <result property="payload1" column="payload1"/>
+        <result property="payload2" column="payload2"/>
+        <result property="payload3" column="payload3"/>
         <result property="ls"/>
         <association property="period" javaType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
             <id column="period_id" property="id"/>
