@@ -18,6 +18,15 @@
         <collection property="consumptions" column="input_id" 
                 select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterInputId"/>
     </resultMap>
+    
+    <insert id="insertHeatmeterInput" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterInput"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter_input` (`value`) values (#{value})
+    </insert>
+
+    <update id="updateHeatmeterInput" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterInput">
+        update `heatmeter_input` set `value` = #{value} where `id` = #{id}
+    </update>
 
     <select id="selectHeatmeterInputsByHeatmeterId" parameterType="map" resultMap="heatmeterInputResultMap">
         select hp.`id` input_id, hp.*, p.`id` period_id, p.* 

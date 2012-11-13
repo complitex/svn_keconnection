@@ -232,8 +232,8 @@ public class HeatmeterList extends TemplatePage {
                     heatmeter.getPayloads().add(p);
 
                     //add new empty input
-                    HeatmeterInput i = new HeatmeterInput();
-                    i.addNewConsumption();
+                    HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOperatingMonth());
+                    i.addNewConsumptionIfNecessary();
                     heatmeter.getInputs().add(i);
                 }
                 return heatmeters;
