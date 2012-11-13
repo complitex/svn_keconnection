@@ -92,6 +92,7 @@ public class HeatmeterBean extends AbstractBean {
             h.setOperatingMonth(getOperatingMonthDate(h));
             loadPayloads(h);
             loadInputs(h);
+            loadPeriods(h);
         }
         return heatmeters;
     }
@@ -113,6 +114,10 @@ public class HeatmeterBean extends AbstractBean {
 
     private void loadInputs(Heatmeter heatmeter) {
         heatmeter.setInputs(heatmeterInputBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
+    }
+
+    private void loadPeriods(Heatmeter heatmeter) {
+        heatmeter.setPeriods(heatmeterPeriodBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
     }
 
     public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper) {
