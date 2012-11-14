@@ -28,10 +28,10 @@
         update `heatmeter_input` set `value` = #{value} where `id` = #{id}
     </update>
 
-    <select id="selectHeatmeterInputsByHeatmeterId" parameterType="map" resultMap="heatmeterInputResultMap">
+    <select id="selectHeatmeterInputsByOm" parameterType="map" resultMap="heatmeterInputResultMap">
         SELECT hp.`id` input_id, hp.*, p.`id` period_id, p.* FROM `heatmeter_input` hp
         JOIN `heatmeter_period` p ON (p.`attribute_id` =  hp.`id` AND p.`type` = 4)
-        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{operatingMonth} BETWEEN p.`begin_om` AND p.`end_om`)
+        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{om} BETWEEN p.`begin_om` AND p.`end_om`)
         ORDER BY p.`begin_date`
     </select>
 </mapper>

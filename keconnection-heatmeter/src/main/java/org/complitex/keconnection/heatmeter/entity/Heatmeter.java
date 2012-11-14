@@ -21,7 +21,10 @@ public class Heatmeter implements ILongId {
     private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
     private Boolean calculating; //Участвует в расчетах
+
     private Date operatingMonth;
+    private Date minOperatingMonth;
+
     private List<HeatmeterConnection> connections = new ArrayList<>(); //Список кодов домов
     private List<HeatmeterPeriod> periods = new ArrayList<>(); //Список периодов
     private List<HeatmeterPayload> payloads = new ArrayList<>(); //Список распределений
@@ -133,6 +136,14 @@ public class Heatmeter implements ILongId {
 
     public void setOperatingMonth(Date operatingMonth) {
         this.operatingMonth = operatingMonth;
+    }
+
+    public Date getMinOperatingMonth() {
+        return minOperatingMonth;
+    }
+
+    public void setMinOperatingMonth(Date minOperatingMonth) {
+        this.minOperatingMonth = minOperatingMonth;
     }
 
     public List<HeatmeterInput> getInputs() {

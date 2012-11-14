@@ -7,7 +7,10 @@ import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.Date;
 import java.util.List;
+
+import static com.google.common.collect.ImmutableMap.of;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -38,8 +41,12 @@ public class HeatmeterConnectionBean extends AbstractBean{
         sqlSession().delete("deleteHeatmeterConnection", id);
     }
 
-    public List<HeatmeterConnection> getList(Long heatmeterId) {
-        return sqlSession().selectList("selectHeatmeterConnectionsByHeatmeterId", heatmeterId);
+    public List<HeatmeterConnection> getActualList(Long heatmeterId) {
+        return sqlSession().selectList("selectActualHeatmeterConnections", heatmeterId);
+    }
+
+    public List<HeatmeterConnection> getList(Long heatmeterId, Date om){
+        return sqlSession().selectList("selectHeatmeterConnectionsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 
     public List<HeatmeterConnection> getList(FilterWrapper<HeatmeterConnection> filterWrapper) {

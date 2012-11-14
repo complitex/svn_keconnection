@@ -4,15 +4,17 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Date;
-import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterInput;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Date;
+import java.util.List;
+
+import static com.google.common.collect.ImmutableMap.of;
 
 /**
  *
@@ -36,12 +38,15 @@ public class HeatmeterInputBean extends AbstractBean {
         heatmeterPeriodBean.save(heatmeterInput.getPeriod());
     }
 
-    public List<HeatmeterInput> getList(long heatmeterId, Date operatingMonth) {
-        List<HeatmeterInput> inputs = sqlSession().selectList("selectHeatmeterInputsByHeatmeterId",
-                ImmutableMap.of("heatmeterId", heatmeterId, "operatingMonth", operatingMonth));
+    public List<HeatmeterInput> getList(long heatmeterId, Date om) {
+        List<HeatmeterInput> inputs = sqlSession().selectList("selectHeatmeterInputsByOm",
+                of("heatmeterId", heatmeterId, "om", om));
+
+        //todo fix check empty collection in UI
         for (HeatmeterInput input : inputs) {
             input.addNewConsumptionIfNecessary();
         }
+
         return inputs;
     }
 }

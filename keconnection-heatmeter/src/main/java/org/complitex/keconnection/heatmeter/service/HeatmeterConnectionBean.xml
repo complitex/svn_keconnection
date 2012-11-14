@@ -34,8 +34,28 @@
     </select>
 
     <select id="selectHeatmeterConnectionsByHeatmeterId" parameterType="long" resultMap="heatmeterConnectionResultMap">
-        SELECT hc.`id` connection_id, hc.*, p.`id` period_id, p.*, 
-            bc.`building_id`, bc.`organization_id`, bc.`code` 
+        SELECT hc.`id` connection_id, hc.*, p.`id` period_id, p.*,
+            bc.`building_id`, bc.`organization_id`, bc.`code`
+        FROM `heatmeter_connection` hc
+            LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+            JOIN `heatmeter_period` p ON (p.`attribute_id` =  hc.`id` AND p.`type` = 2)
+        WHERE p.`heatmeter_id` = #{heatmeterId}
+        ORDER BY p.`begin_date`
+    </select>
+
+    <select id="selectHeatmeterConnectionsByOm" parameterType="map" resultMap="heatmeterConnectionResultMap">
+        SELECT hc.`id` connection_id, hc.*, p.`id` period_id, p.*,
+            bc.`building_id`, bc.`organization_id`, bc.`code`
+        FROM `heatmeter_connection` hc
+            LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+            JOIN `heatmeter_period` p ON (p.`attribute_id` =  hc.`id` AND p.`type` = 2)
+        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{om} BETWEEN p.`begin_om` AND p.`end_om`)
+        ORDER BY p.`begin_date`
+    </select>
+
+    <select id="selectActualHeatmeterConnections" parameterType="long" resultMap="heatmeterConnectionResultMap">
+        SELECT hc.`id` connection_id, hc.*, p.`id` period_id, p.*,
+            bc.`building_id`, bc.`organization_id`, bc.`code`
         FROM `heatmeter_connection` hc
           LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
           JOIN `heatmeter_period` p ON (p.`attribute_id` =  hc.`id` AND p.`type` = 2)
