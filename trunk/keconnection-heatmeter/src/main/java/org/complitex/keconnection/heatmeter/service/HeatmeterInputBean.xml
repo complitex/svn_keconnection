@@ -29,9 +29,9 @@
     </update>
 
     <select id="selectHeatmeterInputsByHeatmeterId" parameterType="map" resultMap="heatmeterInputResultMap">
-        select hp.`id` input_id, hp.*, p.`id` period_id, p.* 
-        from `heatmeter_input` hp
-          left join `heatmeter_period` p on (p.`attribute_id` =  hp.`id` and p.`type` = 4)
-        where p.`heatmeter_id` = #{heatmeterId} and (#{operatingMonth} between p.`begin_om` and p.`end_om`)
+        SELECT hp.`id` input_id, hp.*, p.`id` period_id, p.* FROM `heatmeter_input` hp
+        JOIN `heatmeter_period` p ON (p.`attribute_id` =  hp.`id` AND p.`type` = 4)
+        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{operatingMonth} BETWEEN p.`begin_om` AND p.`end_om`)
+        ORDER BY p.`begin_date`
     </select>
 </mapper>
