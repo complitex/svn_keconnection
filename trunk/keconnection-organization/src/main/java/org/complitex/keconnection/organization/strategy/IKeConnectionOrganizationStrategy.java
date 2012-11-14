@@ -4,14 +4,14 @@
  */
 package org.complitex.keconnection.organization.strategy;
 
-import java.util.Date;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
-import org.complitex.keconnection.organization.strategy.entity.Organization;
 
 /**
  *
@@ -64,4 +64,6 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
     String displayShortNameAndCode(DomainObject organization, Locale locale);
 
     Date getOperatingMonthDate(long organizationId);
+
+    Date getMinOperatingMonthDate(long organizationId);
 }

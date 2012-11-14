@@ -1,16 +1,17 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Date;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractListBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
-import javax.ejb.Stateless;
-import java.util.List;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Date;
+import java.util.List;
+
+import static com.google.common.collect.ImmutableMap.of;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -58,8 +59,7 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
         return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
     }
 
-    public List<HeatmeterPayload> getList(long heatmeterId, Date operatingMonth) {
-        return sqlSession().selectList("selectHeatmeterPayloadsByHeatmeterId",
-                ImmutableMap.of("heatmeterId", heatmeterId, "operatingMonth", operatingMonth));
+    public List<HeatmeterPayload> getList(long heatmeterId, Date om) {
+        return sqlSession().selectList("selectHeatmeterPayloadsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 }

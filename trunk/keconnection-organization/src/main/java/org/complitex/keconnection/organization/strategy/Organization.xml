@@ -52,5 +52,8 @@
     <select id="findOperatingMonthDate" parameterType="long" resultType="date">
         SELECT MAX(`begin_om`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
     </select>
-    
+
+    <select id="findMinOperatingMonthDate" parameterType="long" resultType="date">
+        SELECT MIN(`begin_om`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
+    </select>
 </mapper>

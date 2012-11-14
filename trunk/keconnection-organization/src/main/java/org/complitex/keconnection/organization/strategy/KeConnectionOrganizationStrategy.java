@@ -7,31 +7,31 @@ package org.complitex.keconnection.organization.strategy;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
-import java.util.Date;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.dictionary.converter.BooleanConverter;
+import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.util.AttributeUtil;
+import org.complitex.dictionary.util.DateUtil;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
+import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
+import org.complitex.keconnection.organization.strategy.web.list.OrganizationList;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.complitex.organization.strategy.OrganizationStrategy;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import org.complitex.dictionary.converter.BooleanConverter;
-import org.complitex.dictionary.entity.Attribute;
-import org.complitex.dictionary.entity.description.EntityAttributeType;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.dictionary.service.StringCultureBean;
-import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
-import org.complitex.dictionary.util.DateUtil;
-import org.complitex.keconnection.organization.strategy.entity.Organization;
-import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
-import org.complitex.keconnection.organization.strategy.web.list.OrganizationList;
 
 /**
  *
@@ -199,6 +199,11 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     @Override
     public Date getOperatingMonthDate(long organizationId) {
         return sqlSession().selectOne(MAPPING_NAMESPACE + ".findOperatingMonthDate", organizationId);
+    }
+
+    @Override
+    public Date getMinOperatingMonthDate(long organizationId) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findMinOperatingMonthDate", organizationId);
     }
 
     @Override

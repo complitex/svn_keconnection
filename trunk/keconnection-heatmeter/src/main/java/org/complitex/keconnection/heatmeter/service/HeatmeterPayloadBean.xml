@@ -72,10 +72,10 @@
           where `tablegram_record_id` in (select `id` from `tablegram_record` where `tablegram_id` = #{tablegramId})
     </delete>
 
-    <select id="selectHeatmeterPayloadsByHeatmeterId" parameterType="map" resultMap="heatmeterPayloadResultMap">
+    <select id="selectHeatmeterPayloadsByOm" parameterType="map" resultMap="heatmeterPayloadResultMap">
         SELECT hp.`id` payload_id, hp.*, p.`id` period_id, p.* FROM `heatmeter_payload` hp
         JOIN `heatmeter_period` p ON (p.`attribute_id` =  hp.`id` AND p.`type` = 3)
-        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{operatingMonth} BETWEEN p.`begin_om` AND p.`end_om`)
+        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{om} BETWEEN p.`begin_om` AND p.`end_om`)
         ORDER BY p.`begin_date`
     </select>
     

@@ -19,7 +19,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
@@ -37,11 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
 import java.util.Date;
 
 import static org.complitex.dictionary.util.DateUtil.addMonth;
-import static org.complitex.dictionary.util.DateUtil.newDate;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.VALID;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
@@ -65,9 +62,8 @@ public class HeatmeterEdit extends FormTemplatePage{
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
-    public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
+    private IModel<Date> operatingMonthModel = Model.of(new Date());
 
-    private IModel<Date> operatingMonthModel = Model.of(DEFAULT_BEGIN_DATE);
 
     public HeatmeterEdit() {
         init(null);
@@ -85,10 +81,10 @@ public class HeatmeterEdit extends FormTemplatePage{
 
         if (id != null){
             heatmeter = heatmeterBean.getHeatmeter(id);
+            operatingMonthModel.setObject(heatmeter.getOperatingMonth());
         }
         else{
             heatmeter = new Heatmeter();
-            heatmeter.setConnections(new ArrayList<HeatmeterConnection>());
             heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);
         }
 
@@ -111,9 +107,13 @@ public class HeatmeterEdit extends FormTemplatePage{
         form.add(container);
 
         //Operating month
-        container.add(new Label("current_operation_month", operatingMonthModel));
+        WebMarkupContainer omContainer = new WebMarkupContainer("om_container");
+        omContainer.setOutputMarkupId(true);
+        container.add(omContainer);
 
-        container.add(new AjaxLink("previous_month") {
+        omContainer.add(new Label("current_operation_month", operatingMonthModel));
+
+        omContainer.add(new AjaxLink("previous_month") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 operatingMonthModel.setObject(addMonth(operatingMonthModel.getObject(), -1));
@@ -127,7 +127,7 @@ public class HeatmeterEdit extends FormTemplatePage{
             }
         });
 
-        container.add(new AjaxLink("next_month") {
+        omContainer.add(new AjaxLink("next_month") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 operatingMonthModel.setObject(addMonth(operatingMonthModel.getObject(), 1));
