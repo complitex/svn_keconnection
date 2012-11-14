@@ -32,9 +32,9 @@
     </select>
 
     <select id="selectHeatmeterPeriodsByHeatmeterId" parameterType="map" resultMap="heatmeterPeriodResultMap">
-        select p.* from `heatmeter_period` p where p.`heatmeter_id` = #{heatmeterId} 
-            and (#{operatingMonth} between p.`begin_om` and p.`end_om`)
-        order by p.`begin_date`
+        SELECT p.* FROM `heatmeter_period` p WHERE p.`heatmeter_id` = #{heatmeterId} 
+            AND (#{operatingMonth} BETWEEN p.`begin_om` AND p.`end_om`)
+        ORDER BY p.`begin_date`
     </select>
 
     <delete id="deleteHeatmeterPeriod" parameterType="long">

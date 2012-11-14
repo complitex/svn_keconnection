@@ -73,10 +73,10 @@
     </delete>
 
     <select id="selectHeatmeterPayloadsByHeatmeterId" parameterType="map" resultMap="heatmeterPayloadResultMap">
-        select hp.`id` payload_id, hp.*, p.`id` period_id, p.* 
-        from `heatmeter_payload` hp
-          left join `heatmeter_period` p on (p.`attribute_id` =  hp.`id` and p.`type` = 3)
-        where p.`heatmeter_id` = #{heatmeterId} and (#{operatingMonth} between p.`begin_om` and p.`end_om`)
+        SELECT hp.`id` payload_id, hp.*, p.`id` period_id, p.* FROM `heatmeter_payload` hp
+        JOIN `heatmeter_period` p ON (p.`attribute_id` =  hp.`id` AND p.`type` = 3)
+        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{operatingMonth} BETWEEN p.`begin_om` AND p.`end_om`)
+        ORDER BY p.`begin_date`
     </select>
     
     <delete id="deleteHeatmeterPayload" parameterType="long">

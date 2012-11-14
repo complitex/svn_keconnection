@@ -34,13 +34,14 @@
     </select>
 
     <select id="selectHeatmeterConnectionsByHeatmeterId" parameterType="long" resultMap="heatmeterConnectionResultMap">
-        select hc.`id` connection_id, hc.*, p.`id` period_id, p.*, 
+        SELECT hc.`id` connection_id, hc.*, p.`id` period_id, p.*, 
             bc.`building_id`, bc.`organization_id`, bc.`code` 
-        from `heatmeter_connection` hc
-          left join `building_code` bc on bc.`id` = hc.`building_code_id`
-          left join `heatmeter_period` p on (p.`attribute_id` =  hc.`id` and p.`type` = 2)
-          left join `operating_month` om on om.`organization_id` = bc.`organization_id`
-        where p.`heatmeter_id` = #{heatmeterId} and (om.`begin_om` between p.`begin_om` and p.`end_om`)
+        FROM `heatmeter_connection` hc
+          LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+          JOIN `heatmeter_period` p ON (p.`attribute_id` =  hc.`id` AND p.`type` = 2)
+          LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
+        WHERE p.`heatmeter_id` = #{heatmeterId} AND (om.`begin_om` BETWEEN p.`begin_om` AND p.`end_om`)
+        ORDER BY p.`begin_date`
     </select>
 
     <delete id="deleteHeatmeterConnection" parameterType="long">

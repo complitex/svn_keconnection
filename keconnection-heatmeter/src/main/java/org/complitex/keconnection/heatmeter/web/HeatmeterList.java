@@ -63,6 +63,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.wicket.markup.html.form.TextField;
 import static org.complitex.dictionary.util.PageUtil.newSorting;
 import static org.complitex.dictionary.util.PageUtil.newTextFields;
 
@@ -179,6 +180,16 @@ public class HeatmeterList extends TemplatePage {
                         return String.valueOf(object);
                     }
                 }).setNullValid(true));
+        
+        //TODO: enable filters
+        filterForm.add(new TextField<String>("organizationFilter", new Model<String>()));
+        filterForm.add(new TextField<String>("addressFilter", new Model<String>()));
+        filterForm.add(new TextField<String>("buildingCodeFilter", new Model<String>()));
+        filterForm.add(new TextField<String>("tg1Filter", new Model<String>()));
+        filterForm.add(new TextField<String>("tg2Filter", new Model<String>()));
+        filterForm.add(new TextField<String>("tg3Filter", new Model<String>()));
+        filterForm.add(new TextField<String>("inputFilter", new Model<String>()));
+        filterForm.add(new TextField<String>("cosumption1Filter", new Model<String>()));
 
         IModel<Date> beginDateFilterModel = new Model<Date>() {
 
