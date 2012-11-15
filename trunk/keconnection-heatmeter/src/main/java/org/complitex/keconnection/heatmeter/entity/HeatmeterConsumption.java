@@ -12,11 +12,11 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterConsumptionSt
  *         Date: 24.10.12 18:31
  */
 public class HeatmeterConsumption implements ILongId {
+
     private Long id;
     private Long heatmeterId;
     private Long heatmeterInputId;
     private Date operatingMonth;
-    private BigDecimal consumption;
     private BigDecimal consumption1;
     private BigDecimal consumption2;
     private BigDecimal consumption3;
@@ -54,14 +54,6 @@ public class HeatmeterConsumption implements ILongId {
 
     public void setOperatingMonth(Date operatingMonth) {
         this.operatingMonth = operatingMonth;
-    }
-
-    public BigDecimal getConsumption() {
-        return consumption;
-    }
-
-    public void setConsumption(BigDecimal consumption) {
-        this.consumption = consumption;
     }
 
     public BigDecimal getConsumption1() {
