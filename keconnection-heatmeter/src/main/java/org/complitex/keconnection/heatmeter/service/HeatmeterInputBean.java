@@ -7,23 +7,24 @@ package org.complitex.keconnection.heatmeter.service;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterInput;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.*;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 import static com.google.common.collect.ImmutableMap.of;
+import static org.complitex.dictionary.util.DateUtil.getDaysDiff;
+import static org.complitex.dictionary.util.DateUtil.getMin;
 
 /**
  *
@@ -89,7 +90,6 @@ public class HeatmeterInputBean extends AbstractBean {
         HeatmeterConsumption c = newInput.getFirstConsumption();
         c.setBeginDate(newInput.getPeriod().getBeginDate());
         c.setEndDate(newInput.getPeriod().getEndDate());
-        c.setHeatmeterId(newInput.getPeriod().getHeatmeterId());
         c.setOperatingMonth(newInput.getPeriod().getEndOm());
         c.setConsumption1(BigDecimal.ZERO);
         c.setConsumption2(BigDecimal.ZERO);

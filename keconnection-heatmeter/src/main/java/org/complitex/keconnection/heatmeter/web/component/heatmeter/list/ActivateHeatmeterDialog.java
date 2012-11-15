@@ -7,10 +7,6 @@ package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.Date;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
@@ -33,6 +29,11 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.Date;
 
 /**
  *
@@ -163,14 +164,14 @@ public abstract class ActivateHeatmeterDialog extends Panel {
         if (openAdjustmentPeriod.isPresent()) {
             HeatmeterPeriod adjustmentPeriod = openAdjustmentPeriod.get();
             adjustmentPeriod.setEndDate(beginDate);
-            adjustmentPeriod.setEndOm(heatmeter.getOperatingMonth());
+            adjustmentPeriod.setEndOm(heatmeter.getOm());
             return adjustmentPeriod;
         } else {
             //add new operational period
             HeatmeterPeriod operationalPeriod = new HeatmeterPeriod(heatmeter.getId(), HeatmeterPeriodType.OPERATION,
                     HeatmeterPeriodSubType.OPERATING);
             operationalPeriod.setBeginDate(beginDate);
-            operationalPeriod.setBeginOm(heatmeter.getOperatingMonth());
+            operationalPeriod.setBeginOm(heatmeter.getOm());
             heatmeter.getPeriods().add(operationalPeriod);
             return operationalPeriod;
         }

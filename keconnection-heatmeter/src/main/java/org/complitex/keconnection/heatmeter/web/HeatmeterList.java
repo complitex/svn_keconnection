@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
@@ -63,7 +64,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.wicket.markup.html.form.TextField;
 import static org.complitex.dictionary.util.PageUtil.newSorting;
 import static org.complitex.dictionary.util.PageUtil.newTextFields;
 
@@ -239,11 +239,11 @@ public class HeatmeterList extends TemplatePage {
                 List<Heatmeter> heatmeters = heatmeterBean.getHeatmeters(filterWrapper);
                 for (Heatmeter heatmeter : heatmeters) {
                     //add new empty payload
-                    HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOperatingMonth());
+                    HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOm());
                     heatmeter.getPayloads().add(p);
 
                     //add new empty input
-                    HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOperatingMonth());
+                    HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOm());
                     i.addNewConsumptionIfNecessary();
                     heatmeter.getInputs().add(i);
                 }

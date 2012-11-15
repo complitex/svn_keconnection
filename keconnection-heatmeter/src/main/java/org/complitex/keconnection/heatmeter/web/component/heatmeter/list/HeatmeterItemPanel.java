@@ -4,7 +4,6 @@
  */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
-import java.text.MessageFormat;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -29,22 +28,24 @@ import org.complitex.address.service.AddressRendererBean;
 import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBindingStatusRenderer;
+import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.HeatmeterEdit;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
-import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 import static com.google.common.collect.Iterables.toArray;
-import static org.complitex.dictionary.util.DateUtil.*;
+import static org.complitex.dictionary.util.DateUtil.nextDay;
+import static org.complitex.dictionary.util.DateUtil.previousDay;
 
 /**
  *
@@ -122,7 +123,7 @@ public abstract class HeatmeterItemPanel extends Panel {
             @Override
             public Boolean getObject() {
                 return (heatmeter.getPayloads().size() > 1 || heatmeter.getConsumptions().size() > 1)
-                        && heatmeter.getOperatingMonth() != null;
+                        && heatmeter.getOm() != null;
             }
         };
 
@@ -182,7 +183,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                     HeatmeterPayload payload = isNewPayload ? heatmeter.getPayloads().get(0)
                             : heatmeter.getPayloads().get(heatmeter.getPayloads().size() - 2);
                     addPayload(this, heatmeter,
-                            payload, isNewPayload && heatmeter.getOperatingMonth() != null, true);
+                            payload, isNewPayload && heatmeter.getOm() != null, true);
                 }
 
                 //input and consumption
@@ -191,7 +192,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                     HeatmeterInput input = isNewInput ? heatmeter.getInputs().get(0)
                             : heatmeter.getInputs().get(heatmeter.getInputs().size() - 2);
                     addInputConsumption(this, heatmeter,
-                            input, isNewInput && heatmeter.getOperatingMonth() != null, true);
+                            input, isNewInput && heatmeter.getOm() != null, true);
                 }
 
                 //status
@@ -332,7 +333,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                         if (previousPayload != null) {
                             HeatmeterPeriod previousPeriod = previousPayload.getPeriod();
                             previousPeriod.setEndDate(previousDay(payload.getPeriod().getBeginDate()));
-                            previousPeriod.setEndOm(heatmeter.getOperatingMonth());
+                            previousPeriod.setEndOm(heatmeter.getOm());
                             heatmeterPayloadBean.save(previousPayload);
                         }
 
@@ -380,10 +381,10 @@ public abstract class HeatmeterItemPanel extends Panel {
                 //update begin date and begin om of new input
                 if (previousInput != null) {
                     input.getPeriod().setBeginDate(nextDay(previousInput.getPeriod().getEndDate()));
-                    input.getPeriod().setBeginOm(heatmeter.getOperatingMonth());
+                    input.getPeriod().setBeginOm(heatmeter.getOm());
                 } else {
-                    input.getPeriod().setBeginDate(heatmeter.getOperatingMonth());
-                    input.getPeriod().setBeginOm(heatmeter.getOperatingMonth());
+                    input.getPeriod().setBeginDate(heatmeter.getOm());
+                    input.getPeriod().setBeginOm(heatmeter.getOm());
                 }
 
                 //validate
@@ -397,7 +398,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                     try {
                         //update end om of input
-                        input.getPeriod().setEndOm(heatmeter.getOperatingMonth());
+                        input.getPeriod().setEndOm(heatmeter.getOm());
 
                         //calculate consumptions for new input
                         heatmeterInputBean.calculateConsumptionForNewInput(heatmeter.getPayloads(), input);
@@ -441,12 +442,12 @@ public abstract class HeatmeterItemPanel extends Panel {
     }
 
     private void addNewPayload(Heatmeter heatmeter) {
-        HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOperatingMonth());
+        HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOm());
         heatmeter.getPayloads().add(p);
     }
 
     private void addNewInput(Heatmeter heatmeter) {
-        HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOperatingMonth());
+        HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOm());
         i.addNewConsumptionIfNecessary();
         heatmeter.getInputs().add(i);
     }

@@ -81,7 +81,7 @@ public class HeatmeterEdit extends FormTemplatePage{
 
         if (id != null){
             heatmeter = heatmeterBean.getHeatmeter(id);
-            operatingMonthModel.setObject(heatmeter.getOperatingMonth());
+            operatingMonthModel.setObject(heatmeter.getOm());
         }
         else{
             heatmeter = new Heatmeter();

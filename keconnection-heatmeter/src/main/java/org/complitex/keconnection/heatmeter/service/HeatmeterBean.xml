@@ -2,57 +2,46 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterBean">
     <resultMap id="heatmeterResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
-        <id property="id" column="id"/>
-        <result property="ls" column="ls"/>
-        <result property="type" column="type_id"/>
-        <result property="calculating" column="calculating"/>
-        <result property="organizationId" column="organization_id"/>
+        <id property="id"/>
+        <result property="ls"/>
+        <result property="type"/>
+        <result property="calculating"/>
+        <result property="organizationId"/>
         <result property="status"/>
-        <result property="bindingStatus" column="binding_status"/>
+        <result property="bindingStatus"/>
+
+        <result property="om"/>
     </resultMap>
     
-    <resultMap id="heatmeterResultMapCollection" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+    <resultMap id="heatmeterWithActiveCollectionsResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
-        <result property="type" column="type_id"/>
+        <result property="type" column="type"/>
         <result property="calculating" column="calculating"/>
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
         <collection property="connections"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
-                    column="id"/>
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByOm"
+                    column="heatmeterId=id,om=om"/>
         <collection property="periods"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByHeatmeterId"
-                    column="id"/>
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByOm"
+                    column="heatmeterId=id,om=om"/>
         <collection property="payloads"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByHeatmeterId"
-                    column="id"/>
-        <collection property="consumptions"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterId"
-                    column="id"/>
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByOm"
+                    column="heatmeterId=id,om=om"/>
+        <collection property="inputs"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterInputBean.selectHeatmeterInputsByOm"
+                    column="heatmeterId=id,om=om"/>
     </resultMap>
 
     <resultMap id="heatmeterForBindingResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
-        <result property="type" column="type_id"/>
+        <result property="type" column="type"/>
         <result property="calculating" column="calculating"/>
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
-        <collection property="connections"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
-                    column="id"/>
-    </resultMap>
-    
-    <resultMap id="heatmeterResultMapSelectList" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
-        <id property="id" column="id"/>
-        <result property="ls" column="ls"/>
-        <result property="type" column="type_id"/>
-        <result property="calculating" column="calculating"/>
-        <result property="organizationId" column="organization_id"/>
-        <result property="status"/>
-        <result property="bindingStatus" column="binding_status"/>
         <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
                     column="id"/>
@@ -60,19 +49,19 @@
 
     <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
             useGeneratedKeys="true" keyProperty="id">
-        insert into `heatmeter` (`ls`, `organization_id`, `type_id`, `calculating`)
+        insert into `heatmeter` (`ls`, `organization_id`, `type`, `calculating`)
             values (#{ls}, #{organizationId}, #{type}, #{calculating})
     </insert>
 
     <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
-        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type_id` = #{type},
+        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type` = #{type},
           `calculating` = #{calculating} where `id` = #{id}
     </update>
 
     <sql id="selectHeatmetersWhere">
         <where>
             <if test="object.ls != null">`ls` = #{object.ls}</if>
-            <if test="object.type != null">and `type_id` = #{object.type}</if>
+            <if test="object.type != null">and `type` = #{object.type}</if>
             <if test="object.calculating != null">and `calculating` = #{object.calculating}</if>
             <if test="object.status != null">and `status` = #{object.status}</if>
             <if test="object.bindingStatus != null">
@@ -95,8 +84,8 @@
     </sql>
 
     <sql id="selectHeatmeterSelectFrom">
-        select h.*, (select heatmeter_status(h.`id`)) as `status`,
-          hc.`binding_status`
+        select h.*, heatmeter_status(h.`id`) as `status`, heatmeter_active_om(h.`id`) as `om`,
+            hc.`binding_status`
         from `heatmeter` h
             LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
     </sql>
@@ -108,7 +97,7 @@
             (SELECT MAX(c.`readout_date`) FROM `heatmeter_consumption` c WHERE c.`heatmeter_id` = h2.`id`))
     </sql>
 
-    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterResultMapCollection">
+    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
     
@@ -117,7 +106,7 @@
     </select>
 
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
-            resultMap="heatmeterResultMapSelectList">
+            resultMap="heatmeterWithActiveCollectionsResultMap">
         select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 
             <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
@@ -147,7 +136,7 @@
     </select>
 
     <update id="updateHeatmeterType" parameterType="map">
-        update `heatmeter` set `type_id` = #{type} where `id` = #{id}
+        update `heatmeter` set `type` = #{type} where `id` = #{id}
     </update>
     
     <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
