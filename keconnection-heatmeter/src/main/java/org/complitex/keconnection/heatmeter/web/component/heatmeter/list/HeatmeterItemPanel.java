@@ -368,13 +368,24 @@ public abstract class HeatmeterItemPanel extends Panel {
                 new PropertyModel<BigDecimal>(input, "firstConsumption.consumption1"),
                 false).setVisible(inputDataVisible));
         container.add(new HeatmeterDateItem("readoutDate",
-                new PropertyModel<Date>(input, "period.beginDate"),
+                new PropertyModel<Date>(input, "period.endDate"),
                 editable).setVisible(inputDataVisible));
 
         AjaxLink<Void> saveConsumption = new AjaxLink<Void>("saveInput") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
+                final HeatmeterInput previousInput = getPreviousInput(heatmeter);
+
+                //update begin date and begin om of new input
+                if (previousInput != null) {
+                    input.getPeriod().setBeginDate(nextDay(previousInput.getPeriod().getEndDate()));
+                    input.getPeriod().setBeginOm(heatmeter.getOperatingMonth());
+                } else {
+                    input.getPeriod().setBeginDate(heatmeter.getOperatingMonth());
+                    input.getPeriod().setBeginOm(heatmeter.getOperatingMonth());
+                }
+
                 //validate
                 //TODO: fix validation:
                 HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validateConsumptions(heatmeterListWrapper.getHeatmeter());
@@ -385,14 +396,11 @@ public abstract class HeatmeterItemPanel extends Panel {
                     saveInputStatusModel.setObject(null);
 
                     try {
-                        //update end date and end om of previous input
-                        HeatmeterInput previousInput = getPreviousInput(heatmeter);
-                        if (previousInput != null) {
-                            HeatmeterPeriod previousPeriod = previousInput.getPeriod();
-                            previousPeriod.setEndDate(previousDay(input.getPeriod().getBeginDate()));
-                            previousPeriod.setEndOm(heatmeter.getOperatingMonth());
-                            heatmeterInputBean.save(previousInput);
-                        }
+                        //update end om of input
+                        input.getPeriod().setEndOm(heatmeter.getOperatingMonth());
+
+                        //calculate consumptions for new input
+                        heatmeterInputBean.calculateConsumptionForNewInput(heatmeter.getPayloads(), input);
 
                         //save new input
                         heatmeterInputBean.save(input);
