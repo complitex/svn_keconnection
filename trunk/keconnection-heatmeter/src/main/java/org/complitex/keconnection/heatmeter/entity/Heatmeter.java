@@ -15,24 +15,38 @@ import java.util.Set;
  * Теплосчетчик
  */
 public class Heatmeter implements ILongId {
-
     private Long id; //Идентификатор
     private Integer ls; //Номер л/с счетчика
     private Long organizationId; //Организация ПУ
     private HeatmeterType type; //Тип счетчика
     private Boolean calculating; //Участвует в расчетах
 
-    private Date operatingMonth;
-    private Date minOperatingMonth;
+    private Date om;
 
     private List<HeatmeterConnection> connections = new ArrayList<>(); //Список кодов домов
     private List<HeatmeterPeriod> periods = new ArrayList<>(); //Список периодов
     private List<HeatmeterPayload> payloads = new ArrayList<>(); //Список распределений
     private List<HeatmeterInput> inputs = new ArrayList<>();
-    //TODO: remove it, use instead inputs.
     private List<HeatmeterConsumption> consumptions = new ArrayList<>();// Список расходов
+
     private HeatmeterStatus status;
     private HeatmeterBindingStatus bindingStatus;
+
+    public boolean isConnectedToSingleBuildingCode() {
+        return getBuildingCodeIds().size() == 1;
+    }
+
+    public Long getFirstBuildingCodeId() {
+        return connections == null || connections.isEmpty() ? null : connections.get(0).getBuildingCodeId();
+    }
+
+    public Set<Long> getBuildingCodeIds() {
+        Set<Long> buildingCodeIds = new HashSet<>();
+        for (HeatmeterConnection hc : connections) {
+            buildingCodeIds.add(hc.getBuildingCodeId());
+        }
+        return buildingCodeIds;
+    }
 
     public Long getId() {
         return id;
@@ -74,6 +88,14 @@ public class Heatmeter implements ILongId {
         this.calculating = calculating;
     }
 
+    public Date getOm() {
+        return om;
+    }
+
+    public void setOm(Date om) {
+        this.om = om;
+    }
+
     public List<HeatmeterConnection> getConnections() {
         return connections;
     }
@@ -98,54 +120,6 @@ public class Heatmeter implements ILongId {
         this.payloads = payloads;
     }
 
-    public HeatmeterStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(HeatmeterStatus status) {
-        this.status = status;
-    }
-
-    public HeatmeterBindingStatus getBindingStatus() {
-        return bindingStatus;
-    }
-
-    public void setBindingStatus(HeatmeterBindingStatus bindingStatus) {
-        this.bindingStatus = bindingStatus;
-    }
-
-    public boolean isConnectedToSingleBuildingCode() {
-        return getBuildingCodeIds().size() == 1;
-    }
-
-    public Long getFirstBuildingCodeId() {
-        return connections == null || connections.isEmpty() ? null : connections.get(0).getBuildingCodeId();
-    }
-
-    public Set<Long> getBuildingCodeIds() {
-        Set<Long> buildingCodeIds = new HashSet<>();
-        for (HeatmeterConnection hc : connections) {
-            buildingCodeIds.add(hc.getBuildingCodeId());
-        }
-        return buildingCodeIds;
-    }
-
-    public Date getOperatingMonth() {
-        return operatingMonth;
-    }
-
-    public void setOperatingMonth(Date operatingMonth) {
-        this.operatingMonth = operatingMonth;
-    }
-
-    public Date getMinOperatingMonth() {
-        return minOperatingMonth;
-    }
-
-    public void setMinOperatingMonth(Date minOperatingMonth) {
-        this.minOperatingMonth = minOperatingMonth;
-    }
-
     public List<HeatmeterInput> getInputs() {
         return inputs;
     }
@@ -160,5 +134,21 @@ public class Heatmeter implements ILongId {
 
     public void setConsumptions(List<HeatmeterConsumption> consumptions) {
         this.consumptions = consumptions;
+    }
+
+    public HeatmeterStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HeatmeterStatus status) {
+        this.status = status;
+    }
+
+    public HeatmeterBindingStatus getBindingStatus() {
+        return bindingStatus;
+    }
+
+    public void setBindingStatus(HeatmeterBindingStatus bindingStatus) {
+        this.bindingStatus = bindingStatus;
     }
 }

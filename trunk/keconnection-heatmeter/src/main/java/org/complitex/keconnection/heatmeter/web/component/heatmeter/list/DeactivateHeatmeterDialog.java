@@ -20,8 +20,7 @@ import org.apache.wicket.model.IModel;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -32,10 +31,6 @@ import javax.ejb.EJB;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Date;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus;
 
 /**
  *
@@ -149,13 +144,13 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
                         }
                     });
             lastOperationalPeriod.setEndDate(info.deactivateDate);
-            lastOperationalPeriod.setEndOm(heatmeter.getOperatingMonth());
+            lastOperationalPeriod.setEndOm(heatmeter.getOm());
             return lastOperationalPeriod;
         } else if (info.deactivateType == HeatmeterPeriodSubType.ADJUSTMENT) {
             HeatmeterPeriod adjustmentPeriod =
                     new HeatmeterPeriod(heatmeter.getId(), HeatmeterPeriodType.OPERATION, HeatmeterPeriodSubType.ADJUSTMENT);
             adjustmentPeriod.setBeginDate(info.deactivateDate);
-            adjustmentPeriod.setBeginOm(heatmeter.getOperatingMonth());
+            adjustmentPeriod.setBeginOm(heatmeter.getOm());
             heatmeter.getPeriods().add(adjustmentPeriod);
             return adjustmentPeriod;
         } else {

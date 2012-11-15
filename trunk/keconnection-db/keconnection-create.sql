@@ -361,13 +361,13 @@ CREATE TABLE `heatmeter`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `ls` INT(7) NOT NULL COMMENT 'Номер л/с теплосчетчика',
   `organization_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на ПУ',
-  `type_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип счетчика',
+  `type` BIGINT(20) NOT NULL COMMENT 'Ссылка на тип счетчика',
   `calculating` TINYINT(1) COMMENT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `heatmeter_unique_id` (`ls`, `organization_id`),
-  KEY `key_type_id` (`type_id`),
+  KEY `key_type_id` (`type`),
   KEY `key_organization_id` (`organization_id`),
-  CONSTRAINT `fk_heatmeter__heatmeter_type` FOREIGN KEY (`type_id`) REFERENCES `heatmeter_type` (`object_id`),
+  CONSTRAINT `fk_heatmeter__heatmeter_type` FOREIGN KEY (`type`) REFERENCES `heatmeter_type` (`object_id`),
   CONSTRAINT `fk_heatmeter__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Теплосчетчик';
 

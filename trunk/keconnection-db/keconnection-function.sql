@@ -1,3 +1,9 @@
+-- SET GLOBAL log_bin_trust_function_creators = 1 $$
+
+-- -------------------
+-- Heatmeter Status
+-- -------------------
+
 DROP FUNCTION IF EXISTS `keconnection`.`heatmeter_status` $$
 CREATE FUNCTION `keconnection`.`heatmeter_status` (pHeatmeterId BIGINT) RETURNS INT DETERMINISTIC
   BEGIN
@@ -16,5 +22,26 @@ CREATE FUNCTION `keconnection`.`heatmeter_status` (pHeatmeterId BIGINT) RETURNS 
     end if;
 
     return -1;
+
+  END $$
+
+-- --------------------------
+-- Heatmeter Operating Month
+-- --------------------------
+
+DROP FUNCTION IF EXISTS `keconnection`.`heatmeter_active_om` $$
+CREATE FUNCTION `keconnection`.`heatmeter_active_om` (pHeatmeterId BIGINT) RETURNS DATE DETERMINISTIC
+  BEGIN
+
+    DECLARE om DATE;
+
+    SELECT MAX(om.`begin_om`) INTO om
+      FROM `heatmeter_connection` hc
+        LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+        JOIN `heatmeter_period` p ON (p.`attribute_id` =  hc.`id` AND p.`type` = 2)
+        LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
+      WHERE p.`heatmeter_id` = pHeatmeterId;
+
+    RETURN om;
 
   END $$

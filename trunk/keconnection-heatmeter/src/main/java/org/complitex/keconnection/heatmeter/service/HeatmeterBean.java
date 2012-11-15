@@ -1,6 +1,5 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
@@ -12,9 +11,9 @@ import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizatio
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+
+import static com.google.common.collect.ImmutableMap.of;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -87,38 +86,7 @@ public class HeatmeterBean extends AbstractBean {
 
     public List<Heatmeter> getHeatmeters(FilterWrapper<Heatmeter> filterWrapper) {
         addUnboundStatusParameter(filterWrapper);
-        List<Heatmeter> heatmeters = sqlSession().selectList("selectHeatmeters", filterWrapper);
-        for (Heatmeter h : heatmeters) {
-            //todo add heatmeter_active_om(id) mysql function
-            h.setOperatingMonth(getOperatingMonthDate(h));
-            loadPayloads(h);
-            loadInputs(h);
-            loadPeriods(h);
-        }
-        return heatmeters;
-    }
-
-    private Date getOperatingMonthDate(Heatmeter heatmeter) {
-        Long organizationId = null;
-        if (!heatmeter.getConnections().isEmpty()) {
-            organizationId = heatmeter.getConnections().get(0).getOrganizationId();
-        }
-        if (organizationId != null && organizationId > 0) {
-            return organizationStrategy.getOperatingMonthDate(organizationId);
-        }
-        return null;
-    }
-
-    private void loadPayloads(Heatmeter heatmeter) {
-        heatmeter.setPayloads(heatmeterPayloadBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
-    }
-
-    private void loadInputs(Heatmeter heatmeter) {
-        heatmeter.setInputs(heatmeterInputBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
-    }
-
-    private void loadPeriods(Heatmeter heatmeter) {
-        heatmeter.setPeriods(heatmeterPeriodBean.getList(heatmeter.getId(), heatmeter.getOperatingMonth()));
+        return sqlSession().selectList("selectHeatmeters", filterWrapper);
     }
 
     public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper) {
@@ -131,27 +99,21 @@ public class HeatmeterBean extends AbstractBean {
     }
 
     public boolean isExist(Integer ls, Long buildingCodeId, Long organizationId) {
-        return sqlSession().selectOne("isExistHeatmeter", ImmutableMap.of("ls", ls, "buildingCodeId", buildingCodeId,
+        return sqlSession().selectOne("isExistHeatmeter", of("ls", ls, "buildingCodeId", buildingCodeId,
                 "organizationId", organizationId));
     }
 
     public Heatmeter getHeatmeterByLs(Integer ls, Long organizationId) {
-        return sqlSession().selectOne("selectHeatmeterByLs", ImmutableMap.of("ls", ls, "organizationId", organizationId));
+        return sqlSession().selectOne("selectHeatmeterByLs", of("ls", ls, "organizationId", organizationId));
     }
 
     public void updateHeatmeterType(final Long id, final HeatmeterType type) {
-        sqlSession().update("updateHeatmeterType", new HashMap<String, Object>() {
-
-            {
-                put("id", id);
-                put("type", type);
-            }
-        });
+        sqlSession().update("updateHeatmeterType", of("id", id, "type", type));
     }
 
     public boolean isOnlyHeatmeterForBuildingCode(long heatmeterId, long buildingCodeId) {
         int result = sqlSession().selectOne("isOnlyHeatmeterForBuildingCode",
-                ImmutableMap.of("buildingCodeId", buildingCodeId, "heatmeterId", heatmeterId));
+                of("buildingCodeId", buildingCodeId, "heatmeterId", heatmeterId));
         return result == 0;
     }
 }

@@ -2,28 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean">
     <resultMap id="heatmeterConsumptionResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
-        <id property="id" column="id"/>
-        <result property="heatmeterId" column="heatmeter_id"/>
-        <result property="heatmeterInputId" column="heatmeter_input_id"/>
-        <result property="operatingMonth" column="om"/>
-        <result property="consumption1" column="consumption1"/>
-        <result property="consumption2" column="consumption2"/>
-        <result property="consumption3" column="consumption3"/>
-        <result property="beginDate" column="begin_date"/>
-        <result property="endDate" column="end_date"/>
-        <result property="status" column="status"/>
+        <id property="id"/>
+        <result property="heatmeterInputId"/>
+        <result property="om"/>
+        <result property="consumption1"/>
+        <result property="consumption2"/>
+        <result property="consumption3"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="status"/>
     </resultMap>
 
     <insert id="insertHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption"
             useGeneratedKeys="true" keyProperty="id">
-        insert into `heatmeter_consumption` (`heatmeter_id`, `heatmeter_input_id`, `om`, 
-                                             `consumption1`, `consumption2`, `consumption3`, `status`, `begin_date`, `end_date`)
-            values (#{heatmeterId}, #{heatmeterInputId}, #{operatingMonth}, #{consumption1}, #{consumption2}, #{consumption3}, 
-                    #{status}, #{beginDate}, #{endDate})
+        insert into `heatmeter_consumption` (`heatmeter_input_id`, `om`, `consumption1`, `consumption2`, `consumption3`,
+          `status`, `begin_date`, `end_date`)
+        values (#{heatmeterInputId}, #{om}, #{consumption1}, #{consumption2}, #{consumption3}, #{status}, #{beginDate},
+          #{endDate})
     </insert>
 
     <update id="updateHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
-        update `heatmeter_consumption` set  `begin_date` = #{beginDate}, `end_date` = #{endDate}, `om` = #{operatingMonth},
+        update `heatmeter_consumption` set  `begin_date` = #{beginDate}, `end_date` = #{endDate}, `om` = #{om},
             `consumption1` = #{consumption1}, `consumption2` = #{consumption2}, `consumption3` = #{consumption3}, 
             `status` = #{status}
     </update>
