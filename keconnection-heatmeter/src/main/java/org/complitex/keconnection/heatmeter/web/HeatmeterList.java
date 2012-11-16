@@ -185,11 +185,81 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(new TextField<String>("organizationFilter", new Model<String>()));
         filterForm.add(new TextField<String>("addressFilter", new Model<String>()));
         filterForm.add(new TextField<String>("buildingCodeFilter", new Model<String>()));
-        filterForm.add(new TextField<String>("tg1Filter", new Model<String>()));
-        filterForm.add(new TextField<String>("tg2Filter", new Model<String>()));
-        filterForm.add(new TextField<String>("tg3Filter", new Model<String>()));
-        filterForm.add(new TextField<String>("inputFilter", new Model<String>()));
-        filterForm.add(new TextField<String>("cosumption1Filter", new Model<String>()));
+        
+        IModel<String> tg1FilterModel = new Model<String>(){
+
+            @Override
+            public String getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (String) map.get(HeatmeterBean.PAYLOAD1_FILTER_PARAM) : null;
+            }
+
+            @Override
+            public void setObject(String object) {
+                filterModel.getObject().add(HeatmeterBean.PAYLOAD1_FILTER_PARAM, object);
+            }
+        };
+        filterForm.add(new TextField<String>("tg1Filter", tg1FilterModel));
+        
+        IModel<String> tg2FilterModel = new Model<String>(){
+
+            @Override
+            public String getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (String) map.get(HeatmeterBean.PAYLOAD2_FILTER_PARAM) : null;
+            }
+
+            @Override
+            public void setObject(String object) {
+                filterModel.getObject().add(HeatmeterBean.PAYLOAD2_FILTER_PARAM, object);
+            }
+        };
+        filterForm.add(new TextField<String>("tg2Filter", tg2FilterModel));
+        
+        IModel<String> tg3FilterModel = new Model<String>(){
+
+            @Override
+            public String getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (String) map.get(HeatmeterBean.PAYLOAD3_FILTER_PARAM) : null;
+            }
+
+            @Override
+            public void setObject(String object) {
+                filterModel.getObject().add(HeatmeterBean.PAYLOAD3_FILTER_PARAM, object);
+            }
+        };
+        filterForm.add(new TextField<String>("tg3Filter", tg3FilterModel));
+        
+        IModel<String> inputFilterModel = new Model<String>(){
+
+            @Override
+            public String getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (String) map.get(HeatmeterBean.INPUT_FILTER_PARAM) : null;
+            }
+
+            @Override
+            public void setObject(String object) {
+                filterModel.getObject().add(HeatmeterBean.INPUT_FILTER_PARAM, object);
+            }
+        };
+        filterForm.add(new TextField<String>("inputFilter", inputFilterModel));
+        
+        IModel<String> consumption1FilterModel = new Model<String>(){
+
+            @Override
+            public String getObject() {
+                Map<String, Object> map = filterModel.getObject().getMap();
+                return map != null ? (String) map.get(HeatmeterBean.CONSUMPTION1_FILTER_PARAM) : null;
+            }
+
+            @Override
+            public void setObject(String object) {
+                filterModel.getObject().add(HeatmeterBean.CONSUMPTION1_FILTER_PARAM, object);
+            }
+        };
+        filterForm.add(new TextField<String>("cosumption1Filter", consumption1FilterModel));
 
         IModel<Date> beginDateFilterModel = new Model<Date>() {
 
@@ -211,12 +281,12 @@ public class HeatmeterList extends TemplatePage {
             @Override
             public Date getObject() {
                 Map<String, Object> map = filterModel.getObject().getMap();
-                return map != null ? (Date) map.get(HeatmeterBean.CONSUMPTION_READOUT_DATE) : null;
+                return map != null ? (Date) map.get(HeatmeterBean.INPUT_READOUT_DATE_FILTER_PARAM) : null;
             }
 
             @Override
             public void setObject(Date date) {
-                filterModel.getObject().add(HeatmeterBean.CONSUMPTION_READOUT_DATE, date);
+                filterModel.getObject().add(HeatmeterBean.INPUT_READOUT_DATE_FILTER_PARAM, date);
             }
         };
         filterForm.add(new MaskedDateInput("readoutDateFilter", readoutDateFilterModel));

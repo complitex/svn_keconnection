@@ -22,9 +22,9 @@
     </insert>
 
     <update id="updateHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
-        update `heatmeter_consumption` set  `begin_date` = #{beginDate}, `end_date` = #{endDate}, `om` = #{om},
+        update `heatmeter_consumption` set `begin_date` = #{beginDate}, `end_date` = #{endDate}, `om` = #{om},
             `consumption1` = #{consumption1}, `consumption2` = #{consumption2}, `consumption3` = #{consumption3}, 
-            `status` = #{status}
+            `status` = #{status} where `id` = #{id}
     </update>
 
     <delete id="deleteHeatmeterConsumption" parameterType="long">

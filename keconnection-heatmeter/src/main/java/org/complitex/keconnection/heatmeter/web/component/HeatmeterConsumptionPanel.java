@@ -40,7 +40,7 @@ public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
                         List<HeatmeterConsumption> list = new ArrayList<>();
 
                         for (HeatmeterConsumption c : model.getObject().getConsumptions()){
-                            if (DateUtil.isSameMonth(c.getOperatingMonth(), operatingMonthModel.getObject())){
+                            if (DateUtil.isSameMonth(c.getOm(), operatingMonthModel.getObject())){
                                 list.add(c);
                             }
                         }

@@ -24,7 +24,13 @@ import static com.google.common.collect.ImmutableMap.of;
 public class HeatmeterBean extends AbstractBean {
 
     public static final String PAYLOAD_BEGIN_DATE_FILTER_PARAM = "payloadBeginDate";
-    public static final String CONSUMPTION_READOUT_DATE = "consumptionReadoutDate";
+    public static final String PAYLOAD1_FILTER_PARAM = "payload1";
+    public static final String PAYLOAD2_FILTER_PARAM = "payload2";
+    public static final String PAYLOAD3_FILTER_PARAM = "payload3";
+    public static final String INPUT_READOUT_DATE_FILTER_PARAM = "inputReadoutDate";
+    public static final String INPUT_FILTER_PARAM = "input";
+    public static final String CONSUMPTION1_FILTER_PARAM = "consumption1";
+    
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
     @EJB
