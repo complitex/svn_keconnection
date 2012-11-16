@@ -74,12 +74,29 @@
                     </otherwise>
                 </choose>
             </if>
-<!--            <if test="map.payloadBeginDate != null">
-                AND hp.`begin_date` = #{map.payloadBeginDate}
+            
+            <if test="map.payloadBeginDate != null">
+                AND payload_p.`begin_date` = #{map.payloadBeginDate}
             </if>
-            <if test="map.consumptionReadoutDate != null">
-                AND hcons.`readout_date` = #{map.consumptionReadoutDate}
-            </if>-->
+            <if test="map.payload1 != null">
+                AND payload.`payload1` = #{map.payload1}
+            </if>
+            <if test="map.payload2 != null">
+                AND payload.`payload2` = #{map.payload2}
+            </if>
+            <if test="map.payload3 != null">
+                AND payload.`payload3` = #{map.payload3}
+            </if>
+            
+            <if test="map.inputReadoutDate != null">
+                AND input_p.`end_date` = #{map.inputReadoutDate}
+            </if>
+            <if test="map.input != null">
+                AND input.`value` = #{map.input}
+            </if>
+            <if test="map.consumption1 != null">
+                AND consumption.`consumption1` = #{map.consumption1}
+            </if>
         </where>
     </sql>
 
@@ -91,10 +108,27 @@
     </sql>
     
     <sql id="selectHeatmeterJoin">
-        LEFT JOIN `heatmeter_payload` hp ON (hp.`heatmeter_id` = h2.`id` AND hp.`begin_date` = 
-            (SELECT MAX(p.`begin_date`) FROM `heatmeter_payload` p WHERE p.`heatmeter_id` = h2.`id`))
-        LEFT JOIN `heatmeter_consumption` hcons ON (hcons.`heatmeter_id` = h2.`id` AND hcons.`readout_date` = 
-            (SELECT MAX(c.`readout_date`) FROM `heatmeter_consumption` c WHERE c.`heatmeter_id` = h2.`id`))
+        <if test="map.payloadBeginDate != null or map.payload1 != null or map.payload2 != null or map.payload3 != null">
+            LEFT JOIN `heatmeter_period` payload_p ON (payload_p.`heatmeter_id` = h2.`id` AND payload_p.`type` = 3
+            AND (h2.`om` BETWEEN payload_p.`begin_om` AND payload_p.`end_om`)
+            AND payload_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE 
+                p.`heatmeter_id` = h2.`id` AND p.`type` = 3 AND (h2.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
+            <if test="map.payload1 != null or map.payload2 != null or map.payload3 != null">
+                LEFT JOIN `heatmeter_payload` payload ON payload.`id` = payload_p.`attribute_id`
+            </if>
+        </if>
+        <if test="map.inputReadoutDate != null or map.input != null or map.consumption1 != null">
+            LEFT JOIN `heatmeter_period` input_p ON (input_p.`heatmeter_id` = h2.`id` AND input_p.`type` = 4
+            AND (h2.`om` BETWEEN input_p.`begin_om` AND input_p.`end_om`)
+            AND input_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE 
+                p.`heatmeter_id` = h2.`id` AND p.`type` = 4 AND (h2.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
+            <if test="map.input != null or map.consumption1 != null">
+                LEFT JOIN `heatmeter_input` input ON input.`id` = input_p.`attribute_id`
+                <if test="map.consumption1 != null">
+                    LEFT JOIN `heatmeter_consumption` consumption ON consumption.`heatmeter_input_id` = input.`id`
+                </if>
+            </if>
+        </if>
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">
@@ -108,6 +142,7 @@
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeterWithActiveCollectionsResultMap">
         select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+            <include refid="selectHeatmeterJoin"/>
             <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
     </select>
@@ -115,7 +150,8 @@
     <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultType="int">
         select count(1) from
-        (select 1 from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+        (select 1 from (<include refid="selectHeatmeterSelectFrom"/>) h2
+            <include refid="selectHeatmeterJoin"/>
             <include refid="selectHeatmetersWhere"/>) h3
     </select>
 

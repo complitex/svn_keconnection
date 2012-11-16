@@ -90,7 +90,7 @@ public class HeatmeterInputBean extends AbstractBean {
         HeatmeterConsumption c = newInput.getFirstConsumption();
         c.setBeginDate(newInput.getPeriod().getBeginDate());
         c.setEndDate(newInput.getPeriod().getEndDate());
-        c.setOperatingMonth(newInput.getPeriod().getEndOm());
+        c.setOm(newInput.getPeriod().getEndOm());
         c.setConsumption1(BigDecimal.ZERO);
         c.setConsumption2(BigDecimal.ZERO);
         c.setConsumption3(BigDecimal.ZERO);
