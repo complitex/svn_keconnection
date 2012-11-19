@@ -11,6 +11,6 @@ public class HeatmeterMenu extends ResourceTemplateMenu {
     public HeatmeterMenu() {
         add("heatmeter_list", HeatmeterList.class);
         add("tablegram_list", TablegramList.class);
-        add("payload_list", PayloadList.class);
+        //add("payload_list", PayloadList.class);
     }
 }
