@@ -64,12 +64,15 @@
     </select>
 
     <select id="isExistHeatmeterPayload" parameterType="long" resultType="boolean">
-        select count(*) > 0 from `heatmeter_payload` where `heatmeter_id` = #{heatmeterId}
+        select count(*) > 0
+          from `heatmeter_payload` hp join `heatmeter_period` p on (p.`attribute_id` =  hp.`id` and p.`type` = 3)
+        where p.`heatmeter_id` = #{heatmeterId}
     </select>
 
     <delete id="deletePayloadByTablegramId" parameterType="long">
-        delete from `heatmeter_payload`
-          where `tablegram_record_id` in (select `id` from `tablegram_record` where `tablegram_id` = #{tablegramId})
+        delete hp, p from `heatmeter_payload` as hp join `heatmeter_period` as p on (p.`attribute_id` =  hp.`id` and p.`type` = 3)
+            left join `tablegram_record` r on (hp.`tablegram_record_id` = r.`id`)
+        where r.`tablegram_id` = #{tablegramId}
     </delete>
 
     <select id="selectHeatmeterPayloadsByOm" parameterType="map" resultMap="heatmeterPayloadResultMap">

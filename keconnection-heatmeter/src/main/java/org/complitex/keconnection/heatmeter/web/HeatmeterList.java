@@ -106,7 +106,7 @@ public class HeatmeterList extends TemplatePage {
         add(messages);
 
         //Filter Model
-        FilterWrapper<Heatmeter> filterWrapper = (FilterWrapper) getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
+        FilterWrapper<Heatmeter> filterWrapper = getTemplateSession().getPreferenceFilter(HeatmeterList.class.getName(),
                 FilterWrapper.of(new Heatmeter()));
         final IModel<FilterWrapper<Heatmeter>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
