@@ -2,7 +2,6 @@ package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 
 import javax.ejb.EJB;
@@ -18,7 +17,7 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterConnectionBean extends AbstractBean{
+public class HeatmeterConnectionBean extends HeatmeterAttributeBean<HeatmeterConnection>{
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
 

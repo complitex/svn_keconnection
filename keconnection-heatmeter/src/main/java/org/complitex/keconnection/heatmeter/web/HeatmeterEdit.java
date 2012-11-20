@@ -62,8 +62,9 @@ public class HeatmeterEdit extends FormTemplatePage{
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
-    private IModel<Date> operatingMonthModel = Model.of(new Date());
-
+    private IModel<Date> om = new Model<>();
+    private Date minOm = null;
+    private Date maxOm = null;
 
     public HeatmeterEdit() {
         init(null);
@@ -81,7 +82,9 @@ public class HeatmeterEdit extends FormTemplatePage{
 
         if (id != null){
             heatmeter = heatmeterBean.getHeatmeter(id);
-            operatingMonthModel.setObject(heatmeter.getOm());
+            om.setObject(heatmeter.getOm());
+            minOm = heatmeterBean.getMinOm(heatmeter.getId());
+            maxOm = heatmeter.getOm();
         }
         else{
             heatmeter = new Heatmeter();
@@ -109,49 +112,50 @@ public class HeatmeterEdit extends FormTemplatePage{
         //Operating month
         WebMarkupContainer omContainer = new WebMarkupContainer("om_container");
         omContainer.setOutputMarkupId(true);
+        omContainer.setVisible(om.getObject() != null);
         container.add(omContainer);
 
-        omContainer.add(new Label("current_operation_month", operatingMonthModel));
+        omContainer.add(new Label("current_operation_month", Model.of(om)));
 
         omContainer.add(new AjaxLink("previous_month") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                operatingMonthModel.setObject(addMonth(operatingMonthModel.getObject(), -1));
+                om.setObject(addMonth(om.getObject(), -1));
 
                 target.add(container);
             }
 
             @Override
             public boolean isEnabled() {
-                return false;  //todo
+                return om.getObject().after(minOm);
             }
         });
 
         omContainer.add(new AjaxLink("next_month") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                operatingMonthModel.setObject(addMonth(operatingMonthModel.getObject(), 1));
+                om.setObject(addMonth(om.getObject(), 1));
 
                 target.add(container);
             }
 
             @Override
             public boolean isEnabled() {
-                return false; //todo
+                return om.getObject().before(maxOm);
             }
         });
 
         //Periods
-        container.add(new HeatmeterPeriodPanel("periods", model, operatingMonthModel));
+        container.add(new HeatmeterPeriodPanel("periods", model, om).setVisible(om.getObject() != null));
 
         //Connection
-        container.add(new HeatmeterConnectionPanel("connections", model, operatingMonthModel));
+        container.add(new HeatmeterConnectionPanel("connections", model, om));
 
         //Payloads
-        container.add(new HeatmeterPayloadPanel("payloads", model, operatingMonthModel));
+        container.add(new HeatmeterPayloadPanel("payloads", model, om).setVisible(om.getObject() != null));
 
         //Consumption
-        container.add(new HeatmeterConsumptionPanel("consumption", model, operatingMonthModel));
+        container.add(new HeatmeterConsumptionPanel("consumption", model, om).setVisible(om.getObject() != null));
 
         //Save
         form.add(new Button("save"){

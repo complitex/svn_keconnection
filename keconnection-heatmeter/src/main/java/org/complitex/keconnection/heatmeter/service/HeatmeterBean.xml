@@ -183,4 +183,12 @@
             LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
             WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId} AND (om.`begin_om` BETWEEN p.`begin_om` AND p.`end_om`)
     </select>
+
+    <select id="selectHeatmeterMinOm" parameterType="long" resultType="date">
+        select min(om.`begin_om`) from `heatmeter` h
+            left join `heatmeter_period` p on (p.`heatmeter_id` = h.`id` and p.`type` = 2)
+            left join `heatmeter_connection` hc on hc.`id` = p.`attribute_id`
+            left join `building_code` bc on bc.`id` = hc.`building_code_id`
+            left join `operating_month` om on om.`organization_id` = bc.`organization_id`
+    </select>
 </mapper>
