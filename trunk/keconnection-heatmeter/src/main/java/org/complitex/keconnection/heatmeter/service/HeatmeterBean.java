@@ -11,6 +11,7 @@ import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizatio
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.Date;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
@@ -121,5 +122,9 @@ public class HeatmeterBean extends AbstractBean {
         int result = sqlSession().selectOne("isOnlyHeatmeterForBuildingCode",
                 of("buildingCodeId", buildingCodeId, "heatmeterId", heatmeterId));
         return result == 0;
+    }
+
+    public Date getMinOm(Long heatmeterId){
+        return sqlSession().selectOne("selectHeatmeterMinOm", heatmeterId);
     }
 }
