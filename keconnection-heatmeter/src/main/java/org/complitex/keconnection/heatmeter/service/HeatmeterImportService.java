@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod.DEFAULT_BEGIN_OM;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING_AND_WATER;

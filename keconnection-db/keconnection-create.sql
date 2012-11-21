@@ -445,7 +445,6 @@ CREATE TABLE `heatmeter_input`(
 DROP TABLE IF EXISTS `heatmeter_consumption`;
 CREATE TABLE `heatmeter_consumption`(
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `heatmeter_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на теплосчетчик',
   `heatmeter_input_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на расход',
   `om` DATE NOT NULL COMMENT  'Операционный месяц',
   `consumption1` DECIMAL(15, 7) COMMENT 'Расхода для тарифной группы 1',
@@ -455,12 +454,11 @@ CREATE TABLE `heatmeter_consumption`(
   `end_date` DATETIME NOT NULL COMMENT 'Дата окончания',
   `status` INT COMMENT 'Статус',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `payload_unique_id` (`heatmeter_id`, `begin_date`, `end_date`, `om`),
-  KEY `key_heatmeter_id` (`heatmeter_id`),
+  UNIQUE KEY `payload_unique_id` (`begin_date`, `end_date`, `om`),
   KEY `key_heatmeter_input_id` (`heatmeter_input_id`),
   KEY `key_om` (`om`),
-  CONSTRAINT `fk_heatmeter_consumption__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`),
-  CONSTRAINT `fk_heatmeter_consumption__heatmeter_input` FOREIGN KEY (`heatmeter_input_id`) REFERENCES `heatmeter_input` (`id`)
+  CONSTRAINT `fk_heatmeter_consumption__heatmeter_input` FOREIGN KEY (`heatmeter_input_id`)
+    REFERENCES `heatmeter_input` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Результаты расчета';
 
 -- ------------------------------

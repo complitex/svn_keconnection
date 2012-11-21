@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.entity;
 
+import java.util.Date;
+
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.CONNECTION;
 
 /**
@@ -15,6 +17,10 @@ public class HeatmeterConnection extends HeatmeterAttribute {
     private String organizationCode;
 
     public HeatmeterConnection() {
+    }
+
+    public HeatmeterConnection(Long heatmeterId, Date beginOm){
+        setPeriod(new HeatmeterPeriod(heatmeterId, CONNECTION, beginOm));
     }
 
     public HeatmeterConnection(Long heatmeterId, Long buildingCodeId) {

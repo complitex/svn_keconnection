@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.heatmeter.service;
 
 import com.google.common.base.Predicate;
@@ -9,7 +5,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterInput;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
@@ -32,7 +27,7 @@ import static org.complitex.dictionary.util.DateUtil.getMin;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterInputBean extends AbstractBean {
+public class HeatmeterInputBean extends HeatmeterAttributeBean<HeatmeterInput> {
 
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
@@ -58,7 +53,7 @@ public class HeatmeterInputBean extends AbstractBean {
         }
     }
 
-    public List<HeatmeterInput> getList(long heatmeterId, Date om) {
+    public List<HeatmeterInput> getList(Long heatmeterId, Date om) {
         List<HeatmeterInput> inputs = sqlSession().selectList("selectHeatmeterInputsByOm",
                 of("heatmeterId", heatmeterId, "om", om));
 
@@ -68,6 +63,11 @@ public class HeatmeterInputBean extends AbstractBean {
         }
 
         return inputs;
+    }
+
+    @Override
+    public void delete(Long id) {
+        sqlSession().delete("deleteHeatmeterInput", id);
     }
 
     public void calculateConsumptionForNewInput(List<HeatmeterPayload> payloads, HeatmeterInput newInput) {

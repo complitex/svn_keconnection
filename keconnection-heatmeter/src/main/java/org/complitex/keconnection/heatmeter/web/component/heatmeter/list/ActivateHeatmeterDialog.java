@@ -125,7 +125,7 @@ public abstract class ActivateHeatmeterDialog extends Panel {
 
                         //save heatmeter info
                         copyHeatmeterInfo(model.getObject());
-                        heatmeterBean.saveHeatmeterInfo(heatmeter);
+                        heatmeterBean.save(heatmeter);
 
                         onActivate(heatmeter, target);
 

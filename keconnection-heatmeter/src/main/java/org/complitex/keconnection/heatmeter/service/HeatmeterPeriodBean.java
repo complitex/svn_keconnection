@@ -1,9 +1,9 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.util.IdListUtil;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 
 import javax.ejb.Stateless;
@@ -41,11 +41,19 @@ public class HeatmeterPeriodBean extends AbstractBean {
         return sqlSession().selectList("selectHeatmeterPeriodsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 
-    public List<HeatmeterPeriod> getList(FilterWrapper<HeatmeterPeriod> filterWrapper) {
-        return null;
-    }
+    public void save(Long heatmeterId, Date om, List<HeatmeterPeriod> list){
+        if (heatmeterId != null) {
+            List<HeatmeterPeriod> db = getList(heatmeterId, om);
 
-    public Integer getCount(FilterWrapper<HeatmeterPeriod> filterWrapper) {
-        return null;
+            for (HeatmeterPeriod p : IdListUtil.getDiff(db, list)) {
+                delete(p.getId());
+            }
+        }
+
+        for (HeatmeterPeriod p : list) {
+            p.setHeatmeterId(heatmeterId);
+
+            save(p);
+        }
     }
 }

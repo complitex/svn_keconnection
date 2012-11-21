@@ -83,6 +83,7 @@
     </select>
     
     <delete id="deleteHeatmeterPayload" parameterType="long">
-        delete from `heatmeter_payload` where `id` = #{id}
+        delete hp, p from `heatmeter_payload` as hp join `heatmeter_period` as p on p.`attribute_id` = hp.`id` and p.`type` = 3
+          where hp.`id` = #{id}
     </delete>
 </mapper>

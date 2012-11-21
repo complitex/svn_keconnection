@@ -65,6 +65,7 @@
     </select>
 
     <delete id="deleteHeatmeterConnection" parameterType="long">
-        delete from `heatmeter_connection` where `id` = #{id}
+        delete c, p from `heatmeter_connection` as c join `heatmeter_period` as p on p.`attribute_id` = c.`id` and p.`type` = 2
+          where c.`id` = #{id}
     </delete>
 </mapper>
