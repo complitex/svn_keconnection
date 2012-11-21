@@ -25,7 +25,6 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
-import org.complitex.keconnection.heatmeter.web.component.HeatmeterConsumptionPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPeriodPanel;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
@@ -64,7 +63,6 @@ public class HeatmeterEdit extends FormTemplatePage{
 
     private IModel<Date> om = new Model<>();
     private Date minOm = null;
-    private Date maxOm = null;
 
     public HeatmeterEdit() {
         init(null);
@@ -84,7 +82,6 @@ public class HeatmeterEdit extends FormTemplatePage{
             heatmeter = heatmeterBean.getHeatmeter(id);
             om.setObject(heatmeter.getOm());
             minOm = heatmeterBean.getMinOm(heatmeter.getId());
-            maxOm = heatmeter.getOm();
         }
         else{
             heatmeter = new Heatmeter();
@@ -110,12 +107,16 @@ public class HeatmeterEdit extends FormTemplatePage{
         form.add(container);
 
         //Operating month
-        WebMarkupContainer omContainer = new WebMarkupContainer("om_container");
+        final WebMarkupContainer omContainer = new WebMarkupContainer("om_container"){
+            @Override
+            public boolean isVisible() {
+                return om.getObject() != null;
+            }
+        };
         omContainer.setOutputMarkupId(true);
-        omContainer.setVisible(om.getObject() != null);
         container.add(omContainer);
 
-        omContainer.add(new Label("current_operation_month", Model.of(om)));
+        omContainer.add(new Label("current_operation_month", om));
 
         omContainer.add(new AjaxLink("previous_month") {
             @Override
@@ -127,7 +128,7 @@ public class HeatmeterEdit extends FormTemplatePage{
 
             @Override
             public boolean isEnabled() {
-                return om.getObject().after(minOm);
+                return minOm != null && om.getObject().after(minOm);
             }
         });
 
@@ -141,21 +142,37 @@ public class HeatmeterEdit extends FormTemplatePage{
 
             @Override
             public boolean isEnabled() {
-                return om.getObject().before(maxOm);
+                return om.getObject().before(model.getObject().getOm());
             }
         });
 
         //Periods
-        container.add(new HeatmeterPeriodPanel("periods", model, om).setVisible(om.getObject() != null));
+        container.add(new HeatmeterPeriodPanel("periods", model, om){
+            @Override
+            public boolean isVisible() {
+                return om.getObject() != null;
+            }
+        });
 
         //Connection
-        container.add(new HeatmeterConnectionPanel("connections", model, om));
+        container.add(new HeatmeterConnectionPanel("connections", model, om){
+            @Override
+            protected void onOmUpdated(AjaxRequestTarget target) {
+                target.add(container);
+                target.add(omContainer);
+            }
+        });
 
         //Payloads
-        container.add(new HeatmeterPayloadPanel("payloads", model, om).setVisible(om.getObject() != null));
+        container.add(new HeatmeterPayloadPanel("payloads", model, om){
+            @Override
+            public boolean isVisible() {
+                return om.getObject() != null;
+            }
+        });
 
         //Consumption
-        container.add(new HeatmeterConsumptionPanel("consumption", model, om).setVisible(om.getObject() != null));
+//        container.add(new HeatmeterConsumptionPanel("consumption", model, om).setVisible(om.getObject() != null));
 
         //Save
         form.add(new Button("save"){

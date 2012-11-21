@@ -58,7 +58,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                 item.visitChildren(new IVisitor<Component, Object>() {
                     @Override
                     public void component(Component object, IVisit<Object> visit) {
-                        object.setEnabled(isCurrentOperationMonth());
+                        object.setEnabled(isActiveOm());
                         visit.dontGoDeeper();
                     }
                 });
@@ -76,7 +76,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
         add(new AjaxSubmitLink("add") {
             @Override
             public boolean isVisible() {
-                return isCurrentOperationMonth();
+                return isActiveOm();
             }
 
             @Override
@@ -94,7 +94,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
         add(new AjaxSubmitLink("remove") {
             @Override
             public boolean isVisible() {
-                return isCurrentOperationMonth() && !periods.getModelObject().isEmpty();
+                return isActiveOm() && !periods.getModelObject().isEmpty();
             }
 
             @Override

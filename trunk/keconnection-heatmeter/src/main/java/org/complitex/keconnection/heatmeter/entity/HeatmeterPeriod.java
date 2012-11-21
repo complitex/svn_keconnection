@@ -35,6 +35,12 @@ public class HeatmeterPeriod implements ILongId{
         this.type = type;
     }
 
+    public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type, Date beginOm) {
+        this.heatmeterId = heatmeterId;
+        this.type = type;
+        this.beginOm = beginOm;
+    }
+
     public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type, HeatmeterPeriodSubType subType) {
         this.heatmeterId = heatmeterId;
         this.type = type;

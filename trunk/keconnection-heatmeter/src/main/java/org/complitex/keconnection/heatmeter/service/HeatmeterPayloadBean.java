@@ -3,7 +3,6 @@ package org.complitex.keconnection.heatmeter.service;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.dictionary.service.AbstractListBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
 import javax.ejb.EJB;
@@ -19,8 +18,7 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
-    
+public class HeatmeterPayloadBean extends HeatmeterAttributeBean<HeatmeterPayload> {
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
 
@@ -59,7 +57,7 @@ public class HeatmeterPayloadBean extends AbstractListBean<HeatmeterPayload> {
         return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
     }
 
-    public List<HeatmeterPayload> getList(long heatmeterId, Date om) {
+    public List<HeatmeterPayload> getList(Long heatmeterId, Date om) {
         return sqlSession().selectList("selectHeatmeterPayloadsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 }

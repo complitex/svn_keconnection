@@ -23,14 +23,12 @@ import org.complitex.keconnection.address.strategy.building.KeConnectionBuilding
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
+import org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -46,8 +44,11 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
 
-    public HeatmeterConnectionPanel(String id, final IModel<Heatmeter> model, final IModel<Date> operatingMonthModel) {
-        super(id, model, operatingMonthModel);
+    @EJB
+    private HeatmeterConnectionBean connectionBean;
+
+    public HeatmeterConnectionPanel(String id, final IModel<Heatmeter> model, final IModel<Date> om) {
+        super(id, model, om);
 
         setOutputMarkupId(true);
 
@@ -55,15 +56,13 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 new LoadableDetachableModel<List<HeatmeterConnection>>() {
                     @Override
                     protected List<HeatmeterConnection> load() {
-                        List<HeatmeterConnection> list = new ArrayList<>();
+                        Heatmeter heatmeter = model.getObject();
 
-//                        for (HeatmeterConnection c : model.getObject().getConnections()){
-//                            if (isSameMonth(c.getOm(), operatingMonthModel.getObject())){
-//                                list.add(c);
-//                            }
-//                        }
-
-                        return list;
+                        if (isActiveOm()){
+                            return heatmeter.getConnections();
+                        }else {
+                            return connectionBean.getList(heatmeter.getId(), om.getObject());
+                        }
                     }
                 }) {
             @Override
@@ -71,8 +70,8 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterConnection connection = item.getModelObject();
 
                 //date
-                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection, "beginDate")));
-                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection, "endDate")));
+                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection.getPeriod(), "beginDate")));
+                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection.getPeriod(), "endDate")));
 
                 //organization
                 final Label organization = new Label("organization", new LoadableDetachableModel<String>() {
@@ -160,6 +159,12 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                             connection.setBuildingCodeId(null);
                             connection.setBuildingId(null);
                             connection.setCode(null);
+                        }else if (om.getObject() == null){
+                            //update om
+                            Date activeOm = organizationStrategy.getOperatingMonthDate(organizationId);
+
+                            om.setObject(activeOm);
+                            model.getObject().setOm(activeOm);
                         }
                     }
 
@@ -175,11 +180,19 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                     }
                 });
                 organizationCode.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                    private boolean omUpdated = om.getObject() == null;
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         target.add(organization);
                         target.add(address);
                         target.add(code);
+
+                        //update om
+                        if (omUpdated && om.getObject() != null){
+                            onOmUpdated(target);
+                            omUpdated = false;
+                        }
                     }
                 });
                 item.add(organizationCode);
@@ -201,7 +214,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 item.visitChildren(new IVisitor<Component, Object>() {
                     @Override
                     public void component(Component object, IVisit<Object> visit) {
-                        object.setEnabled(isCurrentOperationMonth());
+                        object.setEnabled(isActiveOm());
                         visit.dontGoDeeper();
                     }
                 });
@@ -219,12 +232,12 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
         add(new AjaxSubmitLink("add") {
             @Override
             public boolean isVisible() {
-                return isCurrentOperationMonth();
+                return isActiveOm();
             }
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-//                model.getObject().getConnections().add(new HeatmeterConnection(operatingMonthModel.getObject()));
+                model.getObject().getConnections().add(new HeatmeterConnection(model.getObject().getId(), om.getObject()));
 
                 target.add(HeatmeterConnectionPanel.this);
             }
@@ -233,5 +246,8 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
             protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         });
+    }
+
+    protected void onOmUpdated(AjaxRequestTarget target){
     }
 }

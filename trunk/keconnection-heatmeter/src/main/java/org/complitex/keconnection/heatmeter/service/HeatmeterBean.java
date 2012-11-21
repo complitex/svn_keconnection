@@ -34,29 +34,25 @@ public class HeatmeterBean extends AbstractBean {
     
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
+
     @EJB
     private HeatmeterConnectionBean heatmeterConnectionBean;
+
     @EJB
     private HeatmeterPayloadBean heatmeterPayloadBean;
+
     @EJB
     private HeatmeterInputBean heatmeterInputBean;
+
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
+
+
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
     @Transactional
     public void save(Heatmeter heatmeter) {
-        saveHeatmeterInfo(heatmeter);
-
-//        save(heatmeterPeriodBean, heatmeter.getId(), heatmeter.getPeriods());
-//        save(heatmeterConnectionBean, heatmeter.getId(), heatmeter.getConnections());
-//        save(heatmeterPayloadBean, heatmeter.getId(), heatmeter.getPayloads());
-//        save(heatmeterConsumptionBean, heatmeter.getId(), heatmeter.getConsumptions());
-    }
-
-    @Transactional
-    public void saveHeatmeterInfo(Heatmeter heatmeter) {
         if (heatmeter.getId() == null) {
             sqlSession().insert("insertHeatmeter", heatmeter);
         } else {
@@ -64,21 +60,18 @@ public class HeatmeterBean extends AbstractBean {
         }
     }
 
-//    private <T extends IHeatmeterEntity> void save(IHeatmeterEntityBean<T> bean, Long heatmeterId, List<T> list){
-//        if (heatmeterId != null) {
-//            List<T> db = bean.getList(heatmeterId);
-//
-//            for (T object : IdListUtil.getDiff(db, list)) {
-//                bean.delete(object.getId());
-//            }
-//        }
-//
-//        for (T object : list) {
-//            object.setHeatmeterId(heatmeterId);
-//
-//            bean.save(object);
-//        }
-//    }
+    @Transactional
+    public void save(Heatmeter heatmeter, Date om) {
+        save(heatmeter);
+
+        Long heatmeterId = heatmeter.getId();
+
+        heatmeterPeriodBean.save(heatmeterId, om, heatmeter.getPeriods());
+        heatmeterConnectionBean.save(heatmeterId, om, heatmeter.getConnections());
+        heatmeterPayloadBean.save(heatmeterId, om, heatmeter.getPayloads());
+        heatmeterInputBean.save(heatmeterId, om, heatmeter.getInputs());
+    }
+
     public Heatmeter getHeatmeter(Long id) {
         return sqlSession().selectOne("selectHeatmeter", id);
     }

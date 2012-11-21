@@ -34,4 +34,9 @@
         WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{om} BETWEEN p.`begin_om` AND p.`end_om`)
         ORDER BY p.`begin_date`
     </select>
+
+    <delete id="deleteHeatmeterInput" parameterType="long">
+        delete i, p from `heatmeter_input` as i join `heatmeter_period` as p on p.`attribute_id` = i.`id` and p.`type` = 4
+          where i.`id` = #{id}
+    </delete>
 </mapper>

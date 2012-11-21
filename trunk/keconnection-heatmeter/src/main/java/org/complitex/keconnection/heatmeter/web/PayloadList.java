@@ -5,7 +5,6 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.web.component.BookmarkablePageLinkPanel;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
-import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
@@ -24,7 +23,7 @@ import static org.complitex.dictionary.util.PageUtil.newPageParameters;
 public class PayloadList  extends ListTemplatePage<HeatmeterPayload> {
 
     public PayloadList(PageParameters pageParameters) {
-        super(pageParameters, HeatmeterPayloadBean.class, "ls", "tablegramRecordId", "beginDate", "endDate", "operatingMonth",
+        super(pageParameters, null, "ls", "tablegramRecordId", "beginDate", "endDate", "operatingMonth",
                 "payload1", "payload2", "payload3");
     }
 
