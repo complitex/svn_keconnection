@@ -5,6 +5,7 @@ import org.complitex.dictionary.entity.ILongId;
 import java.util.Date;
 
 import static org.complitex.dictionary.util.DateUtil.newDate;
+import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.range;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -45,6 +46,14 @@ public class HeatmeterPeriod implements ILongId{
         this.heatmeterId = heatmeterId;
         this.type = type;
         this.subType = subType;
+    }
+
+    public boolean isConnected(HeatmeterPeriod p){
+        return range(this).isConnected(range(p));
+    }
+
+    public boolean isEncloses(HeatmeterPeriod p){
+        return range(this).encloses(range(p));
     }
 
     public Long getId() {

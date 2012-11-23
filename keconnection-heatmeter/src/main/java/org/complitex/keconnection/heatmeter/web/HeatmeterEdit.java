@@ -18,9 +18,9 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterValidate;
+import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
+import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
+import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.Date;
+import java.util.List;
 
 import static org.complitex.dictionary.util.DateUtil.addMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.VALID;
@@ -60,6 +61,9 @@ public class HeatmeterEdit extends FormTemplatePage{
 
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private KeConnectionBuildingStrategy buildingStrategy;
 
     private IModel<Date> om = new Model<>();
     private Date minOm = null;
@@ -147,29 +151,13 @@ public class HeatmeterEdit extends FormTemplatePage{
         });
 
         //Periods
-        container.add(new HeatmeterPeriodPanel("periods", model, om){
-            @Override
-            public boolean isVisible() {
-                return om.getObject() != null;
-            }
-        });
+        container.add(new HeatmeterPeriodPanel("periods", model, om));
 
         //Connection
-        container.add(new HeatmeterConnectionPanel("connections", model, om){
-            @Override
-            protected void onOmUpdated(AjaxRequestTarget target) {
-                target.add(container);
-                target.add(omContainer);
-            }
-        });
+        container.add(new HeatmeterConnectionPanel("connections", model, om));
 
         //Payloads
-        container.add(new HeatmeterPayloadPanel("payloads", model, om){
-            @Override
-            public boolean isVisible() {
-                return om.getObject() != null;
-            }
-        });
+        container.add(new HeatmeterPayloadPanel("payloads", model, om));
 
         //Consumption
 //        container.add(new HeatmeterConsumptionPanel("consumption", model, om).setVisible(om.getObject() != null));
@@ -182,26 +170,31 @@ public class HeatmeterEdit extends FormTemplatePage{
                     Heatmeter heatmeter = model.getObject();
 
                     //validate
-                    if (!validateHeatmeter(heatmeter)){
+                    HeatmeterValidate validate = heatmeterService.validate(heatmeter);
+
+                    if (!VALID.equals(validate.getStatus())){
+                        error(getStringFormat(validate.getStatus().name().toLowerCase(), validate));
+
                         return;
                     }
 
-                    //save
-                    heatmeterBean.save(heatmeter);
-
+                    //update om for new heatmeter
                     if (heatmeter.getId() == null){
-                        heatmeter.setType(HeatmeterType.HEATING);
+                        HeatmeterConnection connection = heatmeter.getConnections().get(0);
+                        BuildingCode buildingCode = buildingStrategy.getBuildingCodeById(connection.getBuildingCodeId());
 
-                        //create period
-//                        HeatmeterPeriod period = new HeatmeterPeriod();
-//                        period.setHeatmeterId(heatmeter.getId());
-//                        period.setType(OPERATING);
-//                        period.setBeginDate(HeatmeterImportService.DEFAULT_BEGIN_DATE);
-//                        period.setOm(HeatmeterImportService.DEFAULT_BEGIN_DATE);
+                        Date om = organizationStrategy.getOperatingMonthDate(buildingCode.getOrganizationId());
 
-//                        heatmeterPeriodBean.save(period);
-//                        heatmeterPeriodBean.updateParent(period.getId(), period.getId());
+                        heatmeter.setOm(om);
+
+                        List<HeatmeterPeriod> list = heatmeter.getAllTypePeriods();
+                        for (HeatmeterPeriod p : list){
+                            p.setBeginOm(om);
+                        }
                     }
+
+                    //save
+                    heatmeterBean.save(heatmeter, heatmeter.getOm());
 
                     getSession().info(getStringFormat("info_saved", heatmeter.getLs()));
                 } catch (Exception e) {
@@ -232,17 +225,5 @@ public class HeatmeterEdit extends FormTemplatePage{
         };
         correctionsLink.setVisible(heatmeterCorrectionDialog.isVisible());
         form.add(correctionsLink);
-    }
-
-    private boolean validateHeatmeter(Heatmeter heatmeter){
-        HeatmeterValidate validate = heatmeterService.validate(heatmeter);
-
-        if (!VALID.equals(validate.getStatus())){
-            error(getStringFormat(validate.getStatus().name().toLowerCase(), validate));
-
-            return false;
-        }
-
-        return true;
     }
 }

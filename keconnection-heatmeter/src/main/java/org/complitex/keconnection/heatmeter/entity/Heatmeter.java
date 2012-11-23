@@ -1,5 +1,8 @@
 package org.complitex.keconnection.heatmeter.entity;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.ILongId;
 
 import java.util.ArrayList;
@@ -31,6 +34,35 @@ public class Heatmeter implements ILongId {
 
     private HeatmeterStatus status;
     private HeatmeterBindingStatus bindingStatus;
+
+    public List<HeatmeterPeriod> getAllTypePeriods(){
+        ImmutableList.Builder<HeatmeterPeriod> builder = ImmutableList.builder();
+
+        builder.addAll(Lists.transform(connections, new Function<HeatmeterConnection, HeatmeterPeriod>() {
+            @Override
+            public HeatmeterPeriod apply(HeatmeterConnection input) {
+                return input.getPeriod();
+            }
+        }));
+
+        builder.addAll(periods);
+
+        builder.addAll(Lists.transform(payloads, new Function<HeatmeterPayload, HeatmeterPeriod>() {
+            @Override
+            public HeatmeterPeriod apply(HeatmeterPayload input) {
+                return input.getPeriod();
+            }
+        }));
+
+        builder.addAll(Lists.transform(inputs, new Function<HeatmeterInput, HeatmeterPeriod>() {
+            @Override
+            public HeatmeterPeriod apply(HeatmeterInput input) {
+                return input.getPeriod();
+            }
+        }));
+
+        return builder.build();
+    }
 
     public boolean isConnectedToSingleBuildingCode() {
         return getBuildingCodeIds().size() == 1;
