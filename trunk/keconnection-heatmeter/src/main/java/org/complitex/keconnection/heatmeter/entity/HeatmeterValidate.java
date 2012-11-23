@@ -1,7 +1,5 @@
 package org.complitex.keconnection.heatmeter.entity;
 
-import org.complitex.dictionary.entity.IDateRange;
-
 import java.util.Date;
 
 import static org.complitex.dictionary.util.DateUtil.format;
@@ -13,8 +11,8 @@ import static org.complitex.dictionary.util.DateUtil.format;
 public class HeatmeterValidate {
     private HeatmeterValidateStatus status;
 
-    private IDateRange dr1;
-    private IDateRange dr2;
+    private HeatmeterPeriod p1;
+    private HeatmeterPeriod p2;
 
     private Date date;
 
@@ -27,27 +25,27 @@ public class HeatmeterValidate {
         this.date = date;
     }
 
-    public HeatmeterValidate(HeatmeterValidateStatus status, IDateRange dr1) {
+    public HeatmeterValidate(HeatmeterValidateStatus status, HeatmeterPeriod p1) {
         this.status = status;
-        this.dr1 = dr1;
+        this.p1 = p1;
     }
 
-    public HeatmeterValidate(HeatmeterValidateStatus status, IDateRange dr1, IDateRange dr2) {
+    public HeatmeterValidate(HeatmeterValidateStatus status, HeatmeterPeriod p1, HeatmeterPeriod p2) {
         this.status = status;
-        this.dr1 = dr1;
-        this.dr2 = dr2;
+        this.p1 = p1;
+        this.p2 = p2;
     }
 
     @Override
     public String toString() {
         String s = "";
 
-        if (dr1 != null && dr1.getBeginDate() != null){
-            s =  format(dr1.getBeginDate(), dr1.getEndDate());
+        if (p1 != null && p1.getBeginDate() != null){
+            s =  format(p1.getBeginDate(), p1.getEndDate());
         }
 
-        if(dr2 != null && dr2.getBeginDate() != null){
-            s += ", " + format(dr2.getBeginDate(), dr2.getEndDate());
+        if(p2 != null && p2.getBeginDate() != null){
+            s += ", " + format(p2.getBeginDate(), p2.getEndDate());
         }
 
         if (date != null){
@@ -61,11 +59,11 @@ public class HeatmeterValidate {
         return status;
     }
 
-    public IDateRange getDr1() {
-        return dr1;
+    public HeatmeterPeriod getP1() {
+        return p1;
     }
 
-    public IDateRange getDr2() {
-        return dr2;
+    public HeatmeterPeriod getP2() {
+        return p2;
     }
 }

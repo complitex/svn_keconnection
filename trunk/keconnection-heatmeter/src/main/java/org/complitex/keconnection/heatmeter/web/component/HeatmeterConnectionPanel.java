@@ -159,12 +159,6 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                             connection.setBuildingCodeId(null);
                             connection.setBuildingId(null);
                             connection.setCode(null);
-                        }else if (om.getObject() == null){
-                            //update om
-                            Date activeOm = organizationStrategy.getOperatingMonthDate(organizationId);
-
-                            om.setObject(activeOm);
-                            model.getObject().setOm(activeOm);
                         }
                     }
 
@@ -180,19 +174,11 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                     }
                 });
                 organizationCode.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-                    private boolean omUpdated = om.getObject() == null;
-
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         target.add(organization);
                         target.add(address);
                         target.add(code);
-
-                        //update om
-                        if (omUpdated && om.getObject() != null){
-                            onOmUpdated(target);
-                            omUpdated = false;
-                        }
                     }
                 });
                 item.add(organizationCode);
@@ -246,8 +232,5 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
             protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         });
-    }
-
-    protected void onOmUpdated(AjaxRequestTarget target){
     }
 }
