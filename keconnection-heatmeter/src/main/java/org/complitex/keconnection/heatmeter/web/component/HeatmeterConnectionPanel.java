@@ -58,11 +58,9 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                     protected List<HeatmeterConnection> load() {
                         Heatmeter heatmeter = model.getObject();
 
-                        if (isActiveOm()){
-                            return heatmeter.getConnections();
-                        }else {
-                            return connectionBean.getList(heatmeter.getId(), om.getObject());
-                        }
+                        return isActiveOm()
+                                ? heatmeter.getConnections()
+                                : connectionBean.getList(heatmeter.getId(), om.getObject());
                     }
                 }) {
             @Override

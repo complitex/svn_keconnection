@@ -3,8 +3,8 @@ package org.complitex.keconnection.heatmeter.service;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.dictionary.util.IdListUtil;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
 import javax.ejb.Stateless;
 import java.util.Date;
@@ -37,23 +37,7 @@ public class HeatmeterPeriodBean extends AbstractBean {
         sqlSession().delete("deleteHeatmeterPeriod", id);
     }
 
-    public List<HeatmeterPeriod> getList(long heatmeterId, Date om) {
-        return sqlSession().selectList("selectHeatmeterPeriodsByOm", of("heatmeterId", heatmeterId, "om", om));
-    }
-
-    public void save(Long heatmeterId, Date om, List<HeatmeterPeriod> list){
-        if (heatmeterId != null) {
-            List<HeatmeterPeriod> db = getList(heatmeterId, om);
-
-            for (HeatmeterPeriod p : IdListUtil.getDiff(db, list)) {
-                delete(p.getId());
-            }
-        }
-
-        for (HeatmeterPeriod p : list) {
-            p.setHeatmeterId(heatmeterId);
-
-            save(p);
-        }
+    public List<HeatmeterPeriod> getList(long heatmeterId, Date om, HeatmeterPeriodType type) {
+        return sqlSession().selectList("selectHeatmeterPeriodsByOm", of("heatmeterId", heatmeterId, "om", om, "type", type));
     }
 }

@@ -17,8 +17,9 @@ import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
+import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 
-import java.util.ArrayList;
+import javax.ejb.EJB;
 import java.util.Date;
 import java.util.List;
 
@@ -27,23 +28,22 @@ import java.util.List;
  *         Date: 24.10.12 15:45
  */
 public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
-    public HeatmeterPeriodPanel(String id, final IModel<Heatmeter> model, final IModel<Date> operatingMonthModel) {
-        super(id, model, operatingMonthModel);
+    @EJB
+    private HeatmeterPeriodBean heatmeterPeriodBean;
+
+    public HeatmeterPeriodPanel(String id, final IModel<Heatmeter> model, final IModel<Date> om) {
+        super(id, model, om);
         setOutputMarkupId(true);
 
         final ListView<HeatmeterPeriod> periods = new ListView<HeatmeterPeriod>("list_view",
                 new LoadableDetachableModel<List<HeatmeterPeriod>>() {
                     @Override
                     protected List<HeatmeterPeriod> load() {
-                        List<HeatmeterPeriod> list = new ArrayList<>();
+                        Heatmeter heatmeter = model.getObject();
 
-//                        for (HeatmeterPeriod p : model.getObject().getPeriods()){
-//                            if (isSameMonth(operatingMonthModel.getObject(), p.getOm())){
-//                                list.add(p);
-//                            }
-//                        }
-
-                        return list;
+                        return isActiveOm()
+                                ? heatmeter.getPeriods()
+                                : heatmeterPeriodBean.getList(heatmeter.getId(), om.getObject());
                     }
                 }) {
             @Override
