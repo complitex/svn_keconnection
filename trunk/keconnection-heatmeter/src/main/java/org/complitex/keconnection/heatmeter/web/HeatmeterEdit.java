@@ -185,6 +185,11 @@ public class HeatmeterEdit extends FormTemplatePage{
 
                         Date om = organizationStrategy.getOperatingMonthDate(buildingCode.getOrganizationId());
 
+                        if (om == null){
+                            error(getStringFormat("error_om_not_found", buildingCode.getBuildingCode()));
+                            return;
+                        }
+
                         heatmeter.setOm(om);
 
                         List<HeatmeterPeriod> list = heatmeter.getAllTypePeriods();
