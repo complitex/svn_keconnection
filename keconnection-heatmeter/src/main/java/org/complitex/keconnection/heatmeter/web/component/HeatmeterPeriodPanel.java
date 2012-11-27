@@ -22,6 +22,7 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import javax.ejb.EJB;
 import java.util.Date;
 import java.util.List;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -43,7 +44,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
 
                         return isActiveOm()
                                 ? heatmeter.getPeriods()
-                                : heatmeterPeriodBean.getList(heatmeter.getId(), om.getObject());
+                                : heatmeterPeriodBean.getList(heatmeter.getId(), om.getObject(), HeatmeterPeriodType.OPERATION);
                     }
                 }) {
             @Override

@@ -15,8 +15,38 @@
             <div wicket:id="import_dialog_container">
                 <div wicket:id="import_dialog">
                     <form action="#" wicket:id="upload_form">
-                        <input type="file" wicket:id="file_upload_field"/>
-                        <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
+                        <div wicket:id="uploadFormMessages"></div>
+                        <table class="tbForm">
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginOm"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <select wicket:id="beginOm"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginDate"/><b class="blue">*</b>:
+                                </th>
+                                <td wicket:id="beginDateContainer">
+                                    <span style="white-space: nowrap;">
+                                        <input type="text" wicket:id="beginDate" style="width: 90px;"/>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="file_upload_field"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <input type="file" wicket:id="file_upload_field"/>
+                                </td> 
+                            </tr>
+                        </table>
+                        <div>
+                            <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -157,7 +187,7 @@
                     </div>
                 </div>
             </form>
-            
+
             <div wicket:id="heatmeterBindPanel"></div>
             <div wicket:id="activateHeatmeterDialog"></div>
             <div wicket:id="deactivateHeatmeterDialog"></div>

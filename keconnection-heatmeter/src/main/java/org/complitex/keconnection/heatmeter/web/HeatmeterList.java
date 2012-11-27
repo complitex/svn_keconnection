@@ -1,5 +1,7 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import com.google.common.io.ByteStreams;
 import org.apache.wicket.Component;
 import org.apache.wicket.ThreadContext;
@@ -64,8 +66,10 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.complitex.dictionary.util.PageUtil.newSorting;
-import static org.complitex.dictionary.util.PageUtil.newTextFields;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import static org.complitex.dictionary.util.DateUtil.*;
+import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -180,13 +184,13 @@ public class HeatmeterList extends TemplatePage {
                         return String.valueOf(object);
                     }
                 }).setNullValid(true));
-        
+
         //TODO: enable filters
         filterForm.add(new TextField<String>("organizationFilter", new Model<String>()));
         filterForm.add(new TextField<String>("addressFilter", new Model<String>()));
         filterForm.add(new TextField<String>("buildingCodeFilter", new Model<String>()));
-        
-        IModel<String> tg1FilterModel = new Model<String>(){
+
+        IModel<String> tg1FilterModel = new Model<String>() {
 
             @Override
             public String getObject() {
@@ -200,8 +204,8 @@ public class HeatmeterList extends TemplatePage {
             }
         };
         filterForm.add(new TextField<String>("tg1Filter", tg1FilterModel));
-        
-        IModel<String> tg2FilterModel = new Model<String>(){
+
+        IModel<String> tg2FilterModel = new Model<String>() {
 
             @Override
             public String getObject() {
@@ -215,8 +219,8 @@ public class HeatmeterList extends TemplatePage {
             }
         };
         filterForm.add(new TextField<String>("tg2Filter", tg2FilterModel));
-        
-        IModel<String> tg3FilterModel = new Model<String>(){
+
+        IModel<String> tg3FilterModel = new Model<String>() {
 
             @Override
             public String getObject() {
@@ -230,8 +234,8 @@ public class HeatmeterList extends TemplatePage {
             }
         };
         filterForm.add(new TextField<String>("tg3Filter", tg3FilterModel));
-        
-        IModel<String> inputFilterModel = new Model<String>(){
+
+        IModel<String> inputFilterModel = new Model<String>() {
 
             @Override
             public String getObject() {
@@ -245,8 +249,8 @@ public class HeatmeterList extends TemplatePage {
             }
         };
         filterForm.add(new TextField<String>("inputFilter", inputFilterModel));
-        
-        IModel<String> consumption1FilterModel = new Model<String>(){
+
+        IModel<String> consumption1FilterModel = new Model<String>() {
 
             @Override
             public String getObject() {
@@ -416,14 +420,65 @@ public class HeatmeterList extends TemplatePage {
         importDialogContainer.setOutputMarkupId(true);
         add(importDialogContainer);
 
-        importDialog = new Dialog("import_dialog");
+        importDialog = new Dialog("import_dialog") {
+
+            {
+                getOptions().putLiteral("width", "auto");
+            }
+        };
         importDialog.setTitle(getString("import_dialog_title"));
-        importDialog.setWidth(420);
-        importDialog.setHeight(80);
+        importDialog.setMinHeight(0);
         importDialogContainer.add(importDialog);
 
         Form<?> uploadForm = new Form<>("upload_form");
         importDialog.add(uploadForm);
+
+        final FeedbackPanel uploadFormMessages = new FeedbackPanel("uploadFormMessages",
+                new ContainerFeedbackMessageFilter(uploadForm));
+        uploadFormMessages.setOutputMarkupId(true);
+        uploadForm.add(uploadFormMessages);
+
+        final IModel<Integer> beginOmModel = new Model<Integer>(getMonth(getCurrentDate()) + 1);
+        MonthDropDownChoice beginOm = new MonthDropDownChoice("beginOm", beginOmModel);
+        beginOm.setRequired(true);
+        uploadForm.add(beginOm);
+
+        final IModel<Date> beginDateModel = new Model<>();
+        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer") {
+
+            {
+                setOutputMarkupPlaceholderTag(true);
+            }
+
+            @Override
+            protected void onBeforeRender() {
+                removeAll();
+
+                MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
+                beginDate.setRequired(true);
+                add(beginDate);
+
+                Integer beginOm = beginOmModel.getObject();
+                if (beginOm != null) {
+                    int year = getYear(getCurrentDate());
+                    Date firstDayOfMonth = getFirstDayOfMonth(year, beginOm);
+                    beginDateModel.setObject(firstDayOfMonth);
+                    beginDate.setMinDate(firstDayOfMonth);
+                    beginDate.setMaxDate(getLastDayOfMonth(year, beginOm));
+                }
+
+                super.onBeforeRender();
+            }
+        };
+        uploadForm.add(beginDateContainer);
+
+        beginOm.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(beginDateContainer);
+            }
+        });
 
         final FileUploadField fileUploadField = new FileUploadField("file_upload_field");
         uploadForm.add(fileUploadField);
@@ -432,6 +487,31 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
+                final int currentYear = getYear(getCurrentDate());
+                final int beginOm = beginOmModel.getObject();
+                final Date beginDate = beginDateModel.getObject();
+
+                //validation
+                boolean validated = true;
+                if (beginDateContainer.isVisibilityAllowed()) {
+                    final int beginDateYear = getYear(beginDate);
+                    final int beginDateMonth = getMonth(beginDate);
+
+                    if (beginDateYear != currentYear) {
+                        validated = false;
+                        error(getString("error_wrong_year"));
+                    }
+                    if (beginDateMonth != beginOm - 1) {
+                        validated = false;
+                        error(getString("error_wrong_month"));
+                    }
+                }
+
+                if (!validated) {
+                    target.add(uploadFormMessages);
+                    return;
+                }
+
                 FileUpload fileUpload = fileUploadField.getFileUpload();
 
                 if (fileUpload == null || fileUpload.getClientFileName() == null) {
@@ -485,7 +565,8 @@ public class HeatmeterList extends TemplatePage {
                     });
                     target.add(dataContainer);
 
-                    heatmeterImportService.asyncUploadHeatmeters(fileUpload.getClientFileName(), inputStream, listener);
+                    heatmeterImportService.asyncUploadHeatmeters(fileUpload.getClientFileName(), inputStream,
+                            getFirstDayOfMonth(currentYear, beginOm), beginDate, listener);
                 } catch (IOException e) {
                     log.error("Ошибка чтения файла", e);
                 }
@@ -493,7 +574,7 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //no errors
+                target.add(uploadFormMessages);
             }
         });
 

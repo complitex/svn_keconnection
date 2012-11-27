@@ -56,3 +56,4 @@ insert into district_correction(organization_id, correction, object_id, internal
 
 -- config
 insert into config(`name`, `value`) values ('IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\keconnection_import\\kiev');
+--insert into config(`name`, `value`) values ('IMPORT_HEATMETER_DIR', 'D:\\Artem\\Projects\\org.complitex\\keconnection\\docs');

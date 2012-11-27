@@ -15,13 +15,13 @@
 
                 <div wicket:id="container">
                     <div wicket:id="messages"></div>
-                    
+
                     <div>
                         <ul>
                             <li wicket:id="error" class="feedbackPanelERROR"></li>
                         </ul>
                     </div>
-                    
+
                     <div>
                         <ul type="disc">
                             <li wicket:id="warnings" type="disc" class="feedbackPanelWARNING">
@@ -31,7 +31,24 @@
                     </div>
 
                     <form action="#" wicket:id="form">
-                        <div wicket:id="localePicker"></div>
+                        <table class="tbForm">
+                            <tr>
+                                <th>
+                                    <wicket:message key="language"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <div wicket:id="localePicker"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginOm"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <select wicket:id="beginOm"></select>
+                                </td>
+                            </tr>
+                        </table>
 
                         <h2 style="margin-top: 5px;">
                             <wicket:message key="organizationData"/>
@@ -46,6 +63,18 @@
                         <h2 style="margin-top: 15px;">
                             <wicket:message key="heatmeterData"/>
                         </h2>
+                        <table class="tbForm" wicket:id="beginDateContainer">
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginDate"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <span style="white-space: nowrap;">
+                                        <input type="text" wicket:id="beginDate" style="width: 90px;"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
                         <div wicket:id="heatmeterData"></div>
 
                         <h2 style="margin-top: 15px;">

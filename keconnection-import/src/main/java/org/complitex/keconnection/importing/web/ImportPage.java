@@ -4,6 +4,8 @@
  */
 package org.complitex.keconnection.importing.web;
 
+import org.apache.wicket.event.IEvent;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -37,6 +39,12 @@ import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.event.Broadcast;
+import org.complitex.dictionary.web.component.MonthDropDownChoice;
+
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
+import static org.complitex.dictionary.util.DateUtil.*;
 
 /**
  *
@@ -47,13 +55,10 @@ public final class ImportPage extends TemplatePage {
 
     @EJB
     private ImportService importService;
-
     @EJB
     private TablegramImportService tablegramImportService;
-
     @EJB
     private HeatmeterImportService heatmeterImportService;
-
     @EJB
     private LocaleBean localeBean;
     private final IModel<List<IImportFile>> addressDataModel;
@@ -75,7 +80,8 @@ public final class ImportPage extends TemplatePage {
         payloadDataModel = new ListModel<>();
         heatmeterDataModel = new ListModel<>();
 
-        container.add(new AjaxFeedbackPanel("messages"));
+        final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
+        container.add(messages);
 
         warningsModel = new ListModel<>(new LinkedList<String>());
         container.add(new ListView<String>("warnings", warningsModel) {
@@ -89,6 +95,14 @@ public final class ImportPage extends TemplatePage {
 
         Form<Void> form = new Form<>("form");
         container.add(form);
+
+        localeModel = new Model<>(localeBean.getSystemLocale());
+        form.add(new LocalePicker("localePicker", localeModel, false));
+
+        final IModel<Integer> beginOmModel = new Model<Integer>(getMonth(getCurrentDate()) + 1);
+        final MonthDropDownChoice beginOm = new MonthDropDownChoice("beginOm", beginOmModel);
+        beginOm.setRequired(true);
+        form.add(beginOm);
 
         final IChoiceRenderer<IImportFile> renderer = new IChoiceRenderer<IImportFile>() {
 
@@ -113,18 +127,64 @@ public final class ImportPage extends TemplatePage {
                 Arrays.asList(AddressImportFile.values()),
                 renderer));
 
-        form.add(new CheckBoxMultipleChoice<>("heatmeterData",
-                heatmeterDataModel,
-                heatmeterImportService.getHeatmeterImportFiles(),
-                renderer));
+        final List<HeatmeterImportFile> heatmeterImportFiles = heatmeterImportService.getHeatmeterImportFiles();
+        final IModel<Date> beginDateModel = new Model<>();
+        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer") {
+
+            Integer beginOmValue;
+
+            {
+                setOutputMarkupPlaceholderTag(true);
+                beginOmValue = beginOmModel.getObject();
+            }
+
+            @Override
+            public void onEvent(IEvent<?> event) {
+                if (event.getSource() == beginOm) {
+                    this.beginOmValue = (Integer) event.getPayload();
+                }
+            }
+
+            @Override
+            protected void onBeforeRender() {
+                if (beginOmValue != null) {
+                    removeAll();
+
+                    MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
+                    beginDate.setRequired(true);
+                    add(beginDate);
+
+                    int year = getYear(getCurrentDate());
+                    Date firstDayOfMonth = getFirstDayOfMonth(year, beginOmValue);
+                    beginDateModel.setObject(firstDayOfMonth);
+                    beginDate.setMinDate(firstDayOfMonth);
+                    beginDate.setMaxDate(getLastDayOfMonth(year, beginOmValue));
+                }
+
+                beginOmValue = null;
+                super.onBeforeRender();
+            }
+        };
+        beginDateContainer.setVisibilityAllowed(heatmeterImportFiles != null && !heatmeterImportFiles.isEmpty());
+        form.add(beginDateContainer);
+
+        beginOm.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (beginDateContainer.isVisibilityAllowed()) {
+                    beginOm.send(beginDateContainer, Broadcast.EXACT, beginOmModel.getObject());
+                    target.add(beginDateContainer);
+                }
+            }
+        });
+
+        form.add(new CheckBoxMultipleChoice<>("heatmeterData", heatmeterDataModel, heatmeterImportFiles, renderer));
 
         form.add(new CheckBoxMultipleChoice<>("payloadData",
                 payloadDataModel,
                 tablegramImportService.getPayloadImportFiles(),
                 renderer));
-
-        localeModel = new Model<>(localeBean.getSystemLocale());
-        form.add(new LocalePicker("localePicker", localeModel, false));
 
         //Кнопка импортировать
         Button process = new Button("process") {
@@ -132,17 +192,49 @@ public final class ImportPage extends TemplatePage {
             @Override
             public void onSubmit() {
                 if (!importService.isProcessing()) {
+                    messages.clean();
+
+                    final int currentYear = getYear(getCurrentDate());
+                    final int beginOm = beginOmModel.getObject();
+                    final Date beginDate = beginDateModel.getObject();
+
+                    //validation
+                    boolean validated = true;
+                    if (beginDateContainer.isVisibilityAllowed()) {
+                        final int beginDateYear = getYear(beginDate);
+                        final int beginDateMonth = getMonth(beginDate);
+
+                        if (beginDateYear != currentYear) {
+                            validated = false;
+                            error(getString("error_wrong_year"));
+                        }
+                        if (beginDateMonth != beginOm - 1) {
+                            validated = false;
+                            error(getString("error_wrong_month"));
+                        }
+                    }
+
+                    if (!validated) {
+                        return;
+                    }
+
                     warningsModel.getObject().clear();
 
-                    final List<IImportFile> allImportFiles = ImmutableList.<IImportFile>builder()
-                            .addAll(organizationDataModel.getObject())
-                            .addAll(addressDataModel.getObject())
-                            .addAll(heatmeterDataModel.getObject())
-                            .addAll(payloadDataModel.getObject())
-                            .build();
-                    importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId());
+                    final List<IImportFile> allImportFiles = ImmutableList.<IImportFile>builder().
+                            addAll(organizationDataModel.getObject()).
+                            addAll(addressDataModel.getObject()).
+                            addAll(heatmeterDataModel.getObject()).
+                            addAll(payloadDataModel.getObject()).
+                            build();
+                    importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId(),
+                            getFirstDayOfMonth(currentYear, beginOm), beginDate);
                     container.add(newTimer());
                 }
+            }
+
+            @Override
+            public void onError() {
+                messages.clean();
             }
 
             @Override

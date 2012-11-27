@@ -50,7 +50,7 @@ public class OrganizationImportService extends AbstractImportService {
     /**
      * ID CODE SHORT_NAME NAME HLEVEL
      */
-    public void process(IImportListener listener, long localeId)
+    public void process(IImportListener listener, long localeId, Date beginOm)
             throws ImportFileNotFoundException, ImportFileReadException, RootOrganizationNotFound {
 
         organizationImportBean.delete();
@@ -178,7 +178,7 @@ public class OrganizationImportService extends AbstractImportService {
             }
 
             //add operating month entry if necessary. Only for servicing organizations.
-            addOperatingMonth(newObject.getId(), currentDate);
+            addOperatingMonth(newObject.getId(), beginOm);
 
             listener.recordProcessed(ORGANIZATION, recordIndex);
         }
