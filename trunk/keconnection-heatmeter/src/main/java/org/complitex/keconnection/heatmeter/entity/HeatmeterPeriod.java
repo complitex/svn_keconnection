@@ -20,7 +20,7 @@ public class HeatmeterPeriod implements ILongId{
 
     private Long id;
     private Long heatmeterId;
-    private Long attributeId;
+    private Long objectId;
     private HeatmeterPeriodType type;
     private HeatmeterPeriodSubType subType;
     private Date beginDate = DEFAULT_BEGIN_DATE;
@@ -28,24 +28,8 @@ public class HeatmeterPeriod implements ILongId{
     private Date beginOm = DEFAULT_BEGIN_OM;
     private Date endOm = DEFAULT_END_OM;
 
-    public HeatmeterPeriod() {
-    }
-
-    public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type) {
-        this.heatmeterId = heatmeterId;
+    public HeatmeterPeriod(HeatmeterPeriodType type) {
         this.type = type;
-    }
-
-    public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type, Date beginOm) {
-        this.heatmeterId = heatmeterId;
-        this.type = type;
-        this.beginOm = beginOm;
-    }
-
-    public HeatmeterPeriod(Long heatmeterId, HeatmeterPeriodType type, HeatmeterPeriodSubType subType) {
-        this.heatmeterId = heatmeterId;
-        this.type = type;
-        this.subType = subType;
     }
 
     public boolean isConnected(HeatmeterPeriod p){
@@ -72,12 +56,12 @@ public class HeatmeterPeriod implements ILongId{
         this.heatmeterId = heatmeterId;
     }
 
-    public Long getAttributeId() {
-        return attributeId;
+    public Long getObjectId() {
+        return objectId;
     }
 
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
+    public void setObjectId(Long objectId) {
+        this.objectId = objectId;
     }
 
     public HeatmeterPeriodType getType() {

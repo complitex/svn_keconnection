@@ -383,7 +383,7 @@ CREATE TABLE `heatmeter_period`(
   `sub_type` BIGINT(20) NULL COMMENT 'Ссылка на подтип',
   `begin_date` DATETIME COMMENT 'Дата начала периода',
   `end_date` DATETIME COMMENT 'Дата окончания периода',
-  `attribute_id` BIGINT(20) NULL COMMENT 'Ссылка на атрибут',
+  `object_id` BIGINT(20) NULL COMMENT 'Ссылка на объект',
   `begin_om` DATE NOT NULL COMMENT 'Опер.месяц начиная с которого действует данный параметр расчета',
   `end_om` DATE NOT NULL COMMENT 'Последний опер.месяц в котором действует данный параметр расчета',
   PRIMARY KEY (`id`),
@@ -392,24 +392,11 @@ CREATE TABLE `heatmeter_period`(
   KEY `key_sub_type` (`sub_type`),
   KEY `key_begin_date` (`begin_date`),
   KEY `key_end_date` (`end_date`),
-  KEY `key_attribute_id` (`attribute_id`),
+  KEY `key_object_id` (`object_id`),
   KEY `key_begin_om` (`begin_om`),
   KEY `key_end_om` (`end_om`),
   CONSTRAINT `fk_heatmeter_period__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
-
--- ------------------------------
--- Connection
--- ------------------------------
-
-DROP TABLE IF EXISTS `heatmeter_connection`;
-CREATE TABLE `heatmeter_connection`(
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `building_code_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на код дома',
-  PRIMARY KEY (`id`),
-  KEY `key_heatmeter_connection_building_code_id` (`building_code_id`),
-  CONSTRAINT `fk_heatmeter_connection__building_code` FOREIGN KEY (`building_code_id`) REFERENCES `building_code` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коды домов теплосчетчика';
 
 -- ------------------------------
 -- Payload
@@ -417,13 +404,14 @@ CREATE TABLE `heatmeter_connection`(
 
 DROP TABLE IF EXISTS `heatmeter_payload`;
 CREATE TABLE `heatmeter_payload`(
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `tablegram_record_id` BIGINT(20) COMMENT 'Идентификатор записи файла табуляграммы',
   `payload1` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 1',
   `payload2` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 2',
   `payload3` DECIMAL(5, 2) COMMENT 'Процент распределения расхода для тарифной группы 3',
   PRIMARY KEY (`id`),
   KEY `key_tablegram_record_id` (`tablegram_record_id`),
+  CONSTRAINT `fk_heatmeter_payload__heatmeter_period` FOREIGN KEY (`id`) REFERENCES `heatmeter_period` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_heatmeter_payload__tablegram_record` FOREIGN KEY (`tablegram_record_id`) REFERENCES `tablegram_record` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
 
@@ -433,9 +421,10 @@ CREATE TABLE `heatmeter_payload`(
 
 DROP TABLE IF EXISTS `heatmeter_input`;
 CREATE TABLE `heatmeter_input`(
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор',
   `value` DECIMAL(15, 7),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_heatmeter_input__heatmeter_period` FOREIGN KEY (`id`) REFERENCES `heatmeter_period` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Расход со счетчика';
 
 -- ------------------------------
