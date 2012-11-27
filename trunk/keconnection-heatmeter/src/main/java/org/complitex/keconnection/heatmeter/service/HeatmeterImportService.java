@@ -217,20 +217,24 @@ public class HeatmeterImportService extends AbstractImportService {
             heatmeterBean.save(heatmeter);
 
             //create period
-            HeatmeterPeriod period = new HeatmeterPeriod(heatmeter.getId(), OPERATION, OPERATING);
-            period.setBeginOm(heatmeaterWrapper.getBeginOm());
-            period.setEndOm(heatmeaterWrapper.getEndOm());
-            period.setBeginDate(heatmeaterWrapper.getBeginDate());
-            period.setEndDate(heatmeaterWrapper.getEndDate());
-            heatmeterPeriodBean.save(period);
+            HeatmeterOperation operation = new HeatmeterOperation(heatmeter.getId(), heatmeaterWrapper.getBeginOm(), OPERATING);
+
+            operation.setEndOm(heatmeaterWrapper.getEndOm());
+            operation.setBeginDate(heatmeaterWrapper.getBeginDate());
+            operation.setEndDate(heatmeaterWrapper.getEndDate());
+            heatmeterPeriodBean.save(operation);
         }
 
         //create heatmeter connection
-        HeatmeterConnection connection = new HeatmeterConnection(heatmeter.getId(), buildingCodeId);
-        connection.getPeriod().setBeginOm(heatmeaterWrapper.getBeginOm());
-        connection.getPeriod().setEndOm(heatmeaterWrapper.getEndOm());
-        connection.getPeriod().setBeginDate(heatmeaterWrapper.getBeginDate());
-        connection.getPeriod().setEndDate(heatmeaterWrapper.getEndDate());
+        HeatmeterConnection connection = new HeatmeterConnection();
+
+        connection.setHeatmeterId(heatmeter.getId());
+        connection.setObjectId(buildingCodeId);
+
+        connection.setBeginOm(heatmeaterWrapper.getBeginOm());
+        connection.setEndOm(heatmeaterWrapper.getEndOm());
+        connection.setBeginDate(heatmeaterWrapper.getBeginDate());
+        connection.setEndDate(heatmeaterWrapper.getEndDate());
         heatmeterConnectionBean.save(connection);
     }
 

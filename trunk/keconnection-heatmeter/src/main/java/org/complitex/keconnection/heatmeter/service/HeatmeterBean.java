@@ -66,7 +66,7 @@ public class HeatmeterBean extends AbstractBean {
 
         Long heatmeterId = heatmeter.getId();
 
-        //heatmeterPeriodBean.save(heatmeterId, om, heatmeter.getPeriods());
+        //heatmeterPeriodBean.save(heatmeterId, om, heatmeter.getOperations());
         heatmeterConnectionBean.save(heatmeterId, om, heatmeter.getConnections());
         heatmeterPayloadBean.save(heatmeterId, om, heatmeter.getPayloads());
         heatmeterInputBean.save(heatmeterId, om, heatmeter.getInputs());

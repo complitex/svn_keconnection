@@ -4,9 +4,9 @@
     <insert id="insertHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod"
         useGeneratedKeys="true" keyProperty="id">
         insert into `heatmeter_period`
-          (`heatmeter_id`, `attribute_id`, `type`, `sub_type`, `begin_date`, `end_date`, `begin_om`, `end_om`)
+          (`heatmeter_id`, `object_id`, `type`, `sub_type`, `begin_date`, `end_date`, `begin_om`, `end_om`)
         values
-          (#{heatmeterId}, #{attributeId}, #{type}, #{subType}, #{beginDate}, #{endDate}, #{beginOm}, #{endOm})
+          (#{heatmeterId}, #{objectId}, #{type}, #{subType}, #{beginDate}, #{endDate}, #{beginOm}, #{endOm})
     </insert>
 
     <update id="updateHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
@@ -18,4 +18,9 @@
     <delete id="deleteHeatmeterPeriod" parameterType="long">
         delete from `heatmeter_period` where `id` = #{id}
     </delete>
+
+    <select id="selectHeatmeterPeriodIds" parameterType="map" resultType="long">
+        select `id` from `heatmeter_period` where `type` = #{type} and `heatmeter_id` = #{heatmeterId}
+          and #{om} between `begin_om` and `end_om`
+    </select>
 </mapper>

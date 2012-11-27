@@ -1,16 +1,16 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.PAYLOAD;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,27 +18,23 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPayloadBean extends AbstractHeatmeterParameterBean<HeatmeterPayload> {
-    @EJB
-    private HeatmeterPeriodBean heatmeterPeriodBean;
-
-    public HeatmeterPayload get(Long id) {
-        return sqlSession().selectOne("selectHeatmeterPayload", id);
+public class HeatmeterPayloadBean extends HeatmeterPeriodBean {
+    @Override
+    public HeatmeterPeriodType getType() {
+        return PAYLOAD;
     }
 
     @Transactional
-    public void save(HeatmeterPayload heatmeterPayload) {
-        if (heatmeterPayload.getId() == null) {
-            sqlSession().insert("insertHeatmeterPayload", heatmeterPayload);
-        } else {
-            sqlSession().update("updateHeatmeterPayload", heatmeterPayload);
-        }
-        heatmeterPayload.getPeriod().setAttributeId(heatmeterPayload.getId());
-        heatmeterPeriodBean.save(heatmeterPayload.getPeriod());
-    }
+    public void save(HeatmeterPayload payload) {
+        boolean isNew = payload.getId() == null;
 
-    public void delete(Long id) {
-        sqlSession().delete("deleteHeatmeterPayload", id);
+        super.save(payload);
+
+        if (isNew) {
+            sqlSession().insert("insertHeatmeterPayload", payload);
+        } else {
+            sqlSession().update("updateHeatmeterPayload", payload);
+        }
     }
 
     public boolean isExist(Long heatmeterId) {
@@ -49,15 +45,7 @@ public class HeatmeterPayloadBean extends AbstractHeatmeterParameterBean<Heatmet
         sqlSession().delete("deletePayloadByTablegramId", tablegramId);
     }
 
-    public List<HeatmeterPayload> getList(FilterWrapper<HeatmeterPayload> filterWrapper) {
-        return sqlSession().selectList("selectHeatmeterPayloads", filterWrapper);
-    }
-
-    public Integer getCount(FilterWrapper<HeatmeterPayload> filterWrapper) {
-        return sqlSession().selectOne("selectHeatmeterPayloadsCount", filterWrapper);
-    }
-
-    public List<HeatmeterPayload> getList(Long heatmeterId, Date om) {
+    public List<HeatmeterPayload> getHeatmeterPayloads(Long heatmeterId, Date om) {
         return sqlSession().selectList("selectHeatmeterPayloadsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 }

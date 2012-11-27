@@ -32,6 +32,8 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Date;
 
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.ADJUSTMENT;
+
 /**
  *
  * @author Artem
@@ -134,7 +136,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 
     private HeatmeterPeriod preparePeriod(DeactivateHeatmeterEntity info) {
         if (info.deactivateType == HeatmeterPeriodSubType.OPERATING) {
-            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getPeriods(),
+            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getOperations(),
                     new Predicate<HeatmeterPeriod>() {
 
                         @Override
@@ -146,12 +148,10 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
             lastOperationalPeriod.setEndDate(info.deactivateDate);
             lastOperationalPeriod.setEndOm(heatmeter.getOm());
             return lastOperationalPeriod;
-        } else if (info.deactivateType == HeatmeterPeriodSubType.ADJUSTMENT) {
-            HeatmeterPeriod adjustmentPeriod =
-                    new HeatmeterPeriod(heatmeter.getId(), HeatmeterPeriodType.OPERATION, HeatmeterPeriodSubType.ADJUSTMENT);
+        } else if (info.deactivateType == ADJUSTMENT) {
+            HeatmeterOperation adjustmentPeriod = new HeatmeterOperation(heatmeter.getId(), heatmeter.getOm(), ADJUSTMENT);
             adjustmentPeriod.setBeginDate(info.deactivateDate);
-            adjustmentPeriod.setBeginOm(heatmeter.getOm());
-            heatmeter.getPeriods().add(adjustmentPeriod);
+            heatmeter.getOperations().add(adjustmentPeriod);
             return adjustmentPeriod;
         } else {
             throw new IllegalStateException("Unknown heatmeter period type: " + info.deactivateType);
@@ -161,7 +161,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
     public void open(Heatmeter heatmeter, AjaxRequestTarget target) {
         this.heatmeter = heatmeter;
 
-        model.setObject(new DeactivateHeatmeterEntity(HeatmeterPeriodSubType.ADJUSTMENT, DateUtil.getCurrentDate()));
+        model.setObject(new DeactivateHeatmeterEntity(ADJUSTMENT, DateUtil.getCurrentDate()));
 
         target.add(container);
         dialog.open(target);

@@ -24,7 +24,7 @@
         <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByOm"
                     column="heatmeterId=id,om=om"/>
-        <collection property="periods"
+        <collection property="operations"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByOm"
                     column="heatmeterId=id,om=om"/>
         <collection property="payloads"
