@@ -1,15 +1,8 @@
 package org.complitex.keconnection.heatmeter.entity;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.ILongId;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author  Anatoly A. Ivanov java@inheaven.ru
@@ -27,42 +20,13 @@ public class Heatmeter implements ILongId {
     private Date om;
 
     private List<HeatmeterConnection> connections = new ArrayList<>(); //Список кодов домов
-    private List<HeatmeterPeriod> periods = new ArrayList<>(); //Список периодов
+    private List<HeatmeterOperation> operations = new ArrayList<>(); //Список периодов функционирования
     private List<HeatmeterPayload> payloads = new ArrayList<>(); //Список распределений
     private List<HeatmeterInput> inputs = new ArrayList<>();
     private List<HeatmeterConsumption> consumptions = new ArrayList<>();// Список расходов
 
     private HeatmeterStatus status;
     private HeatmeterBindingStatus bindingStatus;
-
-    public List<HeatmeterPeriod> getAllTypePeriods(){
-        ImmutableList.Builder<HeatmeterPeriod> builder = ImmutableList.builder();
-
-        builder.addAll(Lists.transform(connections, new Function<HeatmeterConnection, HeatmeterPeriod>() {
-            @Override
-            public HeatmeterPeriod apply(HeatmeterConnection input) {
-                return input.getPeriod();
-            }
-        }));
-
-        builder.addAll(periods);
-
-        builder.addAll(Lists.transform(payloads, new Function<HeatmeterPayload, HeatmeterPeriod>() {
-            @Override
-            public HeatmeterPeriod apply(HeatmeterPayload input) {
-                return input.getPeriod();
-            }
-        }));
-
-        builder.addAll(Lists.transform(inputs, new Function<HeatmeterInput, HeatmeterPeriod>() {
-            @Override
-            public HeatmeterPeriod apply(HeatmeterInput input) {
-                return input.getPeriod();
-            }
-        }));
-
-        return builder.build();
-    }
 
     public boolean isConnectedToSingleBuildingCode() {
         return getBuildingCodeIds().size() == 1;
@@ -136,12 +100,12 @@ public class Heatmeter implements ILongId {
         this.connections = connections;
     }
 
-    public List<HeatmeterPeriod> getPeriods() {
-        return periods;
+    public List<HeatmeterOperation> getOperations() {
+        return operations;
     }
 
-    public void setPeriods(List<HeatmeterPeriod> periods) {
-        this.periods = periods;
+    public void setOperations(List<HeatmeterOperation> operations) {
+        this.operations = operations;
     }
 
     public List<HeatmeterPayload> getPayloads() {

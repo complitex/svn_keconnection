@@ -1,15 +1,13 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.service.IProcessListener;
-import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
-import org.complitex.keconnection.heatmeter.entity.Tablegram;
-import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
+import org.complitex.keconnection.heatmeter.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod.DEFAULT_BEGIN_OM;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
 import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.*;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
@@ -80,7 +78,9 @@ public class TablegramService {
                 }
             }else {
                 //create heatmeterPayload
-                HeatmeterPayload heatmeterPayload = new HeatmeterPayload(heatmeter.getId(), tablegramRecord.getId());
+                HeatmeterPayload heatmeterPayload = new HeatmeterPayload(heatmeter.getId(), DEFAULT_BEGIN_OM);
+
+                heatmeterPayload.setTablegramRecordId(tablegramRecord.getId());
                 heatmeterPayload.setPayload1(tablegramRecord.getPayload1());
                 heatmeterPayload.setPayload2(tablegramRecord.getPayload2());
                 heatmeterPayload.setPayload3(tablegramRecord.getPayload3());

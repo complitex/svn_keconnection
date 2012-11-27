@@ -1,5 +1,6 @@
 package org.complitex.keconnection.heatmeter.web;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -191,11 +192,10 @@ public class HeatmeterEdit extends FormTemplatePage{
                         }
 
                         heatmeter.setOm(om);
-
-                        List<HeatmeterPeriod> list = heatmeter.getAllTypePeriods();
-                        for (HeatmeterPeriod p : list){
-                            p.setBeginOm(om);
-                        }
+                          //todo set om
+//                        for (HeatmeterPeriod p : list){
+//                            p.setBeginOm(om);
+//                        }
                     }
 
                     //save

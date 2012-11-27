@@ -35,6 +35,8 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Date;
 
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
+
 /**
  *
  * @author Artem
@@ -152,7 +154,7 @@ public abstract class ActivateHeatmeterDialog extends Panel {
 
     private HeatmeterPeriod preparePeriod(Date beginDate) {
         //try find open ADJUSTMENT period
-        Optional<HeatmeterPeriod> openAdjustmentPeriod = Iterables.tryFind(heatmeter.getPeriods(),
+        Optional<HeatmeterOperation> openAdjustmentPeriod = Iterables.tryFind(heatmeter.getOperations(),
                 new Predicate<HeatmeterPeriod>() {
 
                     @Override
@@ -168,12 +170,10 @@ public abstract class ActivateHeatmeterDialog extends Panel {
             return adjustmentPeriod;
         } else {
             //add new operational period
-            HeatmeterPeriod operationalPeriod = new HeatmeterPeriod(heatmeter.getId(), HeatmeterPeriodType.OPERATION,
-                    HeatmeterPeriodSubType.OPERATING);
-            operationalPeriod.setBeginDate(beginDate);
-            operationalPeriod.setBeginOm(heatmeter.getOm());
-            heatmeter.getPeriods().add(operationalPeriod);
-            return operationalPeriod;
+            HeatmeterOperation operation = new HeatmeterOperation(heatmeter.getId(), heatmeter.getOm(), OPERATING);
+            operation.setBeginDate(beginDate);
+            heatmeter.getOperations().add(operation);
+            return operation;
         }
     }
 

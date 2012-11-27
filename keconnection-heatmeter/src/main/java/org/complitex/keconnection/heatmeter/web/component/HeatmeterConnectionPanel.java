@@ -60,7 +60,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
                         return isActiveOm()
                                 ? heatmeter.getConnections()
-                                : connectionBean.getList(heatmeter.getId(), om.getObject());
+                                : connectionBean.getHeatmeterConnections(heatmeter.getId(), om.getObject());
                     }
                 }) {
             @Override
@@ -68,8 +68,8 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterConnection connection = item.getModelObject();
 
                 //date
-                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection.getPeriod(), "beginDate")));
-                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection.getPeriod(), "endDate")));
+                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection, "beginDate")));
+                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection, "endDate")));
 
                 //organization
                 final Label organization = new Label("organization", new LoadableDetachableModel<String>() {
@@ -221,7 +221,11 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                model.getObject().getConnections().add(new HeatmeterConnection(model.getObject().getId(), om.getObject()));
+                HeatmeterConnection connection = new HeatmeterConnection();
+                connection.setHeatmeterId(model.getObject().getId());
+                connection.setBeginOm(om.getObject());
+
+                model.getObject().getConnections().add(connection);
 
                 target.add(HeatmeterConnectionPanel.this);
             }

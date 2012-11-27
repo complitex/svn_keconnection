@@ -22,7 +22,6 @@ import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import javax.ejb.EJB;
 import java.util.Date;
 import java.util.List;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -42,9 +41,11 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                     protected List<HeatmeterPeriod> load() {
                         Heatmeter heatmeter = model.getObject();
 
-                        return isActiveOm()
-                                ? heatmeter.getPeriods()
-                                : heatmeterPeriodBean.getList(heatmeter.getId(), om.getObject(), HeatmeterPeriodType.OPERATION);
+                        return null;
+
+//                        return isActiveOm()
+//                                ? heatmeter.getOperations()
+//                                : heatmeterPeriodBean.getList(heatmeter.getId(), om.getObject(), HeatmeterPeriodType.OPERATION);
                     }
                 }) {
             @Override
@@ -82,7 +83,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-               //model.getObject().getPeriods().add(new HeatmeterPeriod(operatingMonthModel.getObject()));
+               //model.getObject().getOperations().add(new HeatmeterPeriod(operatingMonthModel.getObject()));
 
                 target.add(HeatmeterPeriodPanel.this);
             }
@@ -101,7 +102,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 List<HeatmeterPeriod> list = periods.getModelObject();
-                model.getObject().getPeriods().remove(list.size() - 1);
+                model.getObject().getOperations().remove(list.size() - 1);
                 periods.detachModels();
 
                 target.add(HeatmeterPeriodPanel.this);

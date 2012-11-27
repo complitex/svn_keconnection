@@ -331,8 +331,8 @@ public abstract class HeatmeterItemPanel extends Panel {
                         //update end date and end om of previous payload
                         HeatmeterPayload previousPayload = getPreviousPayload(heatmeter);
                         if (previousPayload != null) {
-                            HeatmeterPeriod previousPeriod = previousPayload.getPeriod();
-                            previousPeriod.setEndDate(previousDay(payload.getPeriod().getBeginDate()));
+                            HeatmeterPeriod previousPeriod = previousPayload;
+                            previousPeriod.setEndDate(previousDay(payload.getBeginDate()));
                             previousPeriod.setEndOm(heatmeter.getOm());
                             heatmeterPayloadBean.save(previousPayload);
                         }
@@ -380,11 +380,11 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                 //update begin date and begin om of new input
                 if (previousInput != null) {
-                    input.getPeriod().setBeginDate(nextDay(previousInput.getPeriod().getEndDate()));
-                    input.getPeriod().setBeginOm(heatmeter.getOm());
+                    input.setBeginDate(nextDay(previousInput.getEndDate()));
+                    input.setBeginOm(heatmeter.getOm());
                 } else {
-                    input.getPeriod().setBeginDate(heatmeter.getOm());
-                    input.getPeriod().setBeginOm(heatmeter.getOm());
+                    input.setBeginDate(heatmeter.getOm());
+                    input.setBeginOm(heatmeter.getOm());
                 }
 
                 //validate
@@ -398,7 +398,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                     try {
                         //update end om of input
-                        input.getPeriod().setEndOm(heatmeter.getOm());
+                        input.setEndOm(heatmeter.getOm());
 
                         //calculate consumptions for new input
                         heatmeterInputBean.calculateConsumptionForNewInput(heatmeter.getPayloads(), input);

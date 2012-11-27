@@ -11,7 +11,7 @@ import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.rang
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.09.12 19:25
  */
-public class HeatmeterPeriod implements ILongId{
+public abstract class HeatmeterPeriod implements ILongId{
     public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
     public final static Date DEFAULT_END_DATE = newDate(31, 12, 2054);
 

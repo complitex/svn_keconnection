@@ -3,87 +3,48 @@
 <mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean">
     <resultMap id="heatmeterPayloadResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
         <id column="payload_id" property="id"/>
-        <result property="tablegramRecordId" column="tablegram_record_id"/>
         <result property="heatmeterId"/>
-        <result property="payload1" column="payload1"/>
-        <result property="payload2" column="payload2"/>
-        <result property="payload3" column="payload3"/>
+        <result property="type"/>
+        <result property="subType"/>
+        <result property="objectId"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="beginOm"/>
+        <result property="endOm"/>
+
+        <result property="tablegramRecordId"/>
+        <result property="heatmeterId"/>
+        <result property="payload1"/>
+        <result property="payload2"/>
+        <result property="payload3"/>
         <result property="ls"/>
-        <association property="period" javaType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
-            <id column="period_id" property="id"/>
-            <result property="heatmeterId" column="heatmeter_id"/>
-            <result property="type" column="type"/>
-            <result property="subType" column="sub_type"/>
-            <result property="attributeId" column="attribute_id"/>
-            <result property="beginDate" column="begin_date"/>
-            <result property="endDate" column="end_date"/>
-            <result property="beginOm" column="begin_om"/>
-            <result property="endOm" column="end_om"/>
-        </association>
     </resultMap>
 
     <insert id="insertHeatmeterPayload" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload"
         useGeneratedKeys="true" keyProperty="id">
-        insert into `heatmeter_payload` (`tablegram_record_id`, `payload1`, `payload2`, `payload3`)
-        values (#{tablegramRecordId}, #{payload1}, #{payload2}, #{payload3})
+        insert into `heatmeter_payload` (`id`, `tablegram_record_id`, `payload1`, `payload2`, `payload3`)
+          values (#{id}, #{tablegramRecordId}, #{payload1}, #{payload2}, #{payload3})
     </insert>
 
     <update id="updateHeatmeterPayload" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPayload">
         update `heatmeter_payload` set `payload1` = #{payload1}, `payload2` = #{payload2}, `payload3` = #{payload3}
-        where `id` = #{id}
+          where `id` = #{id}
     </update>
-
-    <update id="updateHeatmeterPayloadParent" parameterType="map">
-        update `heatmeter_payload` set `parent_id` = #{parentId} where `id` = #{id}
-    </update>
-
-    <select id="selectHeatmeterPayload" parameterType="long" resultMap="heatmeterPayloadResultMap">
-        select p.*, h.`ls` as ls from `heatmeter_payload` p left join `heatmeter` h on p.`heatmeter_id` = h.`id` where p.`id` = #{id}
-    </select>
-
-    <sql id="selectHeatmeterPayloadFromWhere">
-        from `heatmeter_payload` p left join heatmeter h on p.`heatmeter_id` = h.`id`
-        <where>
-            <if test="object.beginDate != null">and p.`begin_date` = #{object.beginDate}</if>
-            <if test="object.endDate != null">and p.`end_date` = #{object.endDate}</if>
-            <if test="object.om != null">and p.`operating_month` = #{object.om}</if>
-            <if test="object.payload1 != null">and p.`payload1` = #{object.payload1}</if>
-            <if test="object.payload2 != null">and p.`payload2` = #{object.payload2}</if>
-            <if test="object.payload3 != null">and p.`payload3` = #{object.payload3}</if>
-        </where>
-    </sql>
-
-    <select id="selectHeatmeterPayloads" parameterType="org.complitex.dictionary.entity.FilterWrapper"
-            resultMap="heatmeterPayloadResultMap">
-        select p.*, h.`ls` as ls <include refid="selectHeatmeterPayloadFromWhere"/>
-          order by ${sortProperty} ${asc} limit #{first}, #{count}
-    </select>
-
-    <select id="selectHeatmeterPayloadsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
-        select count(*) <include refid="selectHeatmeterPayloadFromWhere"/>
-    </select>
 
     <select id="isExistHeatmeterPayload" parameterType="long" resultType="boolean">
-        select count(*) > 0
-          from `heatmeter_payload` hp join `heatmeter_period` p on (p.`attribute_id` =  hp.`id` and p.`type` = 3)
-        where p.`heatmeter_id` = #{heatmeterId}
+        select count(*) > 0 from `heatmeter_period` p where p.`type` = 3 and p.`heatmeter_id` = #{heatmeterId}
     </select>
 
     <delete id="deletePayloadByTablegramId" parameterType="long">
-        delete hp, p from `heatmeter_payload` as hp join `heatmeter_period` as p on (p.`attribute_id` =  hp.`id` and p.`type` = 3)
+        delete p from `heatmeter_period` p left join `heatmeter_payload` hp on p.`id` = hp.`id`
             left join `tablegram_record` r on (hp.`tablegram_record_id` = r.`id`)
-        where r.`tablegram_id` = #{tablegramId}
+        where p.`type` = 3 and r.`tablegram_id` = #{tablegramId}
     </delete>
 
     <select id="selectHeatmeterPayloadsByOm" parameterType="map" resultMap="heatmeterPayloadResultMap">
-        SELECT hp.`id` payload_id, hp.*, p.`id` period_id, p.* FROM `heatmeter_payload` hp
-        JOIN `heatmeter_period` p ON (p.`attribute_id` =  hp.`id` AND p.`type` = 3)
-        WHERE p.`heatmeter_id` = #{heatmeterId} AND (#{om} BETWEEN p.`begin_om` AND p.`end_om`)
-        ORDER BY p.`begin_date`
+        select hp.`id` as payload_id, p.*, hp.*
+          from `heatmeter_period` p left join `heatmeter_payload` hp on p.`id` = hp.`id`
+        where p.`type` = 3 and p.`heatmeter_id` = #{heatmeterId} and (#{om} between p.`begin_om` and p.`end_om`)
+          order by p.`begin_date`
     </select>
-    
-    <delete id="deleteHeatmeterPayload" parameterType="long">
-        delete hp, p from `heatmeter_payload` as hp join `heatmeter_period` as p on p.`attribute_id` = hp.`id` and p.`type` = 3
-          where hp.`id` = #{id}
-    </delete>
 </mapper>
