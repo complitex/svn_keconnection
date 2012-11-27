@@ -166,7 +166,7 @@ public class ImportService {
     }
 
     @Asynchronous
-    public <T extends IImportFile> void process(List<T> importFiles, long localeId) {
+    public <T extends IImportFile> void process(List<T> importFiles, long localeId, Date beginOm, Date beginDate) {
         if (processing) {
             return;
         }
@@ -185,11 +185,11 @@ public class ImportService {
                 userTransaction.begin();
 
                 if (importFile instanceof OrganizationImportFile) { //import organizations
-                    organizationImportService.process(listener, localeId);
+                    organizationImportService.process(listener, localeId, beginOm);
                 } else if (importFile instanceof AddressImportFile) { //import addresses
                     addressImportService.process((AddressImportFile) importFile, listener, localeId);
                 } else if (importFile instanceof HeatmeterImportFile){ //import heatmeter
-                    heatmeterImportService.process(importFile, listener);
+                    heatmeterImportService.process(importFile, listener, beginOm, beginDate);
                 } else if (importFile instanceof PayloadImportFile){ //import payload
                     tablegramImportService.process(importFile, listener);
                 }

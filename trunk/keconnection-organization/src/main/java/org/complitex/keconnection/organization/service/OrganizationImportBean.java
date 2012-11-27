@@ -50,11 +50,10 @@ public class OrganizationImportBean extends AbstractBean {
     }
 
     @Transactional
-    public void insertOperatingMonth(long organizationId, Date currentDate) {
-        final Date firstDayOfCurrentMonth = getFirstDayOfCurrentMonth();
-        final Date firstDayOfNextMonth = getFirstDayOfMonth(addMonth(firstDayOfCurrentMonth, 1));
+    public void insertOperatingMonth(long organizationId, Date beginOm) {
+        final Date endOm = getFirstDayOfMonth(addMonth(beginOm, 1));
         sqlSession().insert(MAPPING_NAMESPACE + ".insertOperatingMonth",
                 ImmutableMap.of("organizationId", organizationId,
-                "beginOm", firstDayOfCurrentMonth, "endOm", firstDayOfNextMonth));
+                "beginOm", beginOm, "endOm", endOm));
     }
 }

@@ -23,9 +23,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod.DEFAULT_BEGIN_OM;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING_AND_WATER;
@@ -36,73 +36,72 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
  *         Date: 10.09.12 17:53
  */
 @Stateless
-public class HeatmeterImportService extends AbstractImportService{
-    private final static Logger log = LoggerFactory.getLogger(HeatmeterImportService.class);
+public class HeatmeterImportService extends AbstractImportService {
 
+    private final static Logger log = LoggerFactory.getLogger(HeatmeterImportService.class);
     @EJB
     private ConfigBean configBean;
-
     @EJB
     private HeatmeterBean heatmeterBean;
-
     @EJB
     private HeatmeterConnectionBean heatmeterConnectionBean;
-
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
-
     @EJB
     private IKeConnectionOrganizationStrategy organizationStrategy;
-
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
 
     @Asynchronous
-    public void asyncUploadHeatmeters(String fileName, InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
-        uploadHeatmeters(fileName, inputStream, listener);
+    public void asyncUploadHeatmeters(String fileName, InputStream inputStream, Date beginOm, Date beginDate,
+            IProcessListener<HeatmeterWrapper> listener) {
+        uploadHeatmeters(fileName, inputStream, beginOm, beginDate, listener);
     }
 
-    public void process(final IImportFile importFile, final IImportListener listener)
-            throws ImportFileNotFoundException, ImportFileReadException{
+    public void process(final IImportFile importFile, final IImportListener listener, final Date beginOm, Date beginDate)
+            throws ImportFileNotFoundException, ImportFileReadException {
         int size = getRecordCount(importFile);
 
         listener.beginImport(importFile, size);
 
-        uploadHeatmeters(importFile.getFileName(), getInputStream(importFile.getFileName()), new IProcessListener<HeatmeterWrapper>() {
-            int index = 0;
-            int processed = 0;
+        uploadHeatmeters(importFile.getFileName(), getInputStream(importFile.getFileName()), beginOm, beginDate,
+                new IProcessListener<HeatmeterWrapper>() {
 
-            @Override
-            public void processed(HeatmeterWrapper object) {
-                index++;
-                processed++;
+                    int index = 0;
+                    int processed = 0;
 
-                listener.recordProcessed(importFile, index);
-            }
+                    @Override
+                    public void processed(HeatmeterWrapper object) {
+                        index++;
+                        processed++;
 
-            @Override
-            public void skip(HeatmeterWrapper object) {
-                index++;
-            }
+                        listener.recordProcessed(importFile, index);
+                    }
 
-            @Override
-            public void error(HeatmeterWrapper object, Exception e) {
-                listener.warn(importFile, e.getMessage());
-            }
+                    @Override
+                    public void skip(HeatmeterWrapper object) {
+                        index++;
+                    }
 
-            @Override
-            public void done() {
-                listener.completeImport(importFile, processed);
-            }
-        });
+                    @Override
+                    public void error(HeatmeterWrapper object, Exception e) {
+                        listener.warn(importFile, e.getMessage());
+                    }
+
+                    @Override
+                    public void done() {
+                        listener.completeImport(importFile, processed);
+                    }
+                });
     }
 
-    private void uploadHeatmeters(String fileName, InputStream inputStream, IProcessListener<HeatmeterWrapper> listener){
+    private void uploadHeatmeters(String fileName, InputStream inputStream, Date beginOm, Date beginDate,
+            IProcessListener<HeatmeterWrapper> listener) {
         HeatmeterWrapper heatmeaterWrapper = null;
 
         int lineNum = 0;
 
-        try  {
+        try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             CSVReader reader = new CSVReader(bufferedReader, ';');
 
@@ -114,20 +113,20 @@ public class HeatmeterImportService extends AbstractImportService{
 
 
             //"GEK";"DOM";"UL";"NDOM";"LOTOP0";"LOTOP1";"LOTOP2";"LOTOP3";"LOTOP4"
-            while ((line = reader.readNext()) != null){
+            while ((line = reader.readNext()) != null) {
                 lineNum++;
 
-                for (int i = 0; i < 5; ++i){
+                for (int i = 0; i < 5; ++i) {
                     String ls = line[4 + i];
 
                     //skip zero or empty lotop
-                    if (ls.isEmpty() || ls.equals("0")){
+                    if (ls.isEmpty() || ls.equals("0")) {
                         continue;
                     }
 
                     String orgCode = line[0];
                     //organization leading zero
-                    if (orgCode.length() < 4 && StringUtil.isNumeric(orgCode)){
+                    if (orgCode.length() < 4 && StringUtil.isNumeric(orgCode)) {
                         orgCode = String.format("%04d", StringUtil.parseInt(orgCode));
                     }
 
@@ -138,6 +137,10 @@ public class HeatmeterImportService extends AbstractImportService{
                     heatmeaterWrapper.setLs(ls);
                     heatmeaterWrapper.setAddress(line[2] + " " + line[3]);
                     heatmeaterWrapper.setFileName(fileName);
+                    heatmeaterWrapper.setBeginOm(beginOm);
+                    heatmeaterWrapper.setEndOm(HeatmeterPeriod.DEFAULT_END_OM);
+                    heatmeaterWrapper.setBeginDate(beginDate);
+                    heatmeaterWrapper.setEndDate(HeatmeterPeriod.DEFAULT_END_DATE);
 
                     //create heatmeter
                     try {
@@ -146,7 +149,7 @@ public class HeatmeterImportService extends AbstractImportService{
                         listener.processed(heatmeaterWrapper);
                     } catch (BuildingNotFoundException | OrganizationNotFoundException | NumberLsException e) {
                         listener.error(heatmeaterWrapper, e);
-                    }catch (DuplicateException e){
+                    } catch (DuplicateException e) {
                         listener.skip(heatmeaterWrapper);
                     }
                 }
@@ -170,14 +173,14 @@ public class HeatmeterImportService extends AbstractImportService{
         //find organization by code
         Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 
-        if (organizationId == null){
+        if (organizationId == null) {
             throw new OrganizationNotFoundException(heatmeaterWrapper);
         }
 
         //find building code
         Long buildingCodeId = buildingStrategy.getBuildingCodeId(organizationId, heatmeaterWrapper.getBuildingCode());
 
-        if (buildingCodeId == null){
+        if (buildingCodeId == null) {
             throw new BuildingNotFoundException(heatmeaterWrapper);
         }
 
@@ -190,14 +193,14 @@ public class HeatmeterImportService extends AbstractImportService{
         }
 
         //check duplicates
-        if (heatmeterBean.isExist(ls, buildingCodeId, organizationId)){
+        if (heatmeterBean.isExist(ls, buildingCodeId, organizationId)) {
             throw new DuplicateException();
         }
 
         //heatmeter
         Heatmeter heatmeter = heatmeterBean.getHeatmeterByLs(ls, KE_ORGANIZATION_OBJECT_ID);
 
-        if (heatmeter == null){
+        if (heatmeter == null) {
             heatmeter = new Heatmeter();
             heatmeter.setLs(ls);
 
@@ -214,20 +217,30 @@ public class HeatmeterImportService extends AbstractImportService{
             heatmeterBean.save(heatmeter);
 
             //create period
-            heatmeterPeriodBean.save(new HeatmeterPeriod(heatmeter.getId(), OPERATION, OPERATING));
+            HeatmeterPeriod period = new HeatmeterPeriod(heatmeter.getId(), OPERATION, OPERATING);
+            period.setBeginOm(heatmeaterWrapper.getBeginOm());
+            period.setEndOm(heatmeaterWrapper.getEndOm());
+            period.setBeginDate(heatmeaterWrapper.getBeginDate());
+            period.setEndDate(heatmeaterWrapper.getEndDate());
+            heatmeterPeriodBean.save(period);
         }
 
         //create heatmeter connection
-        heatmeterConnectionBean.save(new HeatmeterConnection(heatmeter.getId(), buildingCodeId));
+        HeatmeterConnection connection = new HeatmeterConnection(heatmeter.getId(), buildingCodeId);
+        connection.getPeriod().setBeginOm(heatmeaterWrapper.getBeginOm());
+        connection.getPeriod().setEndOm(heatmeaterWrapper.getEndOm());
+        connection.getPeriod().setBeginDate(heatmeaterWrapper.getBeginDate());
+        connection.getPeriod().setEndDate(heatmeaterWrapper.getEndDate());
+        heatmeterConnectionBean.save(connection);
     }
 
-    public List<HeatmeterImportFile> getHeatmeterImportFiles(){
+    public List<HeatmeterImportFile> getHeatmeterImportFiles() {
         List<HeatmeterImportFile> importFiles = new ArrayList<>();
 
         String[] names = getFileList(getDir(), "csv");
 
         if (names != null) {
-            for (String name : names){
+            for (String name : names) {
                 importFiles.add(new HeatmeterImportFile(name));
             }
         }
