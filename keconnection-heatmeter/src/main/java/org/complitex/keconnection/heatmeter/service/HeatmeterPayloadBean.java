@@ -18,7 +18,7 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPayloadBean extends HeatmeterAttributeBean<HeatmeterPayload> {
+public class HeatmeterPayloadBean extends AbstractHeatmeterParameterBean<HeatmeterPayload> {
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;
 

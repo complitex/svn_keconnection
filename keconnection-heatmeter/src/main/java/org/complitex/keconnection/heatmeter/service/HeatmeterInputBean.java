@@ -27,7 +27,7 @@ import static org.complitex.dictionary.util.DateUtil.getMin;
  */
 @XmlMapper
 @Stateless
-public class HeatmeterInputBean extends HeatmeterAttributeBean<HeatmeterInput> {
+public class HeatmeterInputBean extends AbstractHeatmeterParameterBean<HeatmeterInput> {
 
     @EJB
     private HeatmeterPeriodBean heatmeterPeriodBean;

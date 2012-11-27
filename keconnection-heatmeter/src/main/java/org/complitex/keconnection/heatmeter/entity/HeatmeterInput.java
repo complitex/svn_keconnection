@@ -1,42 +1,21 @@
 package org.complitex.keconnection.heatmeter.entity;
 
 import java.math.BigDecimal;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.INPUT;
+
+import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 07.11.12 18:43
  */
-public class HeatmeterInput extends HeatmeterAttribute {
-
-    private Long id;
+public class HeatmeterInput extends HeatmeterPeriod {
     private BigDecimal value;
     private List<HeatmeterConsumption> consumptions = new ArrayList<>();
 
     public HeatmeterInput() {
-    }
-
-    public HeatmeterInput(long heatmeterId, Date beginOm) {
-        HeatmeterPeriod period = new HeatmeterPeriod(heatmeterId, HeatmeterPeriodType.INPUT);
-        period.setBeginOm(beginOm);
-        setPeriod(period);
-    }
-
-    @Override
-    public HeatmeterPeriodType getType() {
-        return INPUT;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        super(INPUT);
     }
 
     public BigDecimal getValue() {
