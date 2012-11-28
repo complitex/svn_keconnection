@@ -311,7 +311,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 editable).setVisible(payloadDataVisible));
 
         container.add(new HeatmeterDateItem("beginDate",
-                new PropertyModel<Date>(payload, "period.beginDate"),
+                new PropertyModel<Date>(payload, "beginDate"),
                 editable).setVisible(payloadDataVisible));
 
         AjaxLink<Void> savePayload = new AjaxLink<Void>("savePayload") {
@@ -369,7 +369,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 new PropertyModel<BigDecimal>(input, "firstConsumption.consumption1"),
                 false).setVisible(inputDataVisible));
         container.add(new HeatmeterDateItem("readoutDate",
-                new PropertyModel<Date>(input, "period.endDate"),
+                new PropertyModel<Date>(input, "endDate"),
                 editable).setVisible(inputDataVisible));
 
         AjaxLink<Void> saveConsumption = new AjaxLink<Void>("saveInput") {

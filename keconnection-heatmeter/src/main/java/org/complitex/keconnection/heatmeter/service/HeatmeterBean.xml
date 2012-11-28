@@ -25,7 +25,7 @@
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByOm"
                     column="heatmeterId=id,om=om"/>
         <collection property="operations"
-                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.selectHeatmeterPeriodsByOm"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean.selectHeatmeterOperationsByOm"
                     column="heatmeterId=id,om=om"/>
         <collection property="payloads"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByOm"
@@ -114,7 +114,7 @@
             AND payload_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE 
                 p.`heatmeter_id` = h2.`id` AND p.`type` = 3 AND (h2.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
             <if test="map.payload1 != null or map.payload2 != null or map.payload3 != null">
-                LEFT JOIN `heatmeter_payload` payload ON payload.`id` = payload_p.`attribute_id`
+                LEFT JOIN `heatmeter_payload` payload ON payload.`id` = payload_p.`id`
             </if>
         </if>
         <if test="map.inputReadoutDate != null or map.input != null or map.consumption1 != null">
@@ -123,7 +123,7 @@
             AND input_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE 
                 p.`heatmeter_id` = h2.`id` AND p.`type` = 4 AND (h2.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
             <if test="map.input != null or map.consumption1 != null">
-                LEFT JOIN `heatmeter_input` input ON input.`id` = input_p.`attribute_id`
+                LEFT JOIN `heatmeter_input` input ON input.`id` = input_p.`id`
                 <if test="map.consumption1 != null">
                     LEFT JOIN `heatmeter_consumption` consumption ON consumption.`heatmeter_input_id` = input.`id`
                 </if>
