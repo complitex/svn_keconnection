@@ -31,7 +31,7 @@ public class HeatmeterBean extends AbstractBean {
     public static final String INPUT_READOUT_DATE_FILTER_PARAM = "inputReadoutDate";
     public static final String INPUT_FILTER_PARAM = "input";
     public static final String CONSUMPTION1_FILTER_PARAM = "consumption1";
-
+    
     @EJB
     private HeatmeterOperationBean operationBean;
 

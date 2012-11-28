@@ -36,11 +36,10 @@ CREATE FUNCTION `keconnection`.`heatmeter_active_om` (pHeatmeterId BIGINT) RETUR
     DECLARE om DATE;
 
     SELECT MAX(om.`begin_om`) INTO om
-      FROM `heatmeter_connection` hc
-        LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
-        JOIN `heatmeter_period` p ON (p.`attribute_id` =  hc.`id` AND p.`type` = 2)
+        FROM `heatmeter_period` p
+        LEFT JOIN `building_code` bc ON bc.`id` = p.`object_id`
         LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
-      WHERE p.`heatmeter_id` = pHeatmeterId;
+      WHERE p.`type` = 2 AND p.`heatmeter_id` = pHeatmeterId;
 
     RETURN om;
 
