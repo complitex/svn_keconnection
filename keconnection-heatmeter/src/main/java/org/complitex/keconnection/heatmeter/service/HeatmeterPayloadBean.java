@@ -18,7 +18,7 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.PA
  */
 @XmlMapper
 @Stateless
-public class HeatmeterPayloadBean extends HeatmeterPeriodBean {
+public class HeatmeterPayloadBean extends HeatmeterPeriodBean<HeatmeterPayload> {
     @Override
     public HeatmeterPeriodType getType() {
         return PAYLOAD;
@@ -34,6 +34,15 @@ public class HeatmeterPayloadBean extends HeatmeterPeriodBean {
             sqlSession().insert("insertHeatmeterPayload", payload);
         } else {
             sqlSession().update("updateHeatmeterPayload", payload);
+        }
+    }
+
+    @Override
+    public void save(Long heatmeterId, Date om, List<HeatmeterPayload> list) {
+        super.save(heatmeterId, om, list);
+
+        for (HeatmeterPayload payload : list){
+            save(payload);
         }
     }
 
