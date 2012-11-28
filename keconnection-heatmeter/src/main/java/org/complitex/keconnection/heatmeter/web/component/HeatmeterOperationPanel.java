@@ -17,9 +17,10 @@ import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
-import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
+import org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean;
 
 import javax.ejb.EJB;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,11 +28,11 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 15:45
  */
-public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
+public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
     @EJB
-    private HeatmeterPeriodBean heatmeterPeriodBean;
+    private HeatmeterOperationBean operationBean;
 
-    public HeatmeterPeriodPanel(String id, final IModel<Heatmeter> model, final IModel<Date> om) {
+    public HeatmeterOperationPanel(String id, final IModel<Heatmeter> model, final IModel<Date> om) {
         super(id, model, om);
         setOutputMarkupId(true);
 
@@ -41,11 +42,11 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                     protected List<HeatmeterPeriod> load() {
                         Heatmeter heatmeter = model.getObject();
 
-                        return null;
+                        return new ArrayList<>();
 
 //                        return isActiveOm()
 //                                ? heatmeter.getOperations()
-//                                : heatmeterPeriodBean.getList(heatmeter.getId(), om.getObject(), HeatmeterPeriodType.OPERATION);
+//                                : operationBean.getList(heatmeter.getId(), om.getObject(), HeatmeterPeriodType.OPERATION);
                     }
                 }) {
             @Override
@@ -85,7 +86,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                //model.getObject().getOperations().add(new HeatmeterPeriod(operatingMonthModel.getObject()));
 
-                target.add(HeatmeterPeriodPanel.this);
+                target.add(HeatmeterOperationPanel.this);
             }
 
             @Override
@@ -105,7 +106,7 @@ public class HeatmeterPeriodPanel extends AbstractHeatmeterEditPanel {
                 model.getObject().getOperations().remove(list.size() - 1);
                 periods.detachModels();
 
-                target.add(HeatmeterPeriodPanel.this);
+                target.add(HeatmeterOperationPanel.this);
             }
 
             @Override

@@ -1,6 +1,5 @@
 package org.complitex.keconnection.heatmeter.web;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -23,11 +22,11 @@ import org.complitex.keconnection.address.strategy.building.KeConnectionBuilding
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
-import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterInputPanel;
+import org.complitex.keconnection.heatmeter.web.component.HeatmeterOperationPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
-import org.complitex.keconnection.heatmeter.web.component.HeatmeterPeriodPanel;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
@@ -56,9 +55,6 @@ public class HeatmeterEdit extends FormTemplatePage{
 
     @EJB
     private HeatmeterService heatmeterService;
-
-    @EJB
-    private HeatmeterPeriodBean heatmeterPeriodBean;
 
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
@@ -151,8 +147,8 @@ public class HeatmeterEdit extends FormTemplatePage{
             }
         });
 
-        //Periods
-        container.add(new HeatmeterPeriodPanel("periods", model, om));
+        //Operation
+        container.add(new HeatmeterOperationPanel("operations", model, om));
 
         //Connection
         container.add(new HeatmeterConnectionPanel("connections", model, om));
@@ -160,8 +156,8 @@ public class HeatmeterEdit extends FormTemplatePage{
         //Payloads
         container.add(new HeatmeterPayloadPanel("payloads", model, om));
 
-        //Consumption
-//        container.add(new HeatmeterConsumptionPanel("consumption", model, om).setVisible(om.getObject() != null));
+        //Input
+        container.add(new HeatmeterInputPanel("inputs", model, om));
 
         //Save
         form.add(new Button("save"){
@@ -182,7 +178,7 @@ public class HeatmeterEdit extends FormTemplatePage{
                     //update om for new heatmeter
                     if (heatmeter.getId() == null){
                         HeatmeterConnection connection = heatmeter.getConnections().get(0);
-                        BuildingCode buildingCode = buildingStrategy.getBuildingCodeById(connection.getBuildingCodeId());
+                        BuildingCode buildingCode = buildingStrategy.getBuildingCodeById(connection.getObjectId());
 
                         Date om = organizationStrategy.getOperatingMonthDate(buildingCode.getOrganizationId());
 
@@ -192,10 +188,12 @@ public class HeatmeterEdit extends FormTemplatePage{
                         }
 
                         heatmeter.setOm(om);
-                          //todo set om
-//                        for (HeatmeterPeriod p : list){
-//                            p.setBeginOm(om);
-//                        }
+
+                        //update om for periods
+                        List<HeatmeterPeriod> periods = heatmeter.getPeriods();
+                        for (HeatmeterPeriod p : periods){
+                            p.setBeginOm(om);
+                        }
                     }
 
                     //save

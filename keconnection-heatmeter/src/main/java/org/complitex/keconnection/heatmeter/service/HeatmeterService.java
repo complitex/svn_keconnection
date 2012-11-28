@@ -148,7 +148,7 @@ public class HeatmeterService {
                 return new HeatmeterValidate(ERROR_CONNECTION_BEGIN_DATE_AFTER_END_DATE, c1);
             }
 
-            if (c1.getBuildingCodeId() == null){
+            if (c1.getObjectId() == null){
                 return new HeatmeterValidate(ERROR_CONNECTION_NOT_FOUND);
             }
 
@@ -158,7 +158,7 @@ public class HeatmeterService {
                     HeatmeterConnection c2 = connections.get(j);
 
                     if(isSameMonth(c1.getBeginOm(), c1.getBeginOm())
-                            && c1.getBuildingCodeId().equals(c2.getBuildingCodeId())
+                            && c1.getObjectId().equals(c2.getObjectId())
                             && c2.getBeginDate() != null
                             && c1.isConnected(c2)){
                         return new HeatmeterValidate(ERROR_CONNECTION_INTERSECTION, c1, c2);

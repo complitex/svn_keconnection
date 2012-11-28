@@ -27,8 +27,8 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.10.12 14:55
  */
-public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
-    public HeatmeterConsumptionPanel(String id, final IModel<Heatmeter> model, final IModel<Date> operatingMonthModel) {
+public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
+    public HeatmeterInputPanel(String id, final IModel<Heatmeter> model, final IModel<Date> operatingMonthModel) {
         super(id, model, operatingMonthModel);
 
         setOutputMarkupId(true);
@@ -87,7 +87,7 @@ public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 //model.getObject().getConsumptions().add(new HeatmeterConsumption(operatingMonthModel.getObject()));
 
-                target.add(HeatmeterConsumptionPanel.this);
+                target.add(HeatmeterInputPanel.this);
             }
 
             @Override
@@ -107,7 +107,7 @@ public class HeatmeterConsumptionPanel extends AbstractHeatmeterEditPanel {
                 model.getObject().getConsumptions().remove(list.size() - 1);
                 listView.detachModels();
 
-                target.add(HeatmeterConsumptionPanel.this);
+                target.add(HeatmeterInputPanel.this);
             }
 
             @Override

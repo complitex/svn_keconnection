@@ -171,7 +171,7 @@ public class HeatmeterCodePanel extends Panel {
         if (code.getBuildingId() != null && code.getOrganizationId() != null){
             Long buildingCodeId = buildingStrategy.getBuildingCodeId(code.getOrganizationId(), code.getBuildingId());
 
-            code.setBuildingCodeId(buildingCodeId);
+            code.setObjectId(buildingCodeId);
         }
     }
 }

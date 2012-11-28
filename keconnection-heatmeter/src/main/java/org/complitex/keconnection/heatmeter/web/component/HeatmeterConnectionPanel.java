@@ -7,7 +7,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -18,7 +17,8 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.address.service.AddressRendererBean;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
+import org.complitex.dictionary.web.component.LabelDateField;
+import org.complitex.dictionary.web.component.LabelTextField;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
@@ -68,8 +68,8 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterConnection connection = item.getModelObject();
 
                 //date
-                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(connection, "beginDate")));
-                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(connection, "endDate")));
+                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(connection, "beginDate")));
+                item.add(new LabelDateField("end_date", new PropertyModel<Date>(connection, "endDate")));
 
                 //organization
                 final Label organization = new Label("organization", new LoadableDetachableModel<String>() {
@@ -104,7 +104,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 item.add(address);
 
                 //address code
-                final TextField code = new TextField<>("code", new Model<String>(){
+                final Component code = new LabelTextField<>("code", 4, new Model<String>(){
                     @Override
                     public String getObject() {
                         String s = super.getObject();
@@ -122,7 +122,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
                         Long buildingCodeId = buildingStrategy.getBuildingCodeId(connection.getOrganizationId(), object);
 
-                        connection.setBuildingCodeId(buildingCodeId);
+                        connection.setObjectId(buildingCodeId);
 
                         if (buildingCodeId != null){
                             BuildingCode buildingCode = buildingStrategy.getBuildingCodeById(buildingCodeId);
@@ -144,7 +144,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 item.add(code);
 
                 //organization code
-                TextField organizationCode = new TextField<>("organization_code", new Model<String>() {
+                Component organizationCode = new LabelTextField<>("organization_code", 4, new Model<String>() {
                     @Override
                     public void setObject(String object) {
                         super.setObject(object);
@@ -154,7 +154,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                         connection.setOrganizationId(organizationId);
 
                         if (organizationId == null){
-                            connection.setBuildingCodeId(null);
+                            connection.setObjectId(null);
                             connection.setBuildingId(null);
                             connection.setCode(null);
                         }
@@ -192,6 +192,11 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
                     @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return isActiveOm();
                     }
                 });
 

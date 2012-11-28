@@ -33,15 +33,26 @@ public class Heatmeter implements ILongId {
     }
 
     public Long getFirstBuildingCodeId() {
-        return connections == null || connections.isEmpty() ? null : connections.get(0).getBuildingCodeId();
+        return connections == null || connections.isEmpty() ? null : connections.get(0).getObjectId();
     }
 
     public Set<Long> getBuildingCodeIds() {
         Set<Long> buildingCodeIds = new HashSet<>();
         for (HeatmeterConnection hc : connections) {
-            buildingCodeIds.add(hc.getBuildingCodeId());
+            buildingCodeIds.add(hc.getObjectId());
         }
         return buildingCodeIds;
+    }
+
+    public List<HeatmeterPeriod> getPeriods(){
+        List<HeatmeterPeriod> list = new ArrayList<>();
+
+        list.addAll(connections);
+        list.addAll(operations);
+        list.addAll(payloads);
+        list.addAll(inputs);
+
+        return Collections.unmodifiableList(list);
     }
 
     public Long getId() {
