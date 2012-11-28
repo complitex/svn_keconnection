@@ -162,9 +162,7 @@
     <select id="isExistHeatmeter" parameterType="map" resultType="boolean">
         select count(*) > 0 from `heatmeter` h
           left join `heatmeter_period` p on p.`heatmeter_id` = h.`id` and p.`type` = 2
-          left join `heatmeter_connection` hc on hc.`id` = p.`attribute_id`
-          left join `building_code` bc on bc.`id` = hc.`building_code_id`
-        where  h.`ls` = #{ls} and hc.`building_code_id` = #{buildingCodeId} and bc.`organization_id` = #{organizationId}
+        where  h.`ls` = #{ls} and p.`object_id` = #{buildingCodeId}
     </select>
 
     <select id="selectHeatmeterByLs" parameterType="map" resultMap="heatmeterResultMap">

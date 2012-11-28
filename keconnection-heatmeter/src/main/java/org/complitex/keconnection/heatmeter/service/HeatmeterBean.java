@@ -31,9 +31,6 @@ public class HeatmeterBean extends AbstractBean {
     public static final String INPUT_READOUT_DATE_FILTER_PARAM = "inputReadoutDate";
     public static final String INPUT_FILTER_PARAM = "input";
     public static final String CONSUMPTION1_FILTER_PARAM = "consumption1";
-    
-    @EJB
-    private HeatmeterPeriodBean heatmeterPeriodBean;
 
     @EJB
     private HeatmeterConnectionBean heatmeterConnectionBean;
@@ -46,7 +43,6 @@ public class HeatmeterBean extends AbstractBean {
 
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
-
 
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
@@ -98,9 +94,8 @@ public class HeatmeterBean extends AbstractBean {
         sqlSession().delete("deleteHeatmeter", id);
     }
 
-    public boolean isExist(Integer ls, Long buildingCodeId, Long organizationId) {
-        return sqlSession().selectOne("isExistHeatmeter", of("ls", ls, "buildingCodeId", buildingCodeId,
-                "organizationId", organizationId));
+    public boolean isExist(Integer ls, Long buildingCodeId) {
+        return sqlSession().selectOne("isExistHeatmeter", of("ls", ls, "buildingCodeId", buildingCodeId));
     }
 
     public Heatmeter getHeatmeterByLs(Integer ls, Long organizationId) {

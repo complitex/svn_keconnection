@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
-import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.OPERATION;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING_AND_WATER;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
@@ -37,18 +36,23 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
  */
 @Stateless
 public class HeatmeterImportService extends AbstractImportService {
-
     private final static Logger log = LoggerFactory.getLogger(HeatmeterImportService.class);
+
     @EJB
     private ConfigBean configBean;
+
     @EJB
     private HeatmeterBean heatmeterBean;
+
     @EJB
-    private HeatmeterConnectionBean heatmeterConnectionBean;
+    private HeatmeterOperationBean operationBean;
+
     @EJB
-    private HeatmeterPeriodBean heatmeterPeriodBean;
+    private HeatmeterConnectionBean connectionBean;
+
     @EJB
     private IKeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
 
@@ -193,7 +197,7 @@ public class HeatmeterImportService extends AbstractImportService {
         }
 
         //check duplicates
-        if (heatmeterBean.isExist(ls, buildingCodeId, organizationId)) {
+        if (heatmeterBean.isExist(ls, buildingCodeId)) {
             throw new DuplicateException();
         }
 
@@ -222,7 +226,7 @@ public class HeatmeterImportService extends AbstractImportService {
             operation.setEndOm(heatmeaterWrapper.getEndOm());
             operation.setBeginDate(heatmeaterWrapper.getBeginDate());
             operation.setEndDate(heatmeaterWrapper.getEndDate());
-            heatmeterPeriodBean.save(operation);
+            operationBean.save(operation);
         }
 
         //create heatmeter connection
@@ -235,7 +239,8 @@ public class HeatmeterImportService extends AbstractImportService {
         connection.setEndOm(heatmeaterWrapper.getEndOm());
         connection.setBeginDate(heatmeaterWrapper.getBeginDate());
         connection.setEndDate(heatmeaterWrapper.getEndDate());
-        heatmeterConnectionBean.save(connection);
+
+        connectionBean.save(connection);
     }
 
     public List<HeatmeterImportFile> getHeatmeterImportFiles() {
