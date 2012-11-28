@@ -7,7 +7,6 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.CO
  *         Date: 02.10.12 15:32
  */
 public class HeatmeterConnection extends HeatmeterPeriod {
-    private Long buildingCodeId;
     private Long buildingId;
     private Long organizationId;
     private Integer code;
@@ -15,14 +14,6 @@ public class HeatmeterConnection extends HeatmeterPeriod {
 
     public HeatmeterConnection() {
         super(CONNECTION);
-    }
-
-    public Long getBuildingCodeId() {
-        return buildingCodeId;
-    }
-
-    public void setBuildingCodeId(Long buildingCodeId) {
-        this.buildingCodeId = buildingCodeId;
     }
 
     public Long getBuildingId() {
