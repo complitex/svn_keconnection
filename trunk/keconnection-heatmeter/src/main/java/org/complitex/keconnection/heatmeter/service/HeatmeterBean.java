@@ -33,16 +33,19 @@ public class HeatmeterBean extends AbstractBean {
     public static final String CONSUMPTION1_FILTER_PARAM = "consumption1";
 
     @EJB
-    private HeatmeterConnectionBean heatmeterConnectionBean;
+    private HeatmeterOperationBean operationBean;
 
     @EJB
-    private HeatmeterPayloadBean heatmeterPayloadBean;
+    private HeatmeterConnectionBean connectionBean;
 
     @EJB
-    private HeatmeterInputBean heatmeterInputBean;
+    private HeatmeterPayloadBean payloadBean;
 
     @EJB
-    private HeatmeterConsumptionBean heatmeterConsumptionBean;
+    private HeatmeterInputBean inputBean;
+
+    @EJB
+    private HeatmeterConsumptionBean consumptionBean;
 
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
@@ -62,10 +65,10 @@ public class HeatmeterBean extends AbstractBean {
 
         Long heatmeterId = heatmeter.getId();
 
-        //heatmeterPeriodBean.save(heatmeterId, om, heatmeter.getOperations());
-        heatmeterConnectionBean.save(heatmeterId, om, heatmeter.getConnections());
-        heatmeterPayloadBean.save(heatmeterId, om, heatmeter.getPayloads());
-        heatmeterInputBean.save(heatmeterId, om, heatmeter.getInputs());
+        operationBean.save(heatmeterId, om, heatmeter.getOperations());
+        connectionBean.save(heatmeterId, om, heatmeter.getConnections());
+        payloadBean.save(heatmeterId, om, heatmeter.getPayloads());
+        inputBean.save(heatmeterId, om, heatmeter.getInputs());
     }
 
     public Heatmeter getHeatmeter(Long id) {

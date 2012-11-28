@@ -29,7 +29,7 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.IN
  */
 @XmlMapper
 @Stateless
-public class HeatmeterInputBean extends HeatmeterPeriodBean {
+public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
     
@@ -54,6 +54,15 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean {
         for (HeatmeterConsumption consumption : input.getConsumptions()) {
             consumption.setHeatmeterInputId(input.getId());
             heatmeterConsumptionBean.save(consumption);
+        }
+    }
+
+    @Override
+    public void save(Long heatmeterId, Date om, List<HeatmeterInput> list) {
+        super.save(heatmeterId, om, list);
+
+        for (HeatmeterInput input : list){
+            save(input);
         }
     }
 

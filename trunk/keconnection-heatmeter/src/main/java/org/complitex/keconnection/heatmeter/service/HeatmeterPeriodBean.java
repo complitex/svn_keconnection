@@ -17,7 +17,7 @@ import static com.google.common.collect.ImmutableMap.of;
  *         Date: 19.09.12 15:12
  */
 @XmlMapper
-public abstract class HeatmeterPeriodBean extends AbstractBean {
+public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends AbstractBean {
     public abstract HeatmeterPeriodType getType();
 
     public List<Long> getIdList(Long heatmeterId, Date om){
@@ -40,14 +40,12 @@ public abstract class HeatmeterPeriodBean extends AbstractBean {
     }
 
     @Transactional
-    public void save(Long heatmeterId, Date om, List<? extends HeatmeterPeriod> list){
-        if (heatmeterId != null) {
-            List<Long> db = getIdList(heatmeterId, om);
-            List<Long> remove = IdListUtil.getIdDiff(db, list);
+    public void save(Long heatmeterId, Date om, List<T> list){
+        List<Long> db = getIdList(heatmeterId, om);
+        List<Long> remove = IdListUtil.getIdDiff(db, list);
 
-            for (Long id : remove) {
-                delete(id);
-            }
+        for (Long id : remove) {
+            delete(id);
         }
 
         for (HeatmeterPeriod object : list) {
