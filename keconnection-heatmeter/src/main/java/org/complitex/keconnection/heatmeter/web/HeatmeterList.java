@@ -1,6 +1,5 @@
 package org.complitex.keconnection.heatmeter.web;
 
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import com.google.common.io.ByteStreams;
 import org.apache.wicket.Component;
@@ -443,42 +442,12 @@ public class HeatmeterList extends TemplatePage {
         beginOm.setRequired(true);
         uploadForm.add(beginOm);
 
-        final IModel<Date> beginDateModel = new Model<>();
-        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer") {
-
-            {
-                setOutputMarkupPlaceholderTag(true);
-            }
-
-            @Override
-            protected void onBeforeRender() {
-                removeAll();
-
-                MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
-                beginDate.setRequired(true);
-                add(beginDate);
-
-                Integer beginOm = beginOmModel.getObject();
-                if (beginOm != null) {
-                    int year = getYear(getCurrentDate());
-                    Date firstDayOfMonth = getFirstDayOfMonth(year, beginOm);
-                    beginDateModel.setObject(firstDayOfMonth);
-                    beginDate.setMinDate(firstDayOfMonth);
-                    beginDate.setMaxDate(getLastDayOfMonth(year, beginOm));
-                }
-
-                super.onBeforeRender();
-            }
-        };
+        final IModel<Date> beginDateModel = new Model<>(getCurrentDate());
+        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer");
+        MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
+        beginDate.setRequired(true);
+        beginDateContainer.add(beginDate);
         uploadForm.add(beginDateContainer);
-
-        beginOm.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(beginDateContainer);
-            }
-        });
 
         final FileUploadField fileUploadField = new FileUploadField("file_upload_field");
         uploadForm.add(fileUploadField);
@@ -487,31 +456,6 @@ public class HeatmeterList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
-                final int currentYear = getYear(getCurrentDate());
-                final int beginOm = beginOmModel.getObject();
-                final Date beginDate = beginDateModel.getObject();
-
-                //validation
-                boolean validated = true;
-                if (beginDateContainer.isVisibilityAllowed()) {
-                    final int beginDateYear = getYear(beginDate);
-                    final int beginDateMonth = getMonth(beginDate);
-
-                    if (beginDateYear != currentYear) {
-                        validated = false;
-                        error(getString("error_wrong_year"));
-                    }
-                    if (beginDateMonth != beginOm - 1) {
-                        validated = false;
-                        error(getString("error_wrong_month"));
-                    }
-                }
-
-                if (!validated) {
-                    target.add(uploadFormMessages);
-                    return;
-                }
-
                 FileUpload fileUpload = fileUploadField.getFileUpload();
 
                 if (fileUpload == null || fileUpload.getClientFileName() == null) {
@@ -566,7 +510,8 @@ public class HeatmeterList extends TemplatePage {
                     target.add(dataContainer);
 
                     heatmeterImportService.asyncUploadHeatmeters(fileUpload.getClientFileName(), inputStream,
-                            getFirstDayOfMonth(currentYear, beginOm), beginDate, listener);
+                            getFirstDayOfMonth(getYear(getCurrentDate()), beginOmModel.getObject()),
+                            beginDateModel.getObject(), listener);
                 } catch (IOException e) {
                     log.error("Ошибка чтения файла", e);
                 }
