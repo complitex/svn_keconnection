@@ -4,7 +4,6 @@
  */
 package org.complitex.keconnection.importing.web;
 
-import org.apache.wicket.event.IEvent;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -39,8 +38,6 @@ import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
 import java.util.*;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.event.Broadcast;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
@@ -129,55 +126,15 @@ public final class ImportPage extends TemplatePage {
 
         final List<HeatmeterImportFile> heatmeterImportFiles = heatmeterImportService.getHeatmeterImportFiles();
         final IModel<Date> beginDateModel = new Model<>();
-        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer") {
-
-            Integer beginOmValue;
-
-            {
-                setOutputMarkupPlaceholderTag(true);
-                beginOmValue = beginOmModel.getObject();
-            }
-
-            @Override
-            public void onEvent(IEvent<?> event) {
-                if (event.getSource() == beginOm) {
-                    this.beginOmValue = (Integer) event.getPayload();
-                }
-            }
-
-            @Override
-            protected void onBeforeRender() {
-                if (beginOmValue != null) {
-                    removeAll();
-
-                    MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
-                    beginDate.setRequired(true);
-                    add(beginDate);
-
-                    int year = getYear(getCurrentDate());
-                    Date firstDayOfMonth = getFirstDayOfMonth(year, beginOmValue);
-                    beginDateModel.setObject(firstDayOfMonth);
-                    beginDate.setMinDate(firstDayOfMonth);
-                    beginDate.setMaxDate(getLastDayOfMonth(year, beginOmValue));
-                }
-
-                beginOmValue = null;
-                super.onBeforeRender();
-            }
-        };
+        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer");
+        MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
+        beginDate.setRequired(true);
+        beginDateContainer.add(beginDate);
         beginDateContainer.setVisibilityAllowed(heatmeterImportFiles != null && !heatmeterImportFiles.isEmpty());
+        if (beginDateContainer.isVisibilityAllowed()) {
+            beginDateModel.setObject(getCurrentDate());
+        }
         form.add(beginDateContainer);
-
-        beginOm.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                if (beginDateContainer.isVisibilityAllowed()) {
-                    beginOm.send(beginDateContainer, Broadcast.EXACT, beginOmModel.getObject());
-                    target.add(beginDateContainer);
-                }
-            }
-        });
 
         form.add(new CheckBoxMultipleChoice<>("heatmeterData", heatmeterDataModel, heatmeterImportFiles, renderer));
 
@@ -194,30 +151,6 @@ public final class ImportPage extends TemplatePage {
                 if (!importService.isProcessing()) {
                     messages.clean();
 
-                    final int currentYear = getYear(getCurrentDate());
-                    final int beginOm = beginOmModel.getObject();
-                    final Date beginDate = beginDateModel.getObject();
-
-                    //validation
-                    boolean validated = true;
-                    if (beginDateContainer.isVisibilityAllowed()) {
-                        final int beginDateYear = getYear(beginDate);
-                        final int beginDateMonth = getMonth(beginDate);
-
-                        if (beginDateYear != currentYear) {
-                            validated = false;
-                            error(getString("error_wrong_year"));
-                        }
-                        if (beginDateMonth != beginOm - 1) {
-                            validated = false;
-                            error(getString("error_wrong_month"));
-                        }
-                    }
-
-                    if (!validated) {
-                        return;
-                    }
-
                     warningsModel.getObject().clear();
 
                     final List<IImportFile> allImportFiles = ImmutableList.<IImportFile>builder().
@@ -227,7 +160,8 @@ public final class ImportPage extends TemplatePage {
                             addAll(payloadDataModel.getObject()).
                             build();
                     importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId(),
-                            getFirstDayOfMonth(currentYear, beginOm), beginDate);
+                            getFirstDayOfMonth(getYear(getCurrentDate()), beginOmModel.getObject()),
+                            beginDateModel.getObject());
                     container.add(newTimer());
                 }
             }
