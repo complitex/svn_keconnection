@@ -4,7 +4,6 @@
  */
 package org.complitex.keconnection.organization.strategy.web.edit;
 
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -18,6 +17,8 @@ import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
 
+import javax.ejb.EJB;
+
 /**
  *
  * @author Artem
@@ -28,8 +29,8 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
     private IKeConnectionOrganizationStrategy organizationStrategy;
     @EJB
     private StringCultureBean stringBean;
-    private WebMarkupContainer readyCloseOperMonthSection;
-    private WebMarkupContainer operatingMonthSection;
+    private WebMarkupContainer readyCloseOmSection;
+    private WebMarkupContainer omSection;
 
     public KeConnectionOrganizationEditComponent(String id, boolean disabled) {
         super(id, disabled);
@@ -50,9 +51,9 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
         //Readiness to close operating month. It is servicing organization only attribute.
         {
-            readyCloseOperMonthSection = new WebMarkupContainer("readyCloseOperMonthSection");
-            readyCloseOperMonthSection.setOutputMarkupPlaceholderTag(true);
-            add(readyCloseOperMonthSection);
+            readyCloseOmSection = new WebMarkupContainer("readyCloseOmSection");
+            readyCloseOmSection.setOutputMarkupPlaceholderTag(true);
+            add(readyCloseOmSection);
 
             final long attributeTypeId = IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH;
             Attribute attribute = organization.getAttribute(attributeTypeId);
@@ -65,28 +66,28 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
             }
             final EntityAttributeType attributeType =
                     organizationStrategy.getEntity().getAttributeType(attributeTypeId);
-            readyCloseOperMonthSection.add(new Label("label",
+            readyCloseOmSection.add(new Label("label",
                     DomainObjectInputPanel.labelModel(attributeType.getAttributeNames(), getLocale())));
-            readyCloseOperMonthSection.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
+            readyCloseOmSection.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
 
-            readyCloseOperMonthSection.add(DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
+            readyCloseOmSection.add(DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
                     organization, attribute, getLocale(), true));
 
             //initial visibility
-            readyCloseOperMonthSection.setVisible(isServicingOrganization());
+            readyCloseOmSection.setVisible(isServicingOrganization());
         }
 
         //Operating month. Only for servicing organizations.
         {
-            operatingMonthSection = new WebMarkupContainer("operatingMonthSection");
-            operatingMonthSection.setOutputMarkupPlaceholderTag(true);
-            add(operatingMonthSection);
+            omSection = new WebMarkupContainer("omSection");
+            omSection.setOutputMarkupPlaceholderTag(true);
+            add(omSection);
 
-            operatingMonthSection.add(new Label("operatingMonth", organization.getOperatingMonth(getLocale())));
+            omSection.add(new Label("om", organization.getOperatingMonth(getLocale())));
 
             //initial visibility
-            operatingMonthSection.setVisibilityAllowed(!isDisabled);
-            operatingMonthSection.setVisible(isServicingOrganization());
+            omSection.setVisibilityAllowed(!isDisabled);
+            omSection.setVisible(isServicingOrganization());
         }
     }
 
@@ -96,21 +97,21 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
         //Readiness to close operating month.
         {
-            boolean wasVisible = readyCloseOperMonthSection.isVisible();
-            readyCloseOperMonthSection.setVisible(isServicingOrganization());
-            boolean visibleNow = readyCloseOperMonthSection.isVisible();
+            boolean wasVisible = readyCloseOmSection.isVisible();
+            readyCloseOmSection.setVisible(isServicingOrganization());
+            boolean visibleNow = readyCloseOmSection.isVisible();
             if (wasVisible ^ visibleNow) {
-                target.add(readyCloseOperMonthSection);
+                target.add(readyCloseOmSection);
             }
         }
 
         //Operating month.
         {
-            boolean wasVisible = operatingMonthSection.isVisible();
-            operatingMonthSection.setVisible(isServicingOrganization());
-            boolean visibleNow = operatingMonthSection.isVisible();
+            boolean wasVisible = omSection.isVisible();
+            omSection.setVisible(isServicingOrganization());
+            boolean visibleNow = omSection.isVisible();
             if (wasVisible ^ visibleNow) {
-                target.add(operatingMonthSection);
+                target.add(omSection);
             }
         }
     }
