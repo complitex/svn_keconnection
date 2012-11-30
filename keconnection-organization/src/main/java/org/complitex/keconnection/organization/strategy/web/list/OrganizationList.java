@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -18,35 +20,33 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.entity.example.AttributeExample;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
+import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
+import org.complitex.dictionary.web.component.search.CollapsibleSearchPanel;
+import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
+import org.complitex.template.web.component.toolbar.search.CollapsibleSearchToolbarButton;
+import org.complitex.template.web.pages.DomainObjectList;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.complitex.template.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.util.List;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.dictionary.entity.example.AttributeExample;
-import org.complitex.dictionary.strategy.StrategyFactory;
-import org.complitex.dictionary.util.AttributeUtil;
-import org.complitex.dictionary.web.component.search.CollapsibleSearchPanel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
-import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
-import org.complitex.keconnection.organization.strategy.entity.Organization;
-import org.complitex.template.web.component.toolbar.search.CollapsibleSearchToolbarButton;
-import org.complitex.template.web.pages.DomainObjectList;
 
 /**
  *
@@ -238,7 +238,7 @@ public class OrganizationList extends ScrollListPage {
                 item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization,
                         IKeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
                 item.add(new Label("parentShortName", organization.getParentShortName()));
-                item.add(new Label("operatingMonth", organization.getOperatingMonth(getLocale())));
+                item.add(new Label("om", organization.getOperatingMonth(getLocale())));
 
                 ScrollBookmarkablePageLink<WebPage> detailsLink = new ScrollBookmarkablePageLink<WebPage>("detailsLink",
                         getOrganizationStrategy().getEditPage(),
