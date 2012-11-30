@@ -13,22 +13,22 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
-import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
 import org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.complitex.dictionary.web.component.LabelDateField;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterOperation;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 15:45
  */
 public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
+
     @EJB
     private HeatmeterOperationBean operationBean;
 
@@ -36,29 +36,50 @@ public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
         super(id, model, om);
         setOutputMarkupId(true);
 
-        final ListView<HeatmeterPeriod> periods = new ListView<HeatmeterPeriod>("list_view",
-                new LoadableDetachableModel<List<HeatmeterPeriod>>() {
-                    @Override
-                    protected List<HeatmeterPeriod> load() {
-                        Heatmeter heatmeter = model.getObject();
+        final IModel<List<HeatmeterOperation>> operationsModel = new LoadableDetachableModel<List<HeatmeterOperation>>() {
 
-                        return new ArrayList<>();
-
-//                        return isActiveOm()
-//                                ? heatmeter.getOperations()
-//                                : operationBean.getList(heatmeter.getId(), om.getObject(), HeatmeterPeriodType.OPERATION);
-                    }
-                }) {
             @Override
-            protected void populateItem(ListItem<HeatmeterPeriod> item) {
-                HeatmeterPeriod heatmeterPeriod = item.getModelObject();
+            protected List<HeatmeterOperation> load() {
+                Heatmeter heatmeter = model.getObject();
 
-                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(heatmeterPeriod, "beginDate")));
-                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(heatmeterPeriod, "endDate")));
+                return isActiveOm()
+                        ? heatmeter.getOperations()
+                        : operationBean.getHeatmeterOperations(heatmeter.getId(), om.getObject());
+            }
+        };
+
+        final ListView<HeatmeterOperation> operations = new ListView<HeatmeterOperation>("list_view", operationsModel) {
+
+            @Override
+            protected void populateItem(ListItem<HeatmeterOperation> item) {
+                final HeatmeterOperation operation = item.getModelObject();
+
+                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(operation, "beginDate")));
+                item.add(new LabelDateField("end_date", new PropertyModel<Date>(operation, "endDate")));
+
                 item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodSubType.class,
-                        new PropertyModel<HeatmeterPeriodSubType>(heatmeterPeriod, "type"), false));
+                        new PropertyModel<HeatmeterPeriodSubType>(operation, "subType"), false));
+
+                item.add(new AjaxSubmitLink("remove") {
+
+                    @Override
+                    public boolean isVisible() {
+                        return isActiveOm() && !operationsModel.getObject().isEmpty();
+                    }
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        model.getObject().getOperations().remove(operation);
+                        target.add(HeatmeterOperationPanel.this);
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    }
+                });
 
                 item.visitChildren(new IVisitor<Component, Object>() {
+
                     @Override
                     public void component(Component object, IVisit<Object> visit) {
                         object.setEnabled(isActiveOm());
@@ -67,16 +88,18 @@ public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
                 });
             }
         };
-        add(periods);
+        add(operations);
 
-        add(new WebMarkupContainer("header"){
+        add(new WebMarkupContainer("header") {
+
             @Override
             public boolean isVisible() {
-                return !periods.getModelObject().isEmpty();
+                return !operationsModel.getObject().isEmpty();
             }
         });
 
         add(new AjaxSubmitLink("add") {
+
             @Override
             public boolean isVisible() {
                 return isActiveOm();
@@ -84,27 +107,10 @@ public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-               //model.getObject().getOperations().add(new HeatmeterPeriod(operatingMonthModel.getObject()));
-
-                target.add(HeatmeterOperationPanel.this);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-            }
-        });
-
-        add(new AjaxSubmitLink("remove") {
-            @Override
-            public boolean isVisible() {
-                return isActiveOm() && !periods.getModelObject().isEmpty();
-            }
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<HeatmeterPeriod> list = periods.getModelObject();
-                model.getObject().getOperations().remove(list.size() - 1);
-                periods.detachModels();
+                HeatmeterOperation operation = new HeatmeterOperation();
+                operation.setHeatmeterId(model.getObject().getId());
+                operation.setBeginOm(om.getObject());
+                model.getObject().getOperations().add(operation);
 
                 target.add(HeatmeterOperationPanel.this);
             }

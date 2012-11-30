@@ -18,20 +18,31 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 @XmlMapper
 public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends AbstractBean {
+
     public abstract HeatmeterPeriodType getType();
 
-    public List<Long> getIdList(Long heatmeterId, Date om){
+    public List<Long> getIdList(Long heatmeterId, Date om) {
         return sqlSession().selectList("selectHeatmeterPeriodIds",
                 of("type", getType(), "heatmeterId", heatmeterId, "om", om));
     }
 
     @Transactional
-    public void save(HeatmeterPeriod heatmeterPeriod) {
-        if (heatmeterPeriod.getId() == null) {
-            sqlSession().insert("insertHeatmeterPeriod", heatmeterPeriod);
+    public void save(T object) {
+        if (object.getId() == null) {
+            sqlSession().insert("insertHeatmeterPeriod", object);
+            insertAdditionalInfo(object);
         } else {
-            sqlSession().update("updateHeatmeterPeriod", heatmeterPeriod);
+            sqlSession().update("updateHeatmeterPeriod", object);
+            updateAdditionalInfo(object);
         }
+    }
+
+    @Transactional
+    public void insertAdditionalInfo(T info) {
+    }
+
+    @Transactional
+    public void updateAdditionalInfo(T info) {
     }
 
     @Transactional
@@ -40,7 +51,7 @@ public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends Abs
     }
 
     @Transactional
-    public void save(Long heatmeterId, Date om, List<T> list){
+    public void save(Long heatmeterId, Date om, List<T> list) {
         List<Long> db = getIdList(heatmeterId, om);
         List<Long> remove = IdListUtil.getIdDiff(db, list);
 
@@ -48,7 +59,7 @@ public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends Abs
             delete(id);
         }
 
-        for (HeatmeterPeriod object : list) {
+        for (T object : list) {
             object.setHeatmeterId(heatmeterId);
 
             save(object);

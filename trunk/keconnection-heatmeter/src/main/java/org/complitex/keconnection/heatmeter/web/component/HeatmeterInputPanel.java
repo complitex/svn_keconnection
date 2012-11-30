@@ -13,53 +13,78 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.TextLabel;
-import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
+import org.complitex.dictionary.web.component.LabelDateField;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterInput;
+import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.10.12 14:55
  */
 public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
-    public HeatmeterInputPanel(String id, final IModel<Heatmeter> model, final IModel<Date> operatingMonthModel) {
-        super(id, model, operatingMonthModel);
+
+    @EJB
+    private HeatmeterInputBean inputBean;
+
+    public HeatmeterInputPanel(String id, final IModel<Heatmeter> model, final IModel<Date> om) {
+        super(id, model, om);
 
         setOutputMarkupId(true);
 
-        final ListView<HeatmeterConsumption> listView = new ListView<HeatmeterConsumption>("list_view",
-                new LoadableDetachableModel<List<HeatmeterConsumption>>() {
-                    @Override
-                    protected List<HeatmeterConsumption> load() {
-                        List<HeatmeterConsumption> list = new ArrayList<>();
+        final IModel<List<HeatmeterInput>> inputsModel = new LoadableDetachableModel<List<HeatmeterInput>>() {
 
-                        for (HeatmeterConsumption c : model.getObject().getConsumptions()){
-                            if (DateUtil.isSameMonth(c.getOm(), operatingMonthModel.getObject())){
-                                list.add(c);
-                            }
-                        }
-
-                        return list;
-                    }
-                }) {
             @Override
-            protected void populateItem(ListItem<HeatmeterConsumption> item) {
-                final HeatmeterConsumption consumption = item.getModelObject();
+            protected List<HeatmeterInput> load() {
+                Heatmeter heatmeter = model.getObject();
 
-                item.add(new MaskedDateInput("readoutDate", new PropertyModel<Date>(consumption, "readoutDate")));
-                item.add(new TextField<>("consumption", new PropertyModel<>(consumption, "consumption")));
-                item.add(new TextLabel("consumption1", consumption.getConsumption1()));
-                item.add(new TextLabel("consumption2", consumption.getConsumption2()));
-                item.add(new TextLabel("consumption3", consumption.getConsumption3()));
-                item.add(new TextLabel("status", consumption.getStatus()));
+                return isActiveOm()
+                        ? heatmeter.getInputs()
+                        : inputBean.getHeatmeterInputs(heatmeter.getId(), om.getObject());
+            }
+        };
+
+        final ListView<HeatmeterInput> listView = new ListView<HeatmeterInput>("list_view", inputsModel) {
+
+            @Override
+            protected void populateItem(ListItem<HeatmeterInput> item) {
+                final HeatmeterInput input = item.getModelObject();
+                final HeatmeterConsumption consumption = input.getFirstConsumption();
+
+                item.add(new LabelDateField("readoutDate", new PropertyModel<Date>(input, "endDate")));
+                item.add(new TextField<>("consumption", new PropertyModel<>(input, "value")));
+                item.add(new TextLabel("consumption1", new PropertyModel<>(consumption, "consumption1")));
+                item.add(new TextLabel("consumption2", new PropertyModel<>(consumption, "consumption2")));
+                item.add(new TextLabel("consumption3", new PropertyModel<>(consumption, "consumption3")));
+
+//                item.add(new TextLabel("status", input.getStatus()));
+
+                item.add(new AjaxSubmitLink("remove") {
+
+                    @Override
+                    public boolean isVisible() {
+                        return isActiveOm() && !inputsModel.getObject().isEmpty();
+                    }
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        model.getObject().getInputs().remove(input);
+                        target.add(HeatmeterInputPanel.this);
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    }
+                });
 
                 item.visitChildren(new IVisitor<Component, Object>() {
+
                     @Override
                     public void component(Component object, IVisit<Object> visit) {
                         object.setEnabled(isActiveOm());
@@ -70,14 +95,16 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
         };
         add(listView);
 
-        add(new WebMarkupContainer("header"){
+        add(new WebMarkupContainer("header") {
+
             @Override
             public boolean isVisible() {
-                return !listView.getModelObject().isEmpty();
+                return !inputsModel.getObject().isEmpty();
             }
         });
 
         add(new AjaxSubmitLink("add") {
+
             @Override
             public boolean isVisible() {
                 return isActiveOm();
@@ -85,27 +112,9 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                //model.getObject().getConsumptions().add(new HeatmeterConsumption(operatingMonthModel.getObject()));
-
-                target.add(HeatmeterInputPanel.this);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-            }
-        });
-
-        add(new AjaxSubmitLink("remove") {
-            @Override
-            public boolean isVisible() {
-                return isActiveOm() && !listView.getModelObject().isEmpty();
-            }
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<HeatmeterConsumption> list = listView.getModelObject();
-                model.getObject().getConsumptions().remove(list.size() - 1);
-                listView.detachModels();
+                HeatmeterInput input = new HeatmeterInput(model.getObject().getId(), om.getObject());
+                input.addNewConsumptionIfNecessary();
+                model.getObject().getInputs().add(input);
 
                 target.add(HeatmeterInputPanel.this);
             }

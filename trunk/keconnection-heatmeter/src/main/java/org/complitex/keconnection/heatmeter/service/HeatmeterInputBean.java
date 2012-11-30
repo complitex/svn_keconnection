@@ -30,39 +30,52 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.IN
 @XmlMapper
 @Stateless
 public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
+
     @EJB
     private HeatmeterConsumptionBean heatmeterConsumptionBean;
-    
+
     @Override
     public HeatmeterPeriodType getType() {
         return INPUT;
     }
 
+    //TODO: remove after testing:
+//    @Transactional
+//    public void save(HeatmeterInput input) {
+//        boolean isNew = input.getId() == null;
+//
+//        super.save(input);
+//        
+//        if (isNew) {
+//            sqlSession().insert("insertHeatmeterInput", input);
+//        } else {
+//            sqlSession().update("updateHeatmeterInput", input);
+//        }
+//
+//        //update consumptions
+//        for (HeatmeterConsumption consumption : input.getConsumptions()) {
+//            consumption.setHeatmeterInputId(input.getId());
+//            heatmeterConsumptionBean.save(consumption);
+//        }
+//    }
     @Transactional
-    public void save(HeatmeterInput input) {
-        boolean isNew = input.getId() == null;
-
-        super.save(input);
-        
-        if (isNew) {
-            sqlSession().insert("insertHeatmeterInput", input);
-        } else {
-            sqlSession().update("updateHeatmeterInput", input);
-        }
-
-        //update consumptions
-        for (HeatmeterConsumption consumption : input.getConsumptions()) {
-            consumption.setHeatmeterInputId(input.getId());
-            heatmeterConsumptionBean.save(consumption);
-        }
+    @Override
+    public void insertAdditionalInfo(HeatmeterInput info) {
+        sqlSession().insert("insertHeatmeterInput", info);
+        updateConsumptions(info.getId(), info.getConsumptions());
     }
 
+    @Transactional
     @Override
-    public void save(Long heatmeterId, Date om, List<HeatmeterInput> list) {
-        super.save(heatmeterId, om, list);
+    public void updateAdditionalInfo(HeatmeterInput info) {
+        sqlSession().update("updateHeatmeterInput", info);
+        updateConsumptions(info.getId(), info.getConsumptions());
+    }
 
-        for (HeatmeterInput input : list){
-            save(input);
+    private void updateConsumptions(long inputId, List<HeatmeterConsumption> consumptions) {
+        for (HeatmeterConsumption consumption : consumptions) {
+            consumption.setHeatmeterInputId(inputId);
+            heatmeterConsumptionBean.save(consumption);
         }
     }
 

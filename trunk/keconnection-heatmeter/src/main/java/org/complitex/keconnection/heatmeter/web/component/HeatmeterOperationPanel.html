@@ -10,16 +10,19 @@
                 <th><wicket:message key="begin_date"/></th>
                 <th><wicket:message key="end_date"/></th>
                 <th><wicket:message key="period_type"/></th>
+                <th></th>
             </tr>
             <tr wicket:id="list_view">
-                <td><input type="text" wicket:id="begin_date" size="8"/></td>
-                <td><input type="text" wicket:id="end_date" size="8"/></td>
+                <td><div wicket:id="begin_date"/></td>
+                <td><div wicket:id="end_date"/></td>
                 <td><select wicket:id="type"></select></td>
+                <td>
+                    <a wicket:id="remove"><wicket:message key="remove"/></a>
+                </td>
             </tr>
         </table>
         <div>
             <a wicket:id="add"><wicket:message key="add"/></a>
-            <a wicket:id="remove"><wicket:message key="remove"/></a>
         </div>
     </fieldset>
 </wicket:panel>
