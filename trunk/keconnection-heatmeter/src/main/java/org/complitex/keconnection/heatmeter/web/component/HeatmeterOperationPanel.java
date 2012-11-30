@@ -12,16 +12,16 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.complitex.dictionary.web.component.EnumDropDownChoice;
+import org.complitex.dictionary.web.component.LabelDateField;
+import org.complitex.dictionary.web.component.LabelEnumDropDownChoice;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterOperation;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType;
 import org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean;
 
 import javax.ejb.EJB;
 import java.util.Date;
 import java.util.List;
-import org.complitex.dictionary.web.component.LabelDateField;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterOperation;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -57,7 +57,7 @@ public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
                 item.add(new LabelDateField("begin_date", new PropertyModel<Date>(operation, "beginDate")));
                 item.add(new LabelDateField("end_date", new PropertyModel<Date>(operation, "endDate")));
 
-                item.add(new EnumDropDownChoice<>("type", HeatmeterPeriodSubType.class,
+                item.add(new LabelEnumDropDownChoice<>("type", HeatmeterPeriodSubType.class,
                         new PropertyModel<HeatmeterPeriodSubType>(operation, "subType"), false));
 
                 item.add(new AjaxSubmitLink("remove") {
