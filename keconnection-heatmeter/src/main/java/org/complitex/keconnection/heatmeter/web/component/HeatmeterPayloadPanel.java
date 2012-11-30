@@ -13,50 +13,74 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
+import org.complitex.dictionary.web.component.LabelDateField;
+import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 16:42
  */
 public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
-    public HeatmeterPayloadPanel(String id, final IModel<Heatmeter> model, final IModel<Date> operatingMonthModel) {
-        super(id, model, operatingMonthModel);
+
+    @EJB
+    private HeatmeterPayloadBean payloadBean;
+
+    public HeatmeterPayloadPanel(String id, final IModel<Heatmeter> model, final IModel<Date> om) {
+        super(id, model, om);
 
         setOutputMarkupId(true);
 
-        final ListView<HeatmeterPayload> payloads = new ListView<HeatmeterPayload>("list_view",
-                new LoadableDetachableModel<List<HeatmeterPayload>>() {
+        final IModel<List<HeatmeterPayload>> payloadsModel = new LoadableDetachableModel<List<HeatmeterPayload>>() {
+
             @Override
             protected List<HeatmeterPayload> load() {
-                List<HeatmeterPayload> list = new ArrayList<>();
+                Heatmeter heatmeter = model.getObject();
 
-//                for (HeatmeterPayload p : model.getObject().getPayloads()){
-//                    if (DateUtil.isSameMonth(p.getOm(), operatingMonthModel.getObject())){
-//                        list.add(p);
-//                    }
-//                }
-
-                return list;
+                return isActiveOm()
+                        ? heatmeter.getPayloads()
+                        : payloadBean.getHeatmeterPayloads(heatmeter.getId(), om.getObject());
             }
-        }) {
+        };
+
+        final ListView<HeatmeterPayload> payloads = new ListView<HeatmeterPayload>("list_view", payloadsModel) {
+
             @Override
             protected void populateItem(ListItem<HeatmeterPayload> item) {
-                HeatmeterPayload payload = item.getModelObject();
+                final HeatmeterPayload payload = item.getModelObject();
 
-                item.add(new MaskedDateInput("begin_date", new PropertyModel<Date>(payload, "beginDate")));
-                item.add(new MaskedDateInput("end_date", new PropertyModel<Date>(payload, "endDate")));
+                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(payload, "beginDate")));
+                item.add(new LabelDateField("end_date", new PropertyModel<Date>(payload, "endDate")));
+
                 item.add(new TextField<>("payload1", new PropertyModel<>(payload, "payload1")));
                 item.add(new TextField<>("payload2", new PropertyModel<>(payload, "payload2")));
                 item.add(new TextField<>("payload3", new PropertyModel<>(payload, "payload3")));
 
+                item.add(new AjaxSubmitLink("remove") {
+
+                    @Override
+                    public boolean isVisible() {
+                        return isActiveOm() && !payloadsModel.getObject().isEmpty();
+                    }
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        model.getObject().getPayloads().remove(payload);
+                        target.add(HeatmeterPayloadPanel.this);
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    }
+                });
+
                 item.visitChildren(new IVisitor<Component, Object>() {
+
                     @Override
                     public void component(Component object, IVisit<Object> visit) {
                         object.setEnabled(isActiveOm());
@@ -67,14 +91,16 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
         };
         add(payloads);
 
-        add(new WebMarkupContainer("header"){
+        add(new WebMarkupContainer("header") {
+
             @Override
             public boolean isVisible() {
-                return !payloads.getModelObject().isEmpty();
+                return !payloadsModel.getObject().isEmpty();
             }
         });
 
         add(new AjaxSubmitLink("add") {
+
             @Override
             public boolean isVisible() {
                 return isActiveOm();
@@ -82,27 +108,10 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-//                model.getObject().getPayloads().add(new HeatmeterPayload(operatingMonthModel.getObject()));
-
-                target.add(HeatmeterPayloadPanel.this);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-            }
-        });
-
-        add(new AjaxSubmitLink("remove") {
-            @Override
-            public boolean isVisible() {
-                return isActiveOm() && !payloads.getModelObject().isEmpty();
-            }
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<HeatmeterPayload> list = payloads.getModelObject();
-                model.getObject().getPayloads().remove(list.size() - 1);
-                payloads.detachModels();
+                HeatmeterPayload payload = new HeatmeterPayload();
+                payload.setHeatmeterId(model.getObject().getId());
+                payload.setBeginOm(om.getObject());
+                model.getObject().getPayloads().add(payload);
 
                 target.add(HeatmeterPayloadPanel.this);
             }

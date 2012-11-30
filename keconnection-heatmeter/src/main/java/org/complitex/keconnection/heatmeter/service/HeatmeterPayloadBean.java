@@ -19,31 +19,36 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.PA
 @XmlMapper
 @Stateless
 public class HeatmeterPayloadBean extends HeatmeterPeriodBean<HeatmeterPayload> {
+
     @Override
     public HeatmeterPeriodType getType() {
         return PAYLOAD;
     }
 
+    //TODO: remove after testing:
+//    @Transactional
+//    public void save(HeatmeterPayload payload) {
+//        boolean isNew = payload.getId() == null;
+//
+//        super.save(payload);
+//
+//        if (isNew) {
+//            sqlSession().insert("insertHeatmeterPayload", payload);
+//        } else {
+//            sqlSession().update("updateHeatmeterPayload", payload);
+//        }
+//    }
+
     @Transactional
-    public void save(HeatmeterPayload payload) {
-        boolean isNew = payload.getId() == null;
-
-        super.save(payload);
-
-        if (isNew) {
-            sqlSession().insert("insertHeatmeterPayload", payload);
-        } else {
-            sqlSession().update("updateHeatmeterPayload", payload);
-        }
+    @Override
+    public void insertAdditionalInfo(HeatmeterPayload info) {
+        sqlSession().insert("insertHeatmeterPayload", info);
     }
 
+    @Transactional
     @Override
-    public void save(Long heatmeterId, Date om, List<HeatmeterPayload> list) {
-        super.save(heatmeterId, om, list);
-
-        for (HeatmeterPayload payload : list){
-            save(payload);
-        }
+    public void updateAdditionalInfo(HeatmeterPayload info) {
+        sqlSession().update("updateHeatmeterPayload", info);
     }
 
     public boolean isExist(Long heatmeterId) {
