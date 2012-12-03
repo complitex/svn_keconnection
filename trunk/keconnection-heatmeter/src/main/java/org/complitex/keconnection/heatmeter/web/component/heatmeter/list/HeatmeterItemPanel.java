@@ -4,7 +4,9 @@
  */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -122,7 +124,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
             @Override
             public Boolean getObject() {
-                return (heatmeter.getPayloads().size() > 1 || heatmeter.getConsumptions().size() > 1)
+                return (heatmeter.getPayloads().size() > 1 || heatmeter.getInputs().size() > 1)
                         && heatmeter.getOm() != null;
             }
         };
@@ -319,7 +321,7 @@ public abstract class HeatmeterItemPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 //validate
-                //TODO: fix validation:
+                //TODO: fix validation
                 HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validatePayloads(heatmeter);
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
                     savePayloadStatusModel.setObject(
@@ -339,6 +341,24 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                         //save new payload
                         heatmeterPayloadBean.save(payload);
+
+                        //recalculate consumptions and save it
+                        {
+                            //do not account for last empty input
+                            Iterable<HeatmeterInput> inputs = Iterables.filter(heatmeter.getInputs(),
+                                    new Predicate<HeatmeterInput>() {
+
+                                        @Override
+                                        public boolean apply(HeatmeterInput input) {
+                                            return input.getId() != null;
+                                        }
+                                    });
+                            heatmeterInputBean.calculateConsumptions(heatmeter.getPayloads(), inputs);
+
+                            for (HeatmeterInput i : inputs) {
+                                heatmeterInputBean.save(i);
+                            }
+                        }
 
                         //add new payload
                         addNewPayload(heatmeter);
@@ -389,7 +409,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                 //validate
                 //TODO: fix validation:
-                HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validateConsumptions(heatmeterListWrapper.getHeatmeter());
+                HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validateConsumptions(heatmeter);
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
                     saveInputStatusModel.setObject(
                             MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
@@ -400,11 +420,11 @@ public abstract class HeatmeterItemPanel extends Panel {
                         //update end om of input
                         input.setEndOm(heatmeter.getOm());
 
-                        //calculate consumptions for new input
-                        heatmeterInputBean.calculateConsumptionForNewInput(heatmeter.getPayloads(), input);
-
-                        //save new input
-                        heatmeterInputBean.save(input);
+                        //recalculate consumptions for inputs and save it
+                        heatmeterInputBean.calculateConsumptions(heatmeter.getPayloads(), heatmeter.getInputs());
+                        for (HeatmeterInput i : heatmeter.getInputs()) {
+                            heatmeterInputBean.save(i);
+                        }
 
                         //add new input
                         addNewInput(heatmeter);

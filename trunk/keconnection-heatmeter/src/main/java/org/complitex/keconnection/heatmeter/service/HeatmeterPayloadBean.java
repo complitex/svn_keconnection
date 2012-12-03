@@ -25,20 +25,6 @@ public class HeatmeterPayloadBean extends HeatmeterPeriodBean<HeatmeterPayload> 
         return PAYLOAD;
     }
 
-    //TODO: remove after testing:
-//    @Transactional
-//    public void save(HeatmeterPayload payload) {
-//        boolean isNew = payload.getId() == null;
-//
-//        super.save(payload);
-//
-//        if (isNew) {
-//            sqlSession().insert("insertHeatmeterPayload", payload);
-//        } else {
-//            sqlSession().update("updateHeatmeterPayload", payload);
-//        }
-//    }
-
     @Transactional
     @Override
     public void insertAdditionalInfo(HeatmeterPayload info) {
