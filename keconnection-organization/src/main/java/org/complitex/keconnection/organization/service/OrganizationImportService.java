@@ -4,20 +4,12 @@
  */
 package org.complitex.keconnection.organization.service;
 
-import org.complitex.dictionary.util.DateUtil;
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.base.Strings;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.complitex.dictionary.converter.BooleanConverter;
 import org.complitex.dictionary.entity.Attribute;
-import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
@@ -30,7 +22,16 @@ import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizatio
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.complitex.keconnection.organization.entity.OrganizationImportFile.*;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+import static org.complitex.keconnection.organization.entity.OrganizationImportFile.ORGANIZATION;
 
 /**
  *
@@ -50,7 +51,7 @@ public class OrganizationImportService extends AbstractImportService {
     /**
      * ID CODE SHORT_NAME NAME HLEVEL
      */
-    public void process(IImportListener listener, long localeId, Date beginOm)
+    public void process(IImportListener listener, long localeId, Date beginOm, Date beginDate)
             throws ImportFileNotFoundException, ImportFileReadException, RootOrganizationNotFound {
 
         organizationImportBean.delete();
@@ -73,9 +74,7 @@ public class OrganizationImportService extends AbstractImportService {
                 organizationImportBean.importOrganization(new OrganizationImport(organizationId, code, shortName, fullName, hlevel));
                 recordIndex++;
             }
-        } catch (IOException e) {
-            throw new ImportFileReadException(e, ORGANIZATION.getFileName(), recordIndex);
-        } catch (NumberFormatException e) {
+        } catch (IOException | NumberFormatException e) {
             throw new ImportFileReadException(e, ORGANIZATION.getFileName(), recordIndex);
         } finally {
             try {
@@ -170,11 +169,10 @@ public class OrganizationImportService extends AbstractImportService {
             //Readiness to close operating month. Only for servicing organizations.
             addReadyCloseOperatingMonthFlag(newObject, systemLocaleId);
 
-            final Date currentDate = DateUtil.getCurrentDate();
             if (oldObject == null) {
-                organizationStrategy.insert(newObject, currentDate);
+                organizationStrategy.insert(newObject, beginDate);
             } else {
-                organizationStrategy.update(oldObject, newObject, currentDate);
+                organizationStrategy.update(oldObject, newObject, beginDate);
             }
 
             //add operating month entry if necessary. Only for servicing organizations.

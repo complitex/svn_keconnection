@@ -4,17 +4,15 @@
  */
 package org.complitex.keconnection.address.service;
 
-import com.google.common.base.Strings;
-import org.complitex.dictionary.util.CloneUtil;
-import static org.complitex.dictionary.util.StringUtil.*;
-import org.complitex.address.strategy.district.DistrictStrategy;
-import org.complitex.address.strategy.street.StreetStrategy;
 import au.com.bytecode.opencsv.CSVReader;
+import com.google.common.base.Strings;
 import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.service.AddressImportService;
 import org.complitex.address.strategy.building.BuildingStrategy;
 import org.complitex.address.strategy.building_address.BuildingAddressStrategy;
 import org.complitex.address.strategy.city.CityStrategy;
+import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
@@ -25,10 +23,9 @@ import org.complitex.dictionary.service.exception.ImportDuplicateException;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
-import org.complitex.dictionary.util.AttributeUtil;
-import org.complitex.dictionary.util.BuildingNumberConverter;
-import org.complitex.dictionary.util.DateUtil;
-import org.complitex.dictionary.util.ResourceUtil;
+import org.complitex.dictionary.util.*;
+import org.complitex.keconnection.address.entity.BuildingImport;
+import org.complitex.keconnection.address.entity.BuildingPartImport;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
@@ -39,14 +36,15 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.IOException;
-
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.complitex.dictionary.util.StringUtil;
-import org.complitex.keconnection.address.entity.BuildingImport;
-import org.complitex.keconnection.address.entity.BuildingPartImport;
-import static org.complitex.address.entity.AddressImportFile.*;
+
+import static org.complitex.address.entity.AddressImportFile.BUILDING;
+import static org.complitex.address.entity.AddressImportFile.STREET;
+import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
+import static org.complitex.dictionary.util.StringUtil.toCyrillic;
 
 /**
  *
@@ -76,32 +74,32 @@ public class KeConnectionAddressImportService extends AbstractImportService {
     @EJB
     private KeConnectionBuildingImportBean buildingImportBean;
 
-    public void process(AddressImportFile addressFile, IImportListener listener, long localeId)
+    public void process(AddressImportFile addressFile, IImportListener listener, long localeId, Date beginDate)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException, ImportDuplicateException {
         switch (addressFile) {
             case COUNTRY:
-                addressImportService.importCountry(listener, localeId);
+                addressImportService.importCountry(listener, localeId, beginDate);
                 break;
             case REGION:
-                addressImportService.importRegion(listener, localeId);
+                addressImportService.importRegion(listener, localeId, beginDate);
                 break;
             case CITY_TYPE:
-                addressImportService.importCityType(listener, localeId);
+                addressImportService.importCityType(listener, localeId, beginDate);
                 break;
             case CITY:
-                addressImportService.importCity(listener, localeId);
+                addressImportService.importCity(listener, localeId, beginDate);
                 break;
             case DISTRICT:
-                addressImportService.importDistrict(listener, localeId);
+                addressImportService.importDistrict(listener, localeId, beginDate);
                 break;
             case STREET_TYPE:
-                addressImportService.importStreetType(listener, localeId);
+                addressImportService.importStreetType(listener, localeId, beginDate);
                 break;
             case STREET:
-                importStreet(listener, localeId);
+                importStreet(listener, localeId, beginDate);
                 break;
             case BUILDING:
-                importBuilding(listener, localeId);
+                importBuilding(listener, localeId, beginDate);
                 break;
         }
     }
@@ -123,7 +121,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
     /**
      * ID DISTR_ID STREET_ID NUM PART GEK CODE
      */
-    private void importBuilding(IImportListener listener, long localeId) throws ImportFileNotFoundException,
+    private void importBuilding(IImportListener listener, long localeId, Date beginDate) throws ImportFileNotFoundException,
             ImportFileReadException, ImportObjectLinkException {
 
         buildingImportBean.delete();
@@ -147,9 +145,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 final String code = line[6].trim();
                 buildingImportBean.saveOrUpdate(buildingPartId, distrId, streetId, num, part, gek, code);
             }
-        } catch (IOException e) {
-            throw new ImportFileReadException(e, BUILDING.getFileName(), recordIndex);
-        } catch (NumberFormatException e) {
+        } catch (IOException | NumberFormatException e) {
             throw new ImportFileReadException(e, BUILDING.getFileName(), recordIndex);
         } finally {
             try {
@@ -245,7 +241,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                     }
                     building.setSubjectIds(subjectIds);
                 }
-                buildingStrategy.insert(building, DateUtil.getCurrentDate());
+                buildingStrategy.insert(building, beginDate);
                 listener.recordProcessed(BUILDING, recordIndex);
             }
             buildingImportBean.markProcessed(imports);
@@ -259,7 +255,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    public void importStreet(IImportListener listener, long localeId)
+    public void importStreet(IImportListener listener, long localeId, Date beginDate)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException, ImportDuplicateException {
         listener.beginImport(STREET, getRecordCount(STREET));
 
@@ -325,18 +321,16 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                             line[3], externalId, existingStreetId, existingStreetExternalId));
                 } else {
                     if (oldObject == null) {
-                        streetStrategy.insert(newObject, DateUtil.getCurrentDate());
+                        streetStrategy.insert(newObject, beginDate);
                     } else {
-                        streetStrategy.update(oldObject, newObject, DateUtil.getCurrentDate());
+                        streetStrategy.update(oldObject, newObject, beginDate);
                     }
                     listener.recordProcessed(STREET, recordIndex);
                 }
             }
 
             listener.completeImport(STREET, recordIndex);
-        } catch (IOException e) {
-            throw new ImportFileReadException(e, STREET.getFileName(), recordIndex);
-        } catch (NumberFormatException e) {
+        } catch (IOException | NumberFormatException e) {
             throw new ImportFileReadException(e, STREET.getFileName(), recordIndex);
         } finally {
             try {

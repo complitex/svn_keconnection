@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.importing.service;
 
 import org.complitex.address.entity.AddressImportFile;
@@ -40,7 +36,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportService {
-
     private static final Logger log = LoggerFactory.getLogger(ImportService.class);
     @Resource
     private UserTransaction userTransaction;
@@ -65,7 +60,7 @@ public class ImportService {
     private volatile String errorMessage;
     private final Map<IImportFile, ImportMessage> messageMap =
             Collections.synchronizedMap(new LinkedHashMap<IImportFile, ImportMessage>());
-    private final Queue<String> warnings = new ConcurrentLinkedQueue<String>();
+    private final Queue<String> warnings = new ConcurrentLinkedQueue<>();
 
     private class ImportListener implements IImportListener {
 
@@ -112,7 +107,7 @@ public class ImportService {
                 logBean.warn(Module.NAME, ImportService.class, AddressImportFile.class, null, Log.EVENT.CREATE, warning);
             }
         }
-    };
+    }
 
     private static class ImportFileComparator implements Comparator<IImportFile> {
 
@@ -185,9 +180,9 @@ public class ImportService {
                 userTransaction.begin();
 
                 if (importFile instanceof OrganizationImportFile) { //import organizations
-                    organizationImportService.process(listener, localeId, beginOm);
+                    organizationImportService.process(listener, localeId, beginOm, beginDate);
                 } else if (importFile instanceof AddressImportFile) { //import addresses
-                    addressImportService.process((AddressImportFile) importFile, listener, localeId);
+                    addressImportService.process((AddressImportFile) importFile, listener, localeId, beginDate);
                 } else if (importFile instanceof HeatmeterImportFile){ //import heatmeter
                     heatmeterImportService.process(importFile, listener, beginOm, beginDate);
                 } else if (importFile instanceof PayloadImportFile){ //import payload
