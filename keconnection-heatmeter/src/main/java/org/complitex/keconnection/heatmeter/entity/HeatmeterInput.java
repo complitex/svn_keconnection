@@ -20,7 +20,7 @@ public class HeatmeterInput extends HeatmeterPeriod {
     }
 
     public HeatmeterInput(Long heatmeterId, Date beginOm) {
-        super(PAYLOAD);
+        super(INPUT);
 
         setHeatmeterId(heatmeterId);
         setBeginOm(beginOm);

@@ -44,9 +44,6 @@ public class HeatmeterBean extends AbstractBean {
     @EJB
     private HeatmeterInputBean inputBean;
 
-    @EJB
-    private HeatmeterConsumptionBean consumptionBean;
-
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
 

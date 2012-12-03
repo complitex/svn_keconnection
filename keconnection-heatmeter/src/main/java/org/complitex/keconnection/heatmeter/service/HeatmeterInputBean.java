@@ -39,25 +39,6 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
         return INPUT;
     }
 
-    //TODO: remove after testing:
-//    @Transactional
-//    public void save(HeatmeterInput input) {
-//        boolean isNew = input.getId() == null;
-//
-//        super.save(input);
-//        
-//        if (isNew) {
-//            sqlSession().insert("insertHeatmeterInput", input);
-//        } else {
-//            sqlSession().update("updateHeatmeterInput", input);
-//        }
-//
-//        //update consumptions
-//        for (HeatmeterConsumption consumption : input.getConsumptions()) {
-//            consumption.setHeatmeterInputId(input.getId());
-//            heatmeterConsumptionBean.save(consumption);
-//        }
-//    }
     @Transactional
     @Override
     public void insertAdditionalInfo(HeatmeterInput info) {
@@ -84,8 +65,9 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
     }
 
     //todo move to HeatmeterInput/ConsumptionService
-    public void calculateConsumptionForNewInput(List<HeatmeterPayload> payloads, HeatmeterInput newInput) {
-        payloads = Lists.newArrayList(Iterables.filter(payloads, new Predicate<HeatmeterPayload>() {
+    public void calculateConsumptions(Iterable<HeatmeterPayload> payloads, Iterable<HeatmeterInput> inputs) {
+        //filter out non existing payloads
+        List<HeatmeterPayload> payloadsList = Lists.newArrayList(Iterables.filter(payloads, new Predicate<HeatmeterPayload>() {
 
             @Override
             public boolean apply(HeatmeterPayload payload) {
@@ -93,7 +75,8 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
             }
         }));
 
-        Collections.sort(payloads, new Comparator<HeatmeterPayload>() {
+        //sort payload in ascending order by begin date
+        Collections.sort(payloadsList, new Comparator<HeatmeterPayload>() {
 
             @Override
             public int compare(HeatmeterPayload p1, HeatmeterPayload p2) {
@@ -101,32 +84,42 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
             }
         });
 
-        HeatmeterConsumption c = newInput.getFirstConsumption();
-        c.setBeginDate(newInput.getBeginDate());
-        c.setEndDate(newInput.getEndDate());
-        c.setOm(newInput.getEndOm());
+        for (HeatmeterInput input : inputs) {
+            calculateConsumption(payloadsList, input);
+        }
+    }
+
+    private void calculateConsumption(List<HeatmeterPayload> payloads, HeatmeterInput input) {
+        HeatmeterConsumption c = input.getFirstConsumption();
+        if (c.getId() == null) { // new consumption
+            c.setBeginDate(input.getBeginDate());
+            c.setEndDate(input.getEndDate());
+            c.setOm(input.getEndOm());
+        }
         c.setConsumption1(BigDecimal.ZERO);
         c.setConsumption2(BigDecimal.ZERO);
         c.setConsumption3(BigDecimal.ZERO);
 
-        int initPeriodLength = getDaysDiff(newInput.getBeginDate(), newInput.getEndDate());
+        int inputPeriodLength = getDaysDiff(input.getBeginDate(), input.getEndDate());
 
-        for (HeatmeterPayload p : payloads) {
-            if (p.getBeginDate().before(newInput.getBeginDate())
-                    && p.getEndDate().after(newInput.getBeginDate())) {
-                Date subPeriodEndDate = getMin(p.getEndDate(), newInput.getEndDate());
-                int subPeriodLength = getDaysDiff(newInput.getBeginDate(), subPeriodEndDate);
-                addSubPeriodCalculations(newInput.getValue(), initPeriodLength, subPeriodLength, c,
-                        p.getPayload2(), p.getPayload3());
-            } else if (p.getBeginDate().after(newInput.getBeginDate())
-                    && p.getBeginDate().before(newInput.getEndDate())) {
-                Date subPeriodEndDate = getMin(p.getEndDate(), newInput.getEndDate());
-                int subPeriodLength = getDaysDiff(p.getBeginDate(), subPeriodEndDate);
-                addSubPeriodCalculations(newInput.getValue(), initPeriodLength, subPeriodLength, c,
-                        p.getPayload2(), p.getPayload3());
+        if (inputPeriodLength != 0) {
+            for (HeatmeterPayload p : payloads) {
+                if (!p.getBeginDate().after(input.getBeginDate())
+                        && p.getEndDate().after(input.getBeginDate())) {
+                    Date subPeriodEndDate = getMin(p.getEndDate(), input.getEndDate());
+                    int subPeriodLength = getDaysDiff(input.getBeginDate(), subPeriodEndDate);
+                    addSubPeriodCalculations(input.getValue(), inputPeriodLength, subPeriodLength, c,
+                            p.getPayload2(), p.getPayload3());
+                } else if (p.getBeginDate().after(input.getBeginDate())
+                        && p.getBeginDate().before(input.getEndDate())) {
+                    Date subPeriodEndDate = getMin(p.getEndDate(), input.getEndDate());
+                    int subPeriodLength = getDaysDiff(p.getBeginDate(), subPeriodEndDate);
+                    addSubPeriodCalculations(input.getValue(), inputPeriodLength, subPeriodLength, c,
+                            p.getPayload2(), p.getPayload3());
+                }
             }
+            c.setConsumption1(input.getValue().subtract(c.getConsumption2()).subtract(c.getConsumption3()));
         }
-        c.setConsumption1(newInput.getValue().subtract(c.getConsumption2()).subtract(c.getConsumption3()));
     }
 
     private void addSubPeriodCalculations(BigDecimal value, int periodLength, int subPeriodLength,
