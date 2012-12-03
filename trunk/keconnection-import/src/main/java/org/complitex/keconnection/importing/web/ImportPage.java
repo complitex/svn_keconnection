@@ -4,7 +4,6 @@
  */
 package org.complitex.keconnection.importing.web;
 
-import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -28,6 +27,8 @@ import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
 import org.complitex.keconnection.heatmeter.service.TablegramImportService;
 import org.complitex.keconnection.importing.service.ImportService;
@@ -38,10 +39,9 @@ import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
 import java.util.*;
-import org.complitex.dictionary.web.component.MonthDropDownChoice;
 
-import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
-import static org.complitex.dictionary.util.DateUtil.*;
+import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
+import static org.complitex.dictionary.util.DateUtil.getFirstDayOfMonth;
 
 /**
  *
@@ -96,10 +96,11 @@ public final class ImportPage extends TemplatePage {
         localeModel = new Model<>(localeBean.getSystemLocale());
         form.add(new LocalePicker("localePicker", localeModel, false));
 
-        final IModel<Integer> beginOmModel = new Model<Integer>(getMonth(getCurrentDate()) + 1);
-        final MonthDropDownChoice beginOm = new MonthDropDownChoice("beginOm", beginOmModel);
-        beginOm.setRequired(true);
-        form.add(beginOm);
+        final IModel<Date> beginOmModel = new Model<>(getCurrentDate());
+        form.add(new MaskedDateInput("beginOm", beginOmModel).setRequired(true));
+
+        final IModel<Date> beginDateModel = new Model<>(getCurrentDate());
+        form.add(new MaskedDateInput("beginDate", beginDateModel).setRequired(true));
 
         final IChoiceRenderer<IImportFile> renderer = new IChoiceRenderer<IImportFile>() {
 
@@ -125,16 +126,6 @@ public final class ImportPage extends TemplatePage {
                 renderer));
 
         final List<HeatmeterImportFile> heatmeterImportFiles = heatmeterImportService.getHeatmeterImportFiles();
-        final IModel<Date> beginDateModel = new Model<>();
-        final WebMarkupContainer beginDateContainer = new WebMarkupContainer("beginDateContainer");
-        MaskedDateInput beginDate = new MaskedDateInput("beginDate", beginDateModel);
-        beginDate.setRequired(true);
-        beginDateContainer.add(beginDate);
-        beginDateContainer.setVisibilityAllowed(heatmeterImportFiles != null && !heatmeterImportFiles.isEmpty());
-        if (beginDateContainer.isVisibilityAllowed()) {
-            beginDateModel.setObject(getCurrentDate());
-        }
-        form.add(beginDateContainer);
 
         form.add(new CheckBoxMultipleChoice<>("heatmeterData", heatmeterDataModel, heatmeterImportFiles, renderer));
 
@@ -160,7 +151,7 @@ public final class ImportPage extends TemplatePage {
                             addAll(payloadDataModel.getObject()).
                             build();
                     importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId(),
-                            getFirstDayOfMonth(getYear(getCurrentDate()), beginOmModel.getObject()),
+                            getFirstDayOfMonth(beginOmModel.getObject()),
                             beginDateModel.getObject());
                     container.add(newTimer());
                 }
