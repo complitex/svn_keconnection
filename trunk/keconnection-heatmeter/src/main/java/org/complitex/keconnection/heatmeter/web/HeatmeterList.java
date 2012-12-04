@@ -313,10 +313,15 @@ public class HeatmeterList extends TemplatePage {
                 for (Heatmeter heatmeter : heatmeters) {
                     //add new empty payload
                     HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOm());
+                    p.setBeginDate(null);
                     heatmeter.getPayloads().add(p);
 
                     //add new empty input
                     HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOm());
+                    if (heatmeter.getOm() != null) {
+                        Date om = heatmeter.getOm();
+                        i.setEndDate(getLastDayOfMonth(getYear(om), getMonth(om)+1));
+                    }
                     i.addNewConsumptionIfNecessary();
                     heatmeter.getInputs().add(i);
                 }

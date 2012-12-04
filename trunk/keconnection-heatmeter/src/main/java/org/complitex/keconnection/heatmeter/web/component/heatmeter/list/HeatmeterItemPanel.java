@@ -46,8 +46,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import static com.google.common.collect.Iterables.toArray;
-import static org.complitex.dictionary.util.DateUtil.nextDay;
-import static org.complitex.dictionary.util.DateUtil.previousDay;
+import static org.complitex.dictionary.util.DateUtil.*;
 
 /**
  *
@@ -463,11 +462,16 @@ public abstract class HeatmeterItemPanel extends Panel {
 
     private void addNewPayload(Heatmeter heatmeter) {
         HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOm());
+        p.setBeginDate(null);
         heatmeter.getPayloads().add(p);
     }
 
     private void addNewInput(Heatmeter heatmeter) {
         HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOm());
+        if (heatmeter.getOm() != null) {
+            Date om = heatmeter.getOm();
+            i.setEndDate(getLastDayOfMonth(getYear(om), getMonth(om) + 1));
+        }
         i.addNewConsumptionIfNecessary();
         heatmeter.getInputs().add(i);
     }
