@@ -319,9 +319,19 @@ public abstract class HeatmeterItemPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
+                //update end date and end om of previous payload if begin date of new payload is filled
+                if (payload.getBeginDate() != null) {
+                    HeatmeterPayload previousPayload = getPreviousPayload(heatmeter);
+                    if (previousPayload != null) {
+                        HeatmeterPeriod previousPeriod = previousPayload;
+                        previousPeriod.setEndDate(previousDay(payload.getBeginDate()));
+                        previousPeriod.setEndOm(heatmeter.getOm());
+                        heatmeterPayloadBean.save(previousPayload);
+                    }
+                }
+
                 //validate
-                //TODO: fix validation
-                HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validatePayloads(heatmeter);
+                HeatmeterValidate validate = heatmeterService.validatePayloads(heatmeter);
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
                     savePayloadStatusModel.setObject(
                             MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
@@ -329,15 +339,6 @@ public abstract class HeatmeterItemPanel extends Panel {
                     savePayloadStatusModel.setObject(null);
 
                     try {
-                        //update end date and end om of previous payload
-                        HeatmeterPayload previousPayload = getPreviousPayload(heatmeter);
-                        if (previousPayload != null) {
-                            HeatmeterPeriod previousPeriod = previousPayload;
-                            previousPeriod.setEndDate(previousDay(payload.getBeginDate()));
-                            previousPeriod.setEndOm(heatmeter.getOm());
-                            heatmeterPayloadBean.save(previousPayload);
-                        }
-
                         //save new payload
                         heatmeterPayloadBean.save(payload);
 
