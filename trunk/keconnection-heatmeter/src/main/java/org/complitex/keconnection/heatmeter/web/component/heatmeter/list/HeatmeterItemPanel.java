@@ -353,7 +353,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                                             return input.getId() != null;
                                         }
                                     });
-                            heatmeterInputBean.calculateConsumptions(heatmeter.getPayloads(), inputs);
+                            heatmeterService.calculateConsumptions(heatmeter.getPayloads(), inputs);
 
                             for (HeatmeterInput i : inputs) {
                                 heatmeterInputBean.save(i);
@@ -407,6 +407,9 @@ public abstract class HeatmeterItemPanel extends Panel {
                     input.setBeginOm(heatmeter.getOm());
                 }
 
+                //update end om of input
+                input.setEndOm(heatmeter.getOm());
+
                 //validate
                 //TODO: fix validation:
                 HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validateConsumptions(heatmeter);
@@ -417,14 +420,23 @@ public abstract class HeatmeterItemPanel extends Panel {
                     saveInputStatusModel.setObject(null);
 
                     try {
-                        //update end om of input
-                        input.setEndOm(heatmeter.getOm());
-
                         //recalculate consumptions for inputs and save it
-                        heatmeterInputBean.calculateConsumptions(heatmeter.getPayloads(), heatmeter.getInputs());
-                        for (HeatmeterInput i : heatmeter.getInputs()) {
-                            heatmeterInputBean.save(i);
+                        {
+                            //do not account for last empty payload
+                            Iterable<HeatmeterPayload> payloads = Iterables.filter(heatmeter.getPayloads(),
+                                    new Predicate<HeatmeterPayload>() {
+
+                                        @Override
+                                        public boolean apply(HeatmeterPayload payload) {
+                                            return payload.getId() != null;
+                                        }
+                                    });
+                            heatmeterService.calculateConsumptions(payloads, heatmeter.getInputs());
+                            for (HeatmeterInput i : heatmeter.getInputs()) {
+                                heatmeterInputBean.save(i);
+                            }
                         }
+
 
                         //add new input
                         addNewInput(heatmeter);

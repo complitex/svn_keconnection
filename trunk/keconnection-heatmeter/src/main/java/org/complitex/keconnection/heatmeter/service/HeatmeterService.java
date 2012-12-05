@@ -1,11 +1,16 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import com.google.common.collect.Lists;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import org.complitex.keconnection.heatmeter.entity.*;
 
 import javax.ejb.Stateless;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.isSameMonth;
+import static org.complitex.dictionary.util.DateUtil.*;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.ADJUSTMENT;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.*;
@@ -235,6 +240,63 @@ public class HeatmeterService {
 //
 //        return new HeatmeterValidate(VALID);
 //    }
-//
-//
+    
+    public void calculateConsumptions(Iterable<HeatmeterPayload> payloads, Iterable<HeatmeterInput> inputs) {
+        List<HeatmeterPayload> payloadsList = Lists.newArrayList(payloads);
+
+        //sort payload in ascending order by begin date
+        Collections.sort(payloadsList, new Comparator<HeatmeterPayload>() {
+
+            @Override
+            public int compare(HeatmeterPayload p1, HeatmeterPayload p2) {
+                return p1.getBeginDate().compareTo(p2.getBeginDate());
+            }
+        });
+
+        for (HeatmeterInput input : inputs) {
+            calculateConsumption(payloadsList, input);
+        }
+    }
+
+    private void calculateConsumption(List<HeatmeterPayload> payloads, HeatmeterInput input) {
+        HeatmeterConsumption c = input.getFirstConsumption();
+        if (c.getId() == null) { // new consumption
+            c.setBeginDate(input.getBeginDate());
+            c.setEndDate(input.getEndDate());
+            c.setOm(input.getEndOm());
+        }
+        c.setConsumption1(BigDecimal.ZERO);
+        c.setConsumption2(BigDecimal.ZERO);
+        c.setConsumption3(BigDecimal.ZERO);
+
+        int inputPeriodLength = getDaysDiff(input.getBeginDate(), input.getEndDate());
+
+        if (inputPeriodLength != 0) {
+            for (HeatmeterPayload p : payloads) {
+                if (!p.getBeginDate().after(input.getBeginDate())
+                        && p.getEndDate().after(input.getBeginDate())) {
+                    Date subPeriodEndDate = getMin(p.getEndDate(), input.getEndDate());
+                    int subPeriodLength = getDaysDiff(input.getBeginDate(), subPeriodEndDate);
+                    addSubPeriodCalculations(input.getValue(), inputPeriodLength, subPeriodLength, c,
+                            p.getPayload2(), p.getPayload3());
+                } else if (p.getBeginDate().after(input.getBeginDate())
+                        && p.getBeginDate().before(input.getEndDate())) {
+                    Date subPeriodEndDate = getMin(p.getEndDate(), input.getEndDate());
+                    int subPeriodLength = getDaysDiff(p.getBeginDate(), subPeriodEndDate);
+                    addSubPeriodCalculations(input.getValue(), inputPeriodLength, subPeriodLength, c,
+                            p.getPayload2(), p.getPayload3());
+                }
+            }
+            c.setConsumption1(input.getValue().subtract(c.getConsumption2()).subtract(c.getConsumption3()));
+        }
+    }
+
+    private void addSubPeriodCalculations(BigDecimal value, int periodLength, int subPeriodLength,
+            HeatmeterConsumption consumption, BigDecimal payload2, BigDecimal payload3) {
+        consumption.setConsumption2(consumption.getConsumption2().add(BigDecimal.valueOf(
+                (value.doubleValue() * subPeriodLength * payload2.doubleValue()) / (periodLength * 100))));
+
+        consumption.setConsumption3(consumption.getConsumption3().add(BigDecimal.valueOf(
+                (value.doubleValue() * subPeriodLength * payload3.doubleValue()) / (periodLength * 100))));
+    }
 }

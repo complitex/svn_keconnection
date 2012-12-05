@@ -113,6 +113,7 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 HeatmeterInput input = new HeatmeterInput(model.getObject().getId(), om.getObject());
+                input.setEndOm(om.getObject());
                 input.addNewConsumptionIfNecessary();
                 model.getObject().getInputs().add(input);
 
