@@ -1,6 +1,5 @@
 package org.complitex.keconnection.heatmeter.web;
 
-import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import com.google.common.io.ByteStreams;
 import org.apache.wicket.Component;
 import org.apache.wicket.ThreadContext;
@@ -11,6 +10,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -32,8 +33,10 @@ import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.service.IProcessListener;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
+import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.dictionary.web.component.image.StaticImage;
@@ -65,10 +68,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import static org.complitex.dictionary.util.DateUtil.*;
-import static org.complitex.dictionary.util.PageUtil.*;
+import static org.complitex.dictionary.util.PageUtil.newSorting;
+import static org.complitex.dictionary.util.PageUtil.newTextFields;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -76,20 +78,29 @@ import static org.complitex.dictionary.util.PageUtil.*;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class HeatmeterList extends TemplatePage {
-
     private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
+
     private static final int IMPORT_AJAX_TIMER = 2;
     private static final int BIND_ALL_AJAX_TIMER = 10;
+
     @EJB
     private HeatmeterBean heatmeterBean;
+
     @EJB
     private HeatmeterImportService heatmeterImportService;
+
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private HeatmeterBindingStatusRenderer heatmeterBindingStatusRenderer;
+
     @EJB
     private HeatmeterBindService heatmeterBindService;
+
+    @EJB
+    private SessionBean sessionBean;
+
     private Dialog importDialog;
     private final AtomicBoolean stopBindingAllCondition = new AtomicBoolean(true);
 
@@ -185,9 +196,9 @@ public class HeatmeterList extends TemplatePage {
                 }).setNullValid(true));
 
         //TODO: enable filters
-        filterForm.add(new TextField<String>("organizationFilter", new Model<String>()));
-        filterForm.add(new TextField<String>("addressFilter", new Model<String>()));
-        filterForm.add(new TextField<String>("buildingCodeFilter", new Model<String>()));
+        filterForm.add(new TextField<>("organizationFilter", new Model<String>()));
+        filterForm.add(new TextField<>("addressFilter", new Model<String>()));
+        filterForm.add(new TextField<>("buildingCodeFilter", new Model<String>()));
 
         IModel<String> tg1FilterModel = new Model<String>() {
 
@@ -202,7 +213,7 @@ public class HeatmeterList extends TemplatePage {
                 filterModel.getObject().add(HeatmeterBean.PAYLOAD1_FILTER_PARAM, object);
             }
         };
-        filterForm.add(new TextField<String>("tg1Filter", tg1FilterModel));
+        filterForm.add(new TextField<>("tg1Filter", tg1FilterModel));
 
         IModel<String> tg2FilterModel = new Model<String>() {
 
