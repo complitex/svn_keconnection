@@ -4,11 +4,6 @@
  */
 package org.complitex.keconnection.organization.web.component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import javax.ejb.EJB;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
@@ -34,6 +29,12 @@ import org.complitex.dictionary.web.component.permission.AbstractDomainObjectPer
 import org.complitex.dictionary.web.component.permission.DomainObjectPermissionParameters;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+
+import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -72,13 +73,13 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
                 ? parameters.getParentSubjectIds() : organizationSubjectIds;
         
         CollapsibleFieldset permissionsFieldset = new CollapsibleFieldset("permissionsFieldset",
-                new ResourceModel("permissions"));
+                new ResourceModel("permissions"), false);
         add(permissionsFieldset);
         
         boolean visibleByAll = selectedSubjectIds.size() == 1
                 && selectedSubjectIds.contains(PermissionBean.VISIBLE_BY_ALL_PERMISSION_ID);
         final IModel<PermissionMode> permissionModeModel =
-                new Model<PermissionMode>(visibleByAll ? PermissionMode.ALL : PermissionMode.SELECT);
+                new Model<>(visibleByAll ? PermissionMode.ALL : PermissionMode.SELECT);
         
         final WebMarkupContainer organizationsContainer = new WebMarkupContainer("organizationsContainer") {
             
