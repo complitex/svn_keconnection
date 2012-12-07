@@ -10,6 +10,9 @@
         <organization-permission-panel>
             org.complitex.keconnection.organization.web.component.KeConnectionOrganizationPermissionPanel
         </organization-permission-panel>
+        <user-organization-picker>
+            org.complitex.keconnection.organization.web.component.KeConnectionUserOrganizationPicker
+        </user-organization-picker>
     </web-components>
     <sidebar>
         <menu class="org.complitex.keconnection.web.admin.AdminMenu"/>
