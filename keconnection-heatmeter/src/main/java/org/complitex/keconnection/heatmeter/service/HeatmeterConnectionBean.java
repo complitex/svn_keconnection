@@ -17,7 +17,7 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.CO
  */
 @XmlMapper
 @Stateless
-public class HeatmeterConnectionBean extends HeatmeterPeriodBean {
+public class HeatmeterConnectionBean extends HeatmeterPeriodBean<HeatmeterConnection> {
     @Override
     public HeatmeterPeriodType getType() {
         return CONNECTION;

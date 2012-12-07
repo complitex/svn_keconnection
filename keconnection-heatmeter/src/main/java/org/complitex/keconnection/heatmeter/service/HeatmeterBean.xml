@@ -12,7 +12,7 @@
 
         <result property="om"/>
     </resultMap>
-    
+
     <resultMap id="heatmeterWithActiveCollectionsResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
         <id property="id" column="id"/>
         <result property="ls" column="ls"/>
@@ -74,7 +74,7 @@
                     </otherwise>
                 </choose>
             </if>
-            
+
             <if test="map.payloadBeginDate != null">
                 AND payload_p.`begin_date` = #{map.payloadBeginDate}
             </if>
@@ -87,7 +87,7 @@
             <if test="map.payload3 != null">
                 AND payload.`payload3` = #{map.payload3}
             </if>
-            
+
             <if test="map.inputReadoutDate != null">
                 AND input_p.`end_date` = #{map.inputReadoutDate}
             </if>
@@ -96,6 +96,10 @@
             </if>
             <if test="map.consumption1 != null">
                 AND consumption.`consumption1` = #{map.consumption1}
+            </if>
+
+            <if test="map.organizations != null">
+                AND bc.`organization_id` IN ${map.organizations}
             </if>
         </where>
     </sql>
@@ -106,12 +110,12 @@
         from `heatmeter` h
             LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
     </sql>
-    
+
     <sql id="selectHeatmeterJoin">
         <if test="map.payloadBeginDate != null or map.payload1 != null or map.payload2 != null or map.payload3 != null">
             LEFT JOIN `heatmeter_period` payload_p ON (payload_p.`heatmeter_id` = h2.`id` AND payload_p.`type` = 3
             AND (h2.`om` BETWEEN payload_p.`begin_om` AND payload_p.`end_om`)
-            AND payload_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE 
+            AND payload_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE
                 p.`heatmeter_id` = h2.`id` AND p.`type` = 3 AND (h2.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
             <if test="map.payload1 != null or map.payload2 != null or map.payload3 != null">
                 LEFT JOIN `heatmeter_payload` payload ON payload.`id` = payload_p.`id`
@@ -120,7 +124,7 @@
         <if test="map.inputReadoutDate != null or map.input != null or map.consumption1 != null">
             LEFT JOIN `heatmeter_period` input_p ON (input_p.`heatmeter_id` = h2.`id` AND input_p.`type` = 4
             AND (h2.`om` BETWEEN input_p.`begin_om` AND input_p.`end_om`)
-            AND input_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE 
+            AND input_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE
                 p.`heatmeter_id` = h2.`id` AND p.`type` = 4 AND (h2.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
             <if test="map.input != null or map.consumption1 != null">
                 LEFT JOIN `heatmeter_input` input ON input.`id` = input_p.`id`
@@ -129,19 +133,24 @@
                 </if>
             </if>
         </if>
+
+        <if test="map.organizations != null">
+            LEFT JOIN `heatmeter_period` connection_p ON (connection_p.`heatmeter_id` = h2.`id` and connection_p.`type` = 2)
+            LEFT JOIN `building_code` bc ON (bc.`id` = connection_p.`object_id`)
+        </if>
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">
         <include refid="selectHeatmeterSelectFrom"/> where h.`id` = #{id}
     </select>
-    
+
     <select id="selectHeatmeterForBinding" parameterType="long" resultMap="heatmeterForBindingResultMap">
         SELECT * FROM `heatmeter` WHERE `id` = #{id}
     </select>
 
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeterWithActiveCollectionsResultMap">
-        select * from (<include refid="selectHeatmeterSelectFrom"/>) h2 
+        select * from (<include refid="selectHeatmeterSelectFrom"/>) h2
             <include refid="selectHeatmeterJoin"/>
             <include refid="selectHeatmetersWhere"/>
           order by ${sortProperty} ${asc} limit #{first}, #{count}
@@ -172,7 +181,7 @@
     <update id="updateHeatmeterType" parameterType="map">
         update `heatmeter` set `type` = #{type} where `id` = #{id}
     </update>
-    
+
     <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
         SELECT COUNT(1) FROM `heatmeter` h
             LEFT JOIN `heatmeter_period` p ON (p.`heatmeter_id` = h.`id` and p.`type` = 2)
