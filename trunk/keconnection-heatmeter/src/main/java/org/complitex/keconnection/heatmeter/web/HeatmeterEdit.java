@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeter.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -15,6 +16,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
@@ -46,16 +48,23 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
  *         Date: 04.09.12 15:25
  */
 public class HeatmeterEdit extends FormTemplatePage {
-
     private final static Logger log = LoggerFactory.getLogger(HeatmeterEdit.class);
+
     @EJB
     private HeatmeterBean heatmeterBean;
+
     @EJB
     private HeatmeterService heatmeterService;
+
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
+
+    @EJB
+    private SessionBean sessionBean;
+
     private IModel<Date> om = new Model<>();
     private Date minOm = null;
 
@@ -77,6 +86,16 @@ public class HeatmeterEdit extends FormTemplatePage {
             heatmeter = heatmeterBean.getHeatmeter(id);
             om.setObject(heatmeter.getOm());
             minOm = heatmeterBean.getMinOm(heatmeter.getId());
+
+            List<Long> organizationsIds = sessionBean.getUserOrganizationTreeObjectIds();
+
+            if (!sessionBean.isAdmin()) {
+                for (HeatmeterConnection connection : heatmeter.getConnections()){
+                    if (!organizationsIds.contains(connection.getOrganizationId())){
+                        throw new UnauthorizedInstantiationException(HeatmeterEdit.class);
+                    }
+                }
+            }
         } else {
             heatmeter = new Heatmeter();
             heatmeter.setOrganizationId(KE_ORGANIZATION_OBJECT_ID);

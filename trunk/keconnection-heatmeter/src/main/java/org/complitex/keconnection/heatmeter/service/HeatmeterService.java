@@ -1,13 +1,15 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import com.google.common.collect.Lists;
+import org.complitex.dictionary.service.SessionBean;
+import org.complitex.keconnection.heatmeter.entity.*;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import org.complitex.keconnection.heatmeter.entity.*;
-
-import javax.ejb.Stateless;
 import java.util.List;
 
 import static org.complitex.dictionary.util.DateUtil.*;
@@ -21,6 +23,9 @@ import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatu
  */
 @Stateless
 public class HeatmeterService {
+    @EJB
+    private SessionBean sessionBean;
+
     public HeatmeterValidate validate(Heatmeter heatmeter){
         HeatmeterValidate heatmeterValidate;
 
@@ -142,8 +147,14 @@ public class HeatmeterService {
             }
         }
 
+        List<Long> organizationIds = sessionBean.getUserOrganizationTreeObjectIds();
+
         for (int i = 0; i < connections.size(); ++i){
             HeatmeterConnection c1 = connections.get(i);
+
+            if (!organizationIds.contains(c1.getOrganizationId())){
+                return new HeatmeterValidate(ERROR_CONNECTION_NOT_USER_ORGANIZATION, c1);
+            }
 
             if (c1.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_CONNECTION_BEGIN_DATE_REQUIRED);
