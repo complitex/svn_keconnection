@@ -54,8 +54,8 @@ public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
             protected void populateItem(ListItem<HeatmeterOperation> item) {
                 final HeatmeterOperation operation = item.getModelObject();
 
-                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(operation, "beginDate")));
-                item.add(new LabelDateField("end_date", new PropertyModel<Date>(operation, "endDate")));
+                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(operation, "beginDate"), false));
+                item.add(new LabelDateField("end_date", new PropertyModel<Date>(operation, "endDate"), false));
 
                 item.add(new LabelEnumDropDownChoice<>("type", HeatmeterPeriodSubType.class,
                         new PropertyModel<HeatmeterPeriodSubType>(operation, "subType"), false));

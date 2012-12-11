@@ -13,16 +13,16 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.complitex.dictionary.web.component.LabelDateField;
 import org.complitex.dictionary.web.component.TextLabel;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption;
-
-import java.util.Date;
-import java.util.List;
-import javax.ejb.EJB;
-import org.complitex.dictionary.web.component.LabelDateField;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterInput;
 import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
+
+import javax.ejb.EJB;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -57,7 +57,7 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterInput input = item.getModelObject();
                 final HeatmeterConsumption consumption = input.getFirstConsumption();
 
-                item.add(new LabelDateField("readoutDate", new PropertyModel<Date>(input, "endDate")));
+                item.add(new LabelDateField("readoutDate", new PropertyModel<Date>(input, "endDate"), false));
                 item.add(new TextField<>("consumption", new PropertyModel<>(input, "value")));
                 item.add(new TextLabel("consumption1", new PropertyModel<>(consumption, "consumption1")));
                 item.add(new TextLabel("consumption2", new PropertyModel<>(consumption, "consumption2")));

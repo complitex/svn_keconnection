@@ -68,8 +68,8 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                 final HeatmeterConnection connection = item.getModelObject();
 
                 //date
-                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(connection, "beginDate")));
-                item.add(new LabelDateField("end_date", new PropertyModel<Date>(connection, "endDate")));
+                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(connection, "beginDate"), false));
+                item.add(new LabelDateField("end_date", new PropertyModel<Date>(connection, "endDate"), false));
 
                 //organization
                 final Label organization = new Label("organization", new LoadableDetachableModel<String>() {
