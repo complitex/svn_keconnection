@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeter.service;
 
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.*;
 
 import javax.ejb.EJB;
@@ -54,9 +55,12 @@ public class HeatmeterService {
         if (!VALID.equals(heatmeterValidate.getStatus())){
             return heatmeterValidate;
         }
-//
-//        //consumption
-//        return validateConsumptions(heatmeter);
+
+        //inputs
+        heatmeterValidate = validateInputs(heatmeter);
+        if (!VALID.equals(heatmeterValidate.getStatus())){
+            return heatmeterValidate;
+        }
 
         return new HeatmeterValidate(VALID);
     }
@@ -152,7 +156,7 @@ public class HeatmeterService {
         for (int i = 0; i < connections.size(); ++i){
             HeatmeterConnection c1 = connections.get(i);
 
-            if (!organizationIds.contains(c1.getOrganizationId())){
+            if (!sessionBean.isAdmin() && !organizationIds.contains(c1.getOrganizationId())){
                 return new HeatmeterValidate(ERROR_CONNECTION_NOT_USER_ORGANIZATION, c1);
             }
 
@@ -223,34 +227,34 @@ public class HeatmeterService {
 
         return new HeatmeterValidate(VALID);
     }
-//
-//    public HeatmeterValidate validateConsumptions(Heatmeter heatmeter){
-//        List<HeatmeterConsumption> consumptions = heatmeter.getConsumptions();
-//        for (int i = 0; i < consumptions.size(); ++i){
-//            HeatmeterConsumption c1 = consumptions.get(i);
-//
-//            if (c1.getReadoutDate() == null) {
-//                return new HeatmeterValidate(ERROR_CONSUMPTION_READOUT_DATE_REQUIRED);
-//            }
-//
-//            if (c1.getConsumption() == null){
-//                return new HeatmeterValidate(ERROR_CONSUMPTION_VALUE_REQUIRED);
-//            }
-//
-//            if (i < consumptions.size() - 1) {
-//                for (int j = i + 1; j < consumptions.size(); ++j){
-//                    HeatmeterConsumption c2 = consumptions.get(j);
-//
-//                    if(isSameMonth(c1.getOm(), c2.getOm())
-//                            && DateUtil.isTheSameDay(c1.getReadoutDate(), c2.getReadoutDate())){
-//                        return new HeatmeterValidate(ERROR_CONSUMPTION_INTERSECTION, c1.getReadoutDate());
-//                    }
-//                }
-//            }
-//        }
-//
-//        return new HeatmeterValidate(VALID);
-//    }
+
+    public HeatmeterValidate validateInputs(Heatmeter heatmeter){
+        List<HeatmeterInput> inputs = heatmeter.getInputs();
+        for (int i = 0; i < inputs.size(); ++i){
+            HeatmeterInput c1 = inputs.get(i);
+
+            if (c1.getEndDate() == null) {
+                return new HeatmeterValidate(ERROR_INPUT_END_DATE_REQUIRED);
+            }
+
+            if (c1.getValue() == null){
+                return new HeatmeterValidate(ERROR_INPUT_VALUE_REQUIRED);
+            }
+
+            if (i < inputs.size() - 1) {
+                for (int j = i + 1; j < inputs.size(); ++j){
+                    HeatmeterInput c2 = inputs.get(j);
+
+                    if (DateUtil.isTheSameDay(c1.getEndDate(), c2.getEndDate()))
+                        if (isSameMonth(c1.getBeginOm(), c2.getBeginOm())) {
+                            return new HeatmeterValidate(ERROR_INPUT_INTERSECTION, c1.getEndDate());
+                        }
+                }
+            }
+        }
+
+        return new HeatmeterValidate(VALID);
+    }
     
     public void calculateConsumptions(Iterable<HeatmeterPayload> payloads, Iterable<HeatmeterInput> inputs) {
         List<HeatmeterPayload> payloadsList = Lists.newArrayList(payloads);

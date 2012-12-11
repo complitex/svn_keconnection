@@ -13,14 +13,14 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.complitex.dictionary.web.component.LabelDateField;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
+import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 
+import javax.ejb.EJB;
 import java.util.Date;
 import java.util.List;
-import javax.ejb.EJB;
-import org.complitex.dictionary.web.component.LabelDateField;
-import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -54,8 +54,8 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
             protected void populateItem(ListItem<HeatmeterPayload> item) {
                 final HeatmeterPayload payload = item.getModelObject();
 
-                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(payload, "beginDate")));
-                item.add(new LabelDateField("end_date", new PropertyModel<Date>(payload, "endDate")));
+                item.add(new LabelDateField("begin_date", new PropertyModel<Date>(payload, "beginDate"), false));
+                item.add(new LabelDateField("end_date", new PropertyModel<Date>(payload, "endDate"), false));
 
                 item.add(new TextField<>("payload1", new PropertyModel<>(payload, "payload1")));
                 item.add(new TextField<>("payload2", new PropertyModel<>(payload, "payload2")));
