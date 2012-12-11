@@ -114,15 +114,18 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     @Override
     public List<Organization> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
+
         if (locale != null) {
             example.setOrderByAttributeTypeId(NAME);
             example.setLocaleId(localeBean.convert(locale).getId());
             example.setAsc(true);
         }
+
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
                 ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICE_PROVIDER,
                 KeConnectionOrganizationTypeStrategy.CALCULATION_MODULE));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
+
         return find(example);
     }
 
@@ -152,6 +155,10 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
     @Transactional
     @Override
     public List<Organization> find(DomainObjectExample example) {
+        if (example.getLocaleId() == null){
+            example.setLocaleId(-1L);
+        }
+
         if (example.getId() != null && example.getId() <= 0) {
             return Collections.emptyList();
         }
