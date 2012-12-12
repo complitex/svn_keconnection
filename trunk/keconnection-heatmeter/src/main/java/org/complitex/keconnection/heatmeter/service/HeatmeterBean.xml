@@ -21,6 +21,7 @@
         <result property="organizationId" column="organization_id"/>
         <result property="status"/>
         <result property="bindingStatus" column="binding_status"/>
+        <result property="updated"/>
         <collection property="connections"
                     select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByOm"
                     column="heatmeterId=id,om=om"/>
