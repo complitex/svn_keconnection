@@ -4,8 +4,10 @@ import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.exception.ConcurrentModificationException;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterType;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 
@@ -31,7 +33,7 @@ public class HeatmeterBean extends AbstractBean {
     public static final String INPUT_READOUT_DATE_FILTER_PARAM = "inputReadoutDate";
     public static final String INPUT_FILTER_PARAM = "input";
     public static final String CONSUMPTION1_FILTER_PARAM = "consumption1";
-    
+
     @EJB
     private HeatmeterOperationBean operationBean;
 
@@ -48,16 +50,20 @@ public class HeatmeterBean extends AbstractBean {
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
     @Transactional
-    public void save(Heatmeter heatmeter) {
+    public void save(Heatmeter heatmeter) throws ConcurrentModificationException {
         if (heatmeter.getId() == null) {
             sqlSession().insert("insertHeatmeter", heatmeter);
         } else {
+            if (isModified(heatmeter)){
+                throw new ConcurrentModificationException();
+            }
+
             sqlSession().update("updateHeatmeter", heatmeter);
         }
     }
 
     @Transactional
-    public void save(Heatmeter heatmeter, Date om) {
+    public void save(Heatmeter heatmeter, Date om) throws ConcurrentModificationException {
         save(heatmeter);
 
         Long heatmeterId = heatmeter.getId();
@@ -66,6 +72,34 @@ public class HeatmeterBean extends AbstractBean {
         connectionBean.save(heatmeterId, om, heatmeter.getConnections());
         payloadBean.save(heatmeterId, om, heatmeter.getPayloads());
         inputBean.save(heatmeterId, om, heatmeter.getInputs());
+    }
+
+    public boolean isModified(Heatmeter heatmeter){
+        if (heatmeter.getId() == null){
+            return false;
+        }
+
+        Heatmeter dbHeatmeter = getHeatmeter(heatmeter.getId());
+
+        if (!heatmeter.getUpdated().equals(dbHeatmeter.getUpdated())){
+            return true;
+        }
+
+        List<HeatmeterPeriod> dbPeriods = dbHeatmeter.getPeriods();
+        List<HeatmeterPeriod> periods = heatmeter.getPeriods();
+
+        for (HeatmeterPeriod dbPeriod : dbPeriods){
+            for (HeatmeterPeriod period : periods){
+                if (period.getId() != null && period.getId().equals(dbPeriod.getId())
+                        && period.getType().equals(dbPeriod.getType())
+                        && !period.getUpdated().equals(dbPeriod.getUpdated())){
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public Heatmeter getHeatmeter(Long id) {

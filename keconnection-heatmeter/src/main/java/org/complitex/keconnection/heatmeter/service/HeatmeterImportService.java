@@ -6,6 +6,7 @@ import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.IProcessListener;
+import org.complitex.dictionary.service.exception.ConcurrentModificationException;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.util.StringUtil;
@@ -173,7 +174,7 @@ public class HeatmeterImportService extends AbstractImportService {
     }
 
     public void createHeatmeter(HeatmeterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
-            OrganizationNotFoundException, DuplicateException, NumberLsException {
+            OrganizationNotFoundException, DuplicateException, NumberLsException, ConcurrentModificationException {
         //find organization by code
         Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
 

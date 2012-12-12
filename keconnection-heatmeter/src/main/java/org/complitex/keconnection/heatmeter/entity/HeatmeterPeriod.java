@@ -28,6 +28,8 @@ public abstract class HeatmeterPeriod implements ILongId{
     private Date beginOm = DEFAULT_BEGIN_OM;
     private Date endOm = DEFAULT_END_OM;
 
+    private Date updated;
+
     public HeatmeterPeriod(HeatmeterPeriodType type) {
         this.type = type;
     }
@@ -110,5 +112,13 @@ public abstract class HeatmeterPeriod implements ILongId{
 
     public void setEndOm(Date endOm) {
         this.endOm = endOm;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
     }
 }

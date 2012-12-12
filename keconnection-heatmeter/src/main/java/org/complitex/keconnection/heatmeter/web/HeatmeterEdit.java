@@ -18,6 +18,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.exception.AbstractException;
+import org.complitex.dictionary.service.exception.ConcurrentModificationException;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
@@ -235,6 +236,9 @@ public class HeatmeterEdit extends FormTemplatePage {
                     heatmeterBean.save(heatmeter, heatmeter.getOm());
 
                     getSession().info(getStringFormat("info_saved", heatmeter.getLs()));
+                } catch (ConcurrentModificationException e){
+                    log.error("Ошибка сохранения теплосчетчика", e);
+                    getSession().error(getString("error_concurrent_modification"));
                 } catch (Exception e) {
                     log.error("Ошибка сохранения теплосчетчика", e);
                     getSession().error(new AbstractException(e, "Ошибка сохранения теплосчетчика: {0}", model.getObject().getLs()) {

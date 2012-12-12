@@ -11,6 +11,7 @@
         <result property="endDate"/>
         <result property="beginOm"/>
         <result property="endOm"/>
+        <result property="updated"/>
     </resultMap>
     
     <select id="selectHeatmeterOperationsByOm" parameterType="map" resultMap="heatmeterOperationResultMap">

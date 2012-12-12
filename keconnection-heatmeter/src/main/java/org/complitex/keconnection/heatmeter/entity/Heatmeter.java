@@ -28,6 +28,8 @@ public class Heatmeter implements ILongId {
     private HeatmeterStatus status;
     private HeatmeterBindingStatus bindingStatus;
 
+    private Date updated;
+
     public boolean isConnectedToSingleBuildingCode() {
         return getBuildingCodeIds().size() == 1;
     }
@@ -157,5 +159,13 @@ public class Heatmeter implements ILongId {
 
     public void setBindingStatus(HeatmeterBindingStatus bindingStatus) {
         this.bindingStatus = bindingStatus;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
     }
 }
