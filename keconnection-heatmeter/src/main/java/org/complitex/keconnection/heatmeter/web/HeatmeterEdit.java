@@ -3,6 +3,7 @@ package org.complitex.keconnection.heatmeter.web;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -31,6 +32,7 @@ import org.complitex.keconnection.heatmeter.web.component.HeatmeterOperationPane
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,7 @@ import static org.complitex.keconnection.organization.strategy.IKeConnectionOrga
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.09.12 15:25
  */
+@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class HeatmeterEdit extends FormTemplatePage {
     private final static Logger log = LoggerFactory.getLogger(HeatmeterEdit.class);
 
