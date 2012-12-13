@@ -8,7 +8,6 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConfig;
 import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
 import org.complitex.keconnection.heatmeter.entity.Tablegram;
@@ -35,8 +34,6 @@ import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.
 public class TablegramImportService extends AbstractImportService{
     private static final Logger log = LoggerFactory.getLogger(TablegramImportService.class);
 
-    private final Date DEFAULT_BEGIN_DATE = DateUtil.newDate(1, 10, 2012);
-
     @EJB
     private ConfigBean configBean;
 
@@ -49,7 +46,7 @@ public class TablegramImportService extends AbstractImportService{
     @EJB
     private TablegramRecordBean tablegramRecordBean;
 
-    public void process(IImportFile importFile, IImportListener listener) throws ImportFileNotFoundException,
+    public void process(IImportFile importFile, IImportListener listener, Date beginOm) throws ImportFileNotFoundException,
             ImportFileReadException {
         Table table = getDbfTable(importFile.getFileName());
 
@@ -60,7 +57,7 @@ public class TablegramImportService extends AbstractImportService{
         Tablegram tablegram = new Tablegram();
 
         tablegram.setFileName(importFile.getFileName());
-        tablegram.setOm(DEFAULT_BEGIN_DATE);
+        tablegram.setOm(beginOm);
 
         int processed = 0;
 

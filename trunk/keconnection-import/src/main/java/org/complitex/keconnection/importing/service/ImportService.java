@@ -186,7 +186,7 @@ public class ImportService {
                 } else if (importFile instanceof HeatmeterImportFile){ //import heatmeter
                     heatmeterImportService.process(importFile, listener, beginOm, beginDate);
                 } else if (importFile instanceof PayloadImportFile){ //import payload
-                    tablegramImportService.process(importFile, listener);
+                    tablegramImportService.process(importFile, listener, beginOm);
                 }
 
                 userTransaction.commit();
