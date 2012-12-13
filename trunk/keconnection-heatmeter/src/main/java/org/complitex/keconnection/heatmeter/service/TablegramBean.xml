@@ -4,7 +4,7 @@
     <resultMap id="tablegramResultMap" type="org.complitex.keconnection.heatmeter.entity.Tablegram">
         <id property="id"/>
         <result property="fileName"/>
-        <result property="om"/>
+        <result property="begin_date"/>
         <result property="uploaded"/>
         <result property="count"/>
         <result property="processedCount"/>
@@ -12,12 +12,11 @@
 
     <insert id="insertTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
             useGeneratedKeys="true" keyProperty="id">
-        insert into `tablegram` (`file_name`, `om`)
-            value (#{fileName}, #{om})
+        insert into `tablegram` (`file_name`, `begin_date`) value (#{fileName}, #{beginDate})
     </insert>
 
     <update id="updateTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram">
-        update `tablegram` set `file_name` = #{fileName}, `om` = #{om}
+        update `tablegram` set `file_name` = #{fileName}, `begin_date` = #{beginDate}
     </update>
 
     <select id="selectTablegram" parameterType="long" resultMap="tablegramResultMap">
@@ -42,7 +41,7 @@
 
     <select id="isExistTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
             resultType="boolean">
-        select count(*) > 0 from `tablegram` where `file_name` = #{fileName} and `om` = #{om}
+        select count(*) > 0 from `tablegram` where `file_name` = #{fileName} and `begin_date` = #{beginDate}
     </select>
 
     <delete id="deleteTablegram" parameterType="long">

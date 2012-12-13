@@ -11,7 +11,7 @@ import java.util.Date;
 public class Tablegram implements ILongId{
     private Long id;
     private String fileName;
-    private Date om;
+    private Date beginDate;
     private Date uploaded;
     private Integer count;
     private Integer processedCount;
@@ -32,12 +32,12 @@ public class Tablegram implements ILongId{
         this.fileName = fileName;
     }
 
-    public Date getOm() {
-        return om;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
-    public void setOm(Date om) {
-        this.om = om;
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
     }
 
     public Date getUploaded() {

@@ -46,7 +46,7 @@ public class TablegramImportService extends AbstractImportService{
     @EJB
     private TablegramRecordBean tablegramRecordBean;
 
-    public void process(IImportFile importFile, IImportListener listener, Date beginOm) throws ImportFileNotFoundException,
+    public void process(IImportFile importFile, IImportListener listener, Date beginDate) throws ImportFileNotFoundException,
             ImportFileReadException {
         Table table = getDbfTable(importFile.getFileName());
 
@@ -57,7 +57,7 @@ public class TablegramImportService extends AbstractImportService{
         Tablegram tablegram = new Tablegram();
 
         tablegram.setFileName(importFile.getFileName());
-        tablegram.setOm(beginOm);
+        tablegram.setBeginDate(beginDate);
 
         int processed = 0;
 
