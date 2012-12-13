@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.IHeaderResponse;
@@ -54,6 +55,7 @@ import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizatio
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.component.toolbar.UploadButton;
+import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -74,6 +76,7 @@ import static org.complitex.dictionary.util.PageUtil.newTextFields;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.09.12 15:25
  */
+@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class HeatmeterList extends TemplatePage {
     private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
 
