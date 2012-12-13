@@ -24,4 +24,11 @@
         where p.`type` = 2 and p.`heatmeter_id` = #{heatmeterId} and #{om} between p.`begin_om` and p.`end_om`
           order by p.`begin_date`
     </select>
+
+    <select id="selectHeatmeterConnectionsByHeatmeterId" parameterType="long" resultMap="heatmeterConnectionResultMap">
+        select p.*, bc.`building_id`, bc.`organization_id`, bc.`code`
+          from `heatmeter_period` p left join `building_code` bc on bc.`id` = p.`object_id`
+        where p.`type` = 2 and p.`heatmeter_id` = #{heatmeterId}
+    </select>
+
 </mapper>
