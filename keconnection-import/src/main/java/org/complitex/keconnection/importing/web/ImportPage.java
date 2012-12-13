@@ -41,6 +41,7 @@ import javax.ejb.EJB;
 import java.util.*;
 
 import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
+import static org.complitex.dictionary.util.DateUtil.getFirstDayOfCurrentMonth;
 import static org.complitex.dictionary.util.DateUtil.getFirstDayOfMonth;
 
 /**
@@ -96,7 +97,7 @@ public final class ImportPage extends TemplatePage {
         localeModel = new Model<>(localeBean.getSystemLocale());
         form.add(new LocalePicker("localePicker", localeModel, false));
 
-        final IModel<Date> beginOmModel = new Model<>(getCurrentDate());
+        final IModel<Date> beginOmModel = new Model<>(getFirstDayOfCurrentMonth());
         form.add(new MaskedDateInput("beginOm", beginOmModel).setRequired(true));
 
         final IModel<Date> beginDateModel = new Model<>(getCurrentDate());

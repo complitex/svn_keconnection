@@ -35,6 +35,7 @@ import javax.ejb.EJB;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.complitex.dictionary.util.DateUtil.getFirstDayOfMonth;
 import static org.complitex.dictionary.util.PageUtil.*;
 import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.PROCESSED;
 
@@ -159,7 +160,8 @@ public class TablegramRecordList extends TemplatePage{
                     @Override
                     public void onClick() {
                         try {
-                            tablegramService.process(tablegramRecord, null, tablegram.getOm(), tablegram.getOm());
+                            tablegramService.process(tablegramRecord, null, getFirstDayOfMonth(tablegram.getBeginDate()),
+                                    tablegram.getBeginDate());
 
                             info(getStringFormat("info_processed", tablegramRecord.getLs(), tablegramRecord.getAddress())
                                     + ": " + getString(tablegramRecord.getStatus().name()));

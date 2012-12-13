@@ -460,7 +460,7 @@ DROP TABLE IF EXISTS `tablegram`;
 CREATE TABLE `tablegram`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
     `file_name` VARCHAR (255) NOT NULL COMMENT 'Название файла',
-    `om` DATE NOT NULL COMMENT  'Операционный месяц',
+    `begin_date` DATE NOT NULL COMMENT  'Операционный месяц',
     `uploaded` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT  'Дата загрузки',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы табуляграмм';

@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
 
+import static org.complitex.dictionary.util.DateUtil.getFirstDayOfMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
 import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.*;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
@@ -42,7 +43,8 @@ public class TablegramService {
             for (TablegramRecord tablegramRecord : tablegramRecords){
                 current = tablegramRecord;
 
-                process(tablegramRecord, listener, tablegram.getOm(), tablegram.getOm());
+                process(tablegramRecord, listener, getFirstDayOfMonth(tablegram.getBeginDate()),
+                        tablegram.getBeginDate());
             }
 
 
