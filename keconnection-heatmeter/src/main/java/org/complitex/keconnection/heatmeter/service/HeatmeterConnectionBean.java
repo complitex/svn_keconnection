@@ -26,4 +26,8 @@ public class HeatmeterConnectionBean extends HeatmeterPeriodBean<HeatmeterConnec
     public List<HeatmeterConnection> getHeatmeterConnections(Long heatmeterId, Date om){
         return sqlSession().selectList("selectHeatmeterConnectionsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
+
+    public List<HeatmeterConnection> getHeatmeterConnections(Long heatmeterId){
+        return sqlSession().selectList("selectHeatmeterConnectionsByHeatmeterId", heatmeterId);
+    }
 }

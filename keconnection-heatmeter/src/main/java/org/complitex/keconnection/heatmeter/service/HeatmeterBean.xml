@@ -186,8 +186,7 @@
     <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
         SELECT COUNT(1) FROM `heatmeter` h
             LEFT JOIN `heatmeter_period` p ON (p.`heatmeter_id` = h.`id` and p.`type` = 2)
-            LEFT JOIN `heatmeter_connection` hc ON hc.`id` = p.`attribute_id`
-            LEFT JOIN `building_code` bc ON bc.`id` = hc.`building_code_id`
+            LEFT JOIN `building_code` bc ON bc.`id` = p.`object_id`
             LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
             WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId} AND (om.`begin_om` BETWEEN p.`begin_om` AND p.`end_om`)
     </select>
