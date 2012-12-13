@@ -330,6 +330,17 @@ public abstract class HeatmeterItemPanel extends Panel {
                     }
                 }
 
+                //set empty payload as zero
+                if (payload.getPayload1() == null){
+                    payload.setPayload1(new BigDecimal(0));
+                }
+                if (payload.getPayload2() == null){
+                    payload.setPayload2(new BigDecimal(0));
+                }
+                if (payload.getPayload3() == null){
+                    payload.setPayload3(new BigDecimal(0));
+                }
+
                 //validate
                 HeatmeterValidate validate = heatmeterService.validatePayloads(heatmeter);
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
