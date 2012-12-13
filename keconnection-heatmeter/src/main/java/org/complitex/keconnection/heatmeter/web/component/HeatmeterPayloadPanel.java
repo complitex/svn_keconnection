@@ -5,7 +5,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -14,20 +13,23 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.dictionary.web.component.LabelDateField;
+import org.complitex.dictionary.web.component.LabelTextField;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
 import org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean;
 
 import javax.ejb.EJB;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import static org.complitex.dictionary.web.component.LabelTextField.Converter.BIG_DECIMAL_CONVERTER_2;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.10.12 16:42
  */
 public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
-
     @EJB
     private HeatmeterPayloadBean payloadBean;
 
@@ -57,9 +59,9 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
                 item.add(new LabelDateField("begin_date", new PropertyModel<Date>(payload, "beginDate"), false));
                 item.add(new LabelDateField("end_date", new PropertyModel<Date>(payload, "endDate"), false));
 
-                item.add(new TextField<>("payload1", new PropertyModel<>(payload, "payload1")));
-                item.add(new TextField<>("payload2", new PropertyModel<>(payload, "payload2")));
-                item.add(new TextField<>("payload3", new PropertyModel<>(payload, "payload3")));
+                item.add(new LabelTextField<>("payload1", 5, new PropertyModel<BigDecimal>(payload, "payload1"), BIG_DECIMAL_CONVERTER_2));
+                item.add(new LabelTextField<>("payload2", 5, new PropertyModel<BigDecimal>(payload, "payload2"), BIG_DECIMAL_CONVERTER_2));
+                item.add(new LabelTextField<>("payload3", 5, new PropertyModel<BigDecimal>(payload, "payload3"), BIG_DECIMAL_CONVERTER_2));
 
                 item.add(new AjaxSubmitLink("remove") {
 

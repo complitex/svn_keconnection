@@ -20,8 +20,10 @@ import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
+import org.complitex.keconnection.heatmeter.entity.Tablegram;
 import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 import org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus;
+import org.complitex.keconnection.heatmeter.service.TablegramBean;
 import org.complitex.keconnection.heatmeter.service.TablegramRecordBean;
 import org.complitex.keconnection.heatmeter.service.TablegramService;
 import org.complitex.template.web.security.SecurityRole;
@@ -51,6 +53,9 @@ public class TablegramRecordList extends TemplatePage{
     @EJB
     private TablegramService tablegramService;
 
+    @EJB
+    private TablegramBean tablegramBean;
+
     //properties
     private final String[] properties = new String[]{
             "heatmeterId", "ls", "name", "address", "payload1", "payload2", "payload3", "status"
@@ -58,6 +63,8 @@ public class TablegramRecordList extends TemplatePage{
 
     public TablegramRecordList(PageParameters pageParameters) {
         Long tablegramId = pageParameters.get("t_id").toLongObject();
+
+        final Tablegram tablegram = tablegramBean.getTablegram(tablegramId);
 
         //Title
         add(new Label("title", new ResourceModel("title")));
@@ -152,7 +159,7 @@ public class TablegramRecordList extends TemplatePage{
                     @Override
                     public void onClick() {
                         try {
-                            tablegramService.process(tablegramRecord, null);
+                            tablegramService.process(tablegramRecord, null, tablegram.getOm(), tablegram.getOm());
 
                             info(getStringFormat("info_processed", tablegramRecord.getLs(), tablegramRecord.getAddress())
                                     + ": " + getString(tablegramRecord.getStatus().name()));

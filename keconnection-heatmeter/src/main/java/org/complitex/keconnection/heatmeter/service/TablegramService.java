@@ -1,13 +1,16 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.service.IProcessListener;
-import org.complitex.keconnection.heatmeter.entity.*;
+import org.complitex.keconnection.heatmeter.entity.Heatmeter;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterPayload;
+import org.complitex.keconnection.heatmeter.entity.Tablegram;
+import org.complitex.keconnection.heatmeter.entity.TablegramRecord;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.Date;
 import java.util.List;
 
-import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod.DEFAULT_BEGIN_OM;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
 import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.*;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
@@ -39,7 +42,7 @@ public class TablegramService {
             for (TablegramRecord tablegramRecord : tablegramRecords){
                 current = tablegramRecord;
 
-                process(tablegramRecord, listener);
+                process(tablegramRecord, listener, tablegram.getOm(), tablegram.getOm());
             }
 
 
@@ -50,7 +53,7 @@ public class TablegramService {
         listener.done();
     }
 
-    public void process(TablegramRecord tablegramRecord, IProcessListener<TablegramRecord> listener){
+    public void process(TablegramRecord tablegramRecord, IProcessListener<TablegramRecord> listener, Date beginOm, Date beginDate){
         if (PROCESSED.equals(tablegramRecord.getStatus()) || ERROR_PAYLOAD_SUM.equals(tablegramRecord.getStatus())){
             if (listener != null) {
                 listener.skip(tablegramRecord);
@@ -78,8 +81,9 @@ public class TablegramService {
                 }
             }else {
                 //create heatmeterPayload
-                HeatmeterPayload heatmeterPayload = new HeatmeterPayload(heatmeter.getId(), DEFAULT_BEGIN_OM);
+                HeatmeterPayload heatmeterPayload = new HeatmeterPayload(heatmeter.getId(), beginOm);
 
+                heatmeterPayload.setBeginDate(beginDate);
                 heatmeterPayload.setTablegramRecordId(tablegramRecord.getId());
                 heatmeterPayload.setPayload1(tablegramRecord.getPayload1());
                 heatmeterPayload.setPayload2(tablegramRecord.getPayload2());
