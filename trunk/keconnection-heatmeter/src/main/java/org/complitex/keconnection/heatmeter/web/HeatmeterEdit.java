@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -185,6 +186,19 @@ public class HeatmeterEdit extends FormTemplatePage {
             public void onSubmit() {
                 try {
                     Heatmeter heatmeter = model.getObject();
+
+                    //set empty payload as zero
+                    for (HeatmeterPayload payload : heatmeter.getPayloads()){
+                        if (payload.getPayload1() == null){
+                            payload.setPayload1(new BigDecimal(0));
+                        }
+                        if (payload.getPayload2() == null){
+                            payload.setPayload2(new BigDecimal(0));
+                        }
+                        if (payload.getPayload3() == null){
+                            payload.setPayload3(new BigDecimal(0));
+                        }
+                    }
 
                     //validate
                     HeatmeterValidate validate = heatmeterService.validate(heatmeter);
