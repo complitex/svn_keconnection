@@ -422,8 +422,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 input.setEndOm(heatmeter.getOm());
 
                 //validate
-                //TODO: fix validation:
-                HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validateConsumptions(heatmeter);
+                HeatmeterValidate validate = heatmeterService.validateInputs(heatmeter);
                 if (HeatmeterValidateStatus.VALID != validate.getStatus()) {
                     saveInputStatusModel.setObject(
                             MessageFormat.format(getString(validate.getStatus().name().toLowerCase()), validate));
