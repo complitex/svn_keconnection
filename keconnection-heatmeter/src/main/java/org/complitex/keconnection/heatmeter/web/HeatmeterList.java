@@ -195,10 +195,9 @@ public class HeatmeterList extends TemplatePage {
                     }
                 }).setNullValid(true));
 
-        //TODO: enable filters
-        filterForm.add(new TextField<>("organizationFilter", new Model<String>()));
-        filterForm.add(new TextField<>("addressFilter", new Model<String>()));
-        filterForm.add(new TextField<>("buildingCodeFilter", new Model<String>()));
+        filterForm.add(new TextField<>("map.organization"));
+        filterForm.add(new TextField<>("map.address"));
+        filterForm.add(new TextField<>("map.buildingCode"));
 
         IModel<String> tg1FilterModel = new Model<String>() {
 
@@ -428,7 +427,7 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "h2.ls", "h2.type_id", "h2.status",
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "bc.code", "h2.ls", "h2.type_id", "h2.status",
                 "hp.begin_date", "hcons.readout_date"));
 
         //Import Dialog
