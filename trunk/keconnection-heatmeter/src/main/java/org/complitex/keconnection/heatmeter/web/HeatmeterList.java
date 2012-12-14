@@ -195,7 +195,7 @@ public class HeatmeterList extends TemplatePage {
                     }
                 }).setNullValid(true));
 
-        filterForm.add(new TextField<>("map.organization"));
+        filterForm.add(new TextField<>("map.organizationCode"));
         filterForm.add(new TextField<>("map.address"));
         filterForm.add(new TextField<>("map.buildingCode"));
 
@@ -427,8 +427,8 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "bc.code", "h2.ls", "h2.type_id", "h2.status",
-                "hp.begin_date", "hcons.readout_date"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "org_sc.value", "bc.code", "h2.ls",
+                "h2.type_id", "h2.status", "hp.begin_date", "hcons.readout_date"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");

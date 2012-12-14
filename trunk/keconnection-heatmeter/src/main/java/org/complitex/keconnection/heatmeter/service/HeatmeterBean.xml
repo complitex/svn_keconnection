@@ -106,6 +106,10 @@
             <if test="map.buildingCode != null">
                 AND bc.`code` = #{map.buildingCode}
             </if>
+
+            <if test="map.organizationCode != null">
+                AND org_sc.`value` = #{map.organizationCode}
+            </if>
         </where>
     </sql>
 
@@ -141,6 +145,10 @@
 
         LEFT JOIN `heatmeter_period` connection_p ON (connection_p.`heatmeter_id` = h2.`id` and connection_p.`type` = 2)
         LEFT JOIN `building_code` bc ON (bc.`id` = connection_p.`object_id`)
+        LEFT JOIN `organization_attribute` org_a ON (org_a.`object_id` = bc.`organization_id` AND org_a.`status` = 'ACTIVE'
+          AND org_a.`attribute_type_id` = 901)
+        LEFT JOIN `organization_string_culture` org_sc ON (org_sc.`id` = org_a.`value_id` AND
+          org_sc.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">
