@@ -102,6 +102,10 @@
             <if test="map.organizations != null">
                 AND bc.`organization_id` IN ${map.organizations}
             </if>
+
+            <if test="map.buildingCode != null">
+                AND bc.`code` = #{map.buildingCode}
+            </if>
         </where>
     </sql>
 
@@ -135,10 +139,8 @@
             </if>
         </if>
 
-        <if test="map.organizations != null">
-            LEFT JOIN `heatmeter_period` connection_p ON (connection_p.`heatmeter_id` = h2.`id` and connection_p.`type` = 2)
-            LEFT JOIN `building_code` bc ON (bc.`id` = connection_p.`object_id`)
-        </if>
+        LEFT JOIN `heatmeter_period` connection_p ON (connection_p.`heatmeter_id` = h2.`id` and connection_p.`type` = 2)
+        LEFT JOIN `building_code` bc ON (bc.`id` = connection_p.`object_id`)
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">

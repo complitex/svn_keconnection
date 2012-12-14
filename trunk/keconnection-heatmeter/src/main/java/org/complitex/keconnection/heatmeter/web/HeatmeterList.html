@@ -62,7 +62,7 @@
                             <th class="center">
                                 <wicket:message key="address"/>
                             </th>
-                            <th class="center">
+                            <th class="center" wicket:id="header.bc.code">
                                 <wicket:message key="buildingCode"/>
                             </th>
                             <th class="center" wicket:id="header.h2.ls">
@@ -109,15 +109,15 @@
                             <th></th>
                             <th>
                                 <!-- organization filter -->
-                                <input type="text" wicket:id="organizationFilter"/>
+                                <input type="text" wicket:id="map.organization"/>
                             </th>
                             <th>
                                 <!-- address filter -->
-                                <input type="text" wicket:id="addressFilter"/>
+                                <input type="text" wicket:id="map.address"/>
                             </th>
                             <th>
                                 <!-- building code filter -->
-                                <input type="text" wicket:id="buildingCodeFilter"/>
+                                <input type="text" wicket:id="map.buildingCode"/>
                             </th>
                             <th>
                                 <input type="text" wicket:id="object.ls"/>
