@@ -4,15 +4,15 @@
  */
 package org.complitex.keconnection.organization.web.component;
 
-import javax.ejb.EJB;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.StrategyFactory;
-import org.complitex.dictionary.web.component.organization.user.UserOrganizationPickerParameters;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+
+import javax.ejb.EJB;
 
 /**
  *
@@ -23,8 +23,7 @@ public class KeConnectionUserOrganizationPicker extends Panel {
     @EJB
     private StrategyFactory strategyFactory;
 
-    public KeConnectionUserOrganizationPicker(String id, final IModel<Long> organizationIdModel,
-            UserOrganizationPickerParameters parameters) {
+    public KeConnectionUserOrganizationPicker(String id, final IModel<Long> organizationIdModel) {
         super(id);
 
         add(new OrganizationPicker("picker", new Model<DomainObject>() {

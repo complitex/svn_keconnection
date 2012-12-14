@@ -125,7 +125,7 @@ public class HeatmeterList extends TemplatePage {
         final IModel<FilterWrapper<Heatmeter>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
         //Filter Form
-        final Form<?> filterForm = new Form<>("filter_form", filterModel);
+        final Form filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
 
@@ -228,7 +228,7 @@ public class HeatmeterList extends TemplatePage {
                 filterModel.getObject().add(HeatmeterBean.PAYLOAD2_FILTER_PARAM, object);
             }
         };
-        filterForm.add(new TextField<String>("tg2Filter", tg2FilterModel));
+        filterForm.add(new TextField<>("tg2Filter", tg2FilterModel));
 
         IModel<String> tg3FilterModel = new Model<String>() {
 
@@ -243,7 +243,7 @@ public class HeatmeterList extends TemplatePage {
                 filterModel.getObject().add(HeatmeterBean.PAYLOAD3_FILTER_PARAM, object);
             }
         };
-        filterForm.add(new TextField<String>("tg3Filter", tg3FilterModel));
+        filterForm.add(new TextField<>("tg3Filter", tg3FilterModel));
 
         IModel<String> inputFilterModel = new Model<String>() {
 
@@ -258,7 +258,7 @@ public class HeatmeterList extends TemplatePage {
                 filterModel.getObject().add(HeatmeterBean.INPUT_FILTER_PARAM, object);
             }
         };
-        filterForm.add(new TextField<String>("inputFilter", inputFilterModel));
+        filterForm.add(new TextField<>("inputFilter", inputFilterModel));
 
         IModel<String> consumption1FilterModel = new Model<String>() {
 
@@ -273,7 +273,7 @@ public class HeatmeterList extends TemplatePage {
                 filterModel.getObject().add(HeatmeterBean.CONSUMPTION1_FILTER_PARAM, object);
             }
         };
-        filterForm.add(new TextField<String>("cosumption1Filter", consumption1FilterModel));
+        filterForm.add(new TextField<>("cosumption1Filter", consumption1FilterModel));
 
         IModel<Date> beginDateFilterModel = new Model<Date>() {
 
@@ -304,9 +304,6 @@ public class HeatmeterList extends TemplatePage {
             }
         };
         filterForm.add(new MaskedDateInput("readoutDateFilter", readoutDateFilterModel));
-
-        //Selected Heatmeaters Id Map
-        final Map<String, Long> selectedIds = new HashMap<>();
 
         //Data Provider
         DataProvider<Heatmeter> dataProvider = new DataProvider<Heatmeter>() {
