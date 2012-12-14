@@ -5,12 +5,16 @@
 package org.complitex.keconnection.organization.strategy.entity;
 
 import org.complitex.dictionary.converter.BooleanConverter;
-import java.util.Date;
-import java.util.Locale;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
-import static org.complitex.dictionary.util.DateUtil.*;
+
+import java.util.Date;
+import java.util.Locale;
+
+import static org.complitex.dictionary.util.DateUtil.displayMonth;
+import static org.complitex.dictionary.util.DateUtil.getMonth;
+import static org.complitex.dictionary.util.DateUtil.getYear;
 
 /**
  *
@@ -40,7 +44,7 @@ public class Organization extends DomainObject {
         if (operatingMonthDate == null) {
             return null;
         }
-        return displayMonth(getMonth(getOperatingMonthDate()) + 1, locale);
+        return displayMonth(getMonth(operatingMonthDate) + 1, locale) + " " + getYear(operatingMonthDate);
     }
 
     public String getParentShortName() {

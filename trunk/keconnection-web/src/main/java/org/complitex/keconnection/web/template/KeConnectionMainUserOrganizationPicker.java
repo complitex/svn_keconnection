@@ -4,14 +4,16 @@
  */
 package org.complitex.keconnection.web.template;
 
-import static com.google.common.base.Strings.*;
-import java.util.Locale;
 import org.apache.wicket.model.IModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.template.web.component.MainUserOrganizationPicker;
+
+import java.util.Locale;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  *
@@ -42,7 +44,7 @@ public class KeConnectionMainUserOrganizationPicker extends MainUserOrganization
         } else if (isNullOrEmpty(code)) {
             return name + " " + operatingMonth;
         } else {
-            return name + " " + code + " " + operatingMonth;
+            return code + " - " + name + " (" + operatingMonth + ")";
         }
     }
 
