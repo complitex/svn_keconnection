@@ -158,9 +158,9 @@
             LEFT JOIN `building` b ON (b.`object_id` = bc.`building_id`)
             LEFT JOIN `building_address` ba ON (ba.`object_id` = b.`parent_id`)
             LEFT JOIN `street_attribute` sa ON (sa.`object_id` = ba.`parent_id`)
-            LEFT JOIN `street_string_culture` ssc ON (ssc.`id` = sa.`value_id` AND sa.`attribute_type_id` = 300)
+            JOIN `street_string_culture` ssc ON (ssc.`id` = sa.`value_id` AND sa.`attribute_type_id` = 300)
             LEFT JOIN `building_address_attribute` baa ON (baa.`object_id` = ba.`object_id`)
-            LEFT JOIN `building_address_string_culture` basc ON (basc.`id` = baa.`value_id` AND baa.`attribute_type_id` = 1500)
+            JOIN `building_address_string_culture` basc ON (basc.`id` = baa.`value_id` AND baa.`attribute_type_id` = 1500)
          </if>
     </sql>
 
@@ -179,11 +179,11 @@
         <include refid="selectHeatmetersWhere"/>
         <choose>
             <when test="sortProperty == 'address'">
-                order by ssc.`value`, basc.`value`
+                order by ssc.`value` ${asc}, basc.`value` + 0 ${asc}
             </when>
-            <otherwise>order by ${sortProperty}</otherwise>
+            <otherwise>order by ${sortProperty} ${asc}</otherwise>
         </choose>
-        ${asc} limit #{first}, #{count}
+        limit #{first}, #{count}
     </select>
 
     <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
