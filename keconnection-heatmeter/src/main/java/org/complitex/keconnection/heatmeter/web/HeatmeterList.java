@@ -427,7 +427,7 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "org_sc.value", "bc.code", "h2.ls",
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "address", "org_sc.value", "bc.code", "h2.ls",
                 "h2.type_id", "h2.status", "hp.begin_date", "hcons.readout_date"));
 
         //Import Dialog
@@ -577,6 +577,11 @@ public class HeatmeterList extends TemplatePage {
             }
 
             AjaxLink<Void> bindAll = new AjaxLink<Void>("bindAll") {
+
+                @Override
+                public boolean isVisible() {
+                    return sessionBean.isAdmin();
+                }
 
                 @Override
                 public void onClick(AjaxRequestTarget target) {
