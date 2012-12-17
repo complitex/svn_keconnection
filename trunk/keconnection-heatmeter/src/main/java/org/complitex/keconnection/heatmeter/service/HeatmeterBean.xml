@@ -110,6 +110,10 @@
             <if test="map.organizationCode != null">
                 AND org_sc.`value` = #{map.organizationCode}
             </if>
+
+            <if test="map.address != null">
+                AND concat(ssc.`value`, ' ', basc.`value`) like concat('%', #{map.address}, '%')
+            </if>
         </where>
     </sql>
 
@@ -145,10 +149,19 @@
 
         LEFT JOIN `heatmeter_period` connection_p ON (connection_p.`heatmeter_id` = h2.`id` and connection_p.`type` = 2)
         LEFT JOIN `building_code` bc ON (bc.`id` = connection_p.`object_id`)
-        LEFT JOIN `organization_attribute` org_a ON (org_a.`object_id` = bc.`organization_id` AND org_a.`status` = 'ACTIVE'
+        JOIN `organization_attribute` org_a ON (org_a.`object_id` = bc.`organization_id` AND org_a.`status` = 'ACTIVE'
           AND org_a.`attribute_type_id` = 901)
         LEFT JOIN `organization_string_culture` org_sc ON (org_sc.`id` = org_a.`value_id` AND
           org_sc.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+
+        <if test="map.address != null or sortProperty == 'address'">
+            LEFT JOIN `building` b ON (b.`object_id` = bc.`building_id`)
+            LEFT JOIN `building_address` ba ON (ba.`object_id` = b.`parent_id`)
+            LEFT JOIN `street_attribute` sa ON (sa.`object_id` = ba.`parent_id`)
+            LEFT JOIN `street_string_culture` ssc ON (ssc.`id` = sa.`value_id` AND sa.`attribute_type_id` = 300)
+            LEFT JOIN `building_address_attribute` baa ON (baa.`object_id` = ba.`object_id`)
+            LEFT JOIN `building_address_string_culture` basc ON (basc.`id` = baa.`value_id` AND baa.`attribute_type_id` = 1500)
+         </if>
     </sql>
 
     <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">
@@ -162,9 +175,15 @@
     <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="heatmeterWithActiveCollectionsResultMap">
         select * from (<include refid="selectHeatmeterSelectFrom"/>) h2
-            <include refid="selectHeatmeterJoin"/>
-            <include refid="selectHeatmetersWhere"/>
-          order by ${sortProperty} ${asc} limit #{first}, #{count}
+        <include refid="selectHeatmeterJoin"/>
+        <include refid="selectHeatmetersWhere"/>
+        <choose>
+            <when test="sortProperty == 'address'">
+                order by ssc.`value`, basc.`value`
+            </when>
+            <otherwise>order by ${sortProperty}</otherwise>
+        </choose>
+        ${asc} limit #{first}, #{count}
     </select>
 
     <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
