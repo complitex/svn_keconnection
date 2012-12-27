@@ -25,7 +25,6 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.example.AttributeExample;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.StringUtil;
@@ -54,15 +53,15 @@ import java.util.List;
  */
 @AuthorizeInstantiation(SecurityRole.ADDRESS_MODULE_VIEW)
 public class OrganizationList extends ScrollListPage {
-
-    @EJB
-    private StrategyFactory strategyFactory;
     @EJB
     private LocaleBean localeBean;
     private DomainObjectExample example;
     private WebMarkupContainer content;
     private DataView<Organization> dataView;
     private CollapsibleSearchPanel searchPanel;
+
+    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
+    private IKeConnectionOrganizationStrategy organizationStrategy;
 
     public OrganizationList() {
         init();
@@ -98,7 +97,7 @@ public class OrganizationList extends ScrollListPage {
 
             @Override
             public String getObject() {
-                return getOrganizationStrategy().getPluralEntityLabel(getLocale());
+                return organizationStrategy.getPluralEntityLabel(getLocale());
             }
         };
 
@@ -112,13 +111,13 @@ public class OrganizationList extends ScrollListPage {
         example = (DomainObjectExample) getFilterObject(newExample());
 
         //Search
-        final List<String> searchFilters = getOrganizationStrategy().getSearchFilters();
+        final List<String> searchFilters = organizationStrategy.getSearchFilters();
         content.setVisible(searchFilters == null || searchFilters.isEmpty());
         add(content);
 
         final IModel<ShowMode> showModeModel = new Model<ShowMode>(ShowMode.ACTIVE);
         searchPanel = new CollapsibleSearchPanel("searchPanel", getTemplateSession().getGlobalSearchComponentState(),
-                searchFilters, getOrganizationStrategy().getSearchCallback(), ShowMode.ALL, true, showModeModel);
+                searchFilters, organizationStrategy.getSearchCallback(), ShowMode.ALL, true, showModeModel);
         add(searchPanel);
         searchPanel.initialize();
 
@@ -152,17 +151,17 @@ public class OrganizationList extends ScrollListPage {
                 example.setAsc(asc);
                 example.setStart(first);
                 example.setSize(count);
-                return getOrganizationStrategy().find(example);
+                return organizationStrategy.find(example);
             }
 
             @Override
             protected int getSize() {
                 example.setStatus(showModeModel.getObject().name());
                 example.setLocaleId(localeBean.convert(getLocale()).getId());
-                return getOrganizationStrategy().count(example);
+                return organizationStrategy.count(example);
             }
         };
-        dataProvider.setSort(String.valueOf(getOrganizationStrategy().getDefaultSortAttributeTypeId()), SortOrder.ASCENDING);
+        dataProvider.setSort(String.valueOf(organizationStrategy.getDefaultSortAttributeTypeId()), SortOrder.ASCENDING);
 
         //Filters
         filterForm.add(new TextField<String>("nameFilter", new Model<String>() {
@@ -234,15 +233,15 @@ public class OrganizationList extends ScrollListPage {
                 item.add(new Label("order", StringUtil.valueOf(getFirstItemOffset() + item.getIndex() + 1)));
                 item.add(new Label("name", AttributeUtil.getStringCultureValue(organization,
                         IKeConnectionOrganizationStrategy.NAME, getLocale())));
-                item.add(new Label("code", getOrganizationStrategy().getUniqueCode(organization)));
+                item.add(new Label("code", organizationStrategy.getUniqueCode(organization)));
                 item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization,
                         IKeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
                 item.add(new Label("parentShortName", organization.getParentShortName()));
                 item.add(new Label("om", organization.getOperatingMonth(getLocale())));
 
                 ScrollBookmarkablePageLink<WebPage> detailsLink = new ScrollBookmarkablePageLink<WebPage>("detailsLink",
-                        getOrganizationStrategy().getEditPage(),
-                        getOrganizationStrategy().getEditPageParams(organization.getId(), null, null),
+                        organizationStrategy.getEditPage(),
+                        organizationStrategy.getEditPageParams(organization.getId(), null, null),
                         String.valueOf(organization.getId()));
                 detailsLink.add(new Label("editMessage", new AbstractReadOnlyModel<String>() {
 
@@ -278,6 +277,8 @@ public class OrganizationList extends ScrollListPage {
 
                         @Override
                         public void onClick(AjaxRequestTarget target) {
+                            organizationStrategy.closeOperatingMonth(organization);
+                            target.add(content);
                         }
                     };
                     closeOperatingMonthLink.setVisibilityAllowed(readyCloseFlag != null && readyCloseFlag);
@@ -328,18 +329,13 @@ public class OrganizationList extends ScrollListPage {
         content.add(new PagingNavigator("navigator", dataView, getPreferencesPage(), content));
     }
 
-    private IKeConnectionOrganizationStrategy getOrganizationStrategy() {
-        return (IKeConnectionOrganizationStrategy) strategyFactory.getStrategy(
-                IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization");
-    }
-
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
         return ImmutableList.of(new AddItemButton(id) {
 
             @Override
             protected void onClick() {
-                DomainObjectList.onAddObject(this.getPage(), getOrganizationStrategy(), getTemplateSession());
+                DomainObjectList.onAddObject(this.getPage(), organizationStrategy, getTemplateSession());
             }
 
             @Override
