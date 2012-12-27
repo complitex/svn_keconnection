@@ -1,7 +1,7 @@
 .errorStatus {
     font-size: 11px;
     color: #FF0000;
-    text-align: right;
+    text-align: center;
 }
 
 table > tbody > tr.lastRow > td {

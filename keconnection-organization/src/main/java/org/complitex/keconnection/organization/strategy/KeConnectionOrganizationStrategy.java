@@ -19,7 +19,6 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.util.AttributeUtil;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
 import org.complitex.keconnection.organization.strategy.web.list.OrganizationList;
@@ -32,6 +31,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import static org.complitex.dictionary.util.DateUtil.addMonth;
+import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
 
 /**
  *
@@ -266,7 +268,21 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
         AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
                 new BooleanConverter().toString(Boolean.TRUE),
                 localeBean.getSystemLocaleObject().getId());
-        update(findById(organization.getId(), true), organization, DateUtil.getCurrentDate());
+        update(findById(organization.getId(), true), organization, getCurrentDate());
+    }
+
+    @Transactional
+    @Override
+    public void closeOperatingMonth(Organization organization) {
+        AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
+                new BooleanConverter().toString(Boolean.FALSE),
+                localeBean.getSystemLocaleObject().getId());
+        update(findById(organization.getId(), true), organization, getCurrentDate());
+
+        sqlSession().insert(MAPPING_NAMESPACE + ".insertOperatingMonth",
+                ImmutableMap.of("organizationId", organization.getId(),
+                        "beginOm", addMonth(organization.getOperatingMonthDate(), 1),
+                        "updated", getCurrentDate()));
     }
 
     @Override

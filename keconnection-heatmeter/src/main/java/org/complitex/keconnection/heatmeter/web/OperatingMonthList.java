@@ -87,7 +87,7 @@ public class OperatingMonthList extends TemplatePage{
         };
         filterForm.add(filterFind);
 
-        final String[] properties = new String[]{"id", "organizationId", "beginOm", "endOm", "updated"};
+        final String[] properties = new String[]{"id", "organizationId", "beginOm", "updated"};
 
         //Filter Fields
         filterForm.add(newTextFields("object.", properties));
@@ -138,6 +138,6 @@ public class OperatingMonthList extends TemplatePage{
 
         //Sorting
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "id", "organization_id",
-                "begin_om", "end_om", "updated"));
+                "begin_om", "updated"));
     }
 }

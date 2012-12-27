@@ -679,7 +679,6 @@ CREATE TABLE `operating_month`(
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
     `organization_id` BIGINT(20) NOT NULL COMMENT 'Ссылка на организацию',
     `begin_om` DATE NOT NULL COMMENT  'Операционный месяц',
-    `end_om` DATE NULL COMMENT  'Конец операционного месяца',
     `updated` TIMESTAMP NULL COMMENT  'Время изменения опер. месяца',
     PRIMARY KEY (`id`),
     KEY `key_organization_id` (`organization_id`),

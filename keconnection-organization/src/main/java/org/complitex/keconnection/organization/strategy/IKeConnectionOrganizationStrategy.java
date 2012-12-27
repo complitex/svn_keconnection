@@ -61,6 +61,8 @@ public interface IKeConnectionOrganizationStrategy extends IOrganizationStrategy
 
     void setReadyCloseOperatingMonthFlag(Organization organization);
 
+    void closeOperatingMonth(Organization organization);
+
     String displayShortNameAndCode(DomainObject organization, Locale locale);
 
     Date getOperatingMonthDate(long organizationId);

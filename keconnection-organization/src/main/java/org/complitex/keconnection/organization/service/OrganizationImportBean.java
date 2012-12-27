@@ -15,8 +15,6 @@ import javax.ejb.TransactionAttributeType;
 import java.util.Date;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.*;
-
 /**
  *
  * @author Artem
@@ -51,9 +49,7 @@ public class OrganizationImportBean extends AbstractBean {
 
     @Transactional
     public void insertOperatingMonth(long organizationId, Date beginOm) {
-        final Date endOm = getFirstDayOfMonth(addMonth(beginOm, 1));
         sqlSession().insert(MAPPING_NAMESPACE + ".insertOperatingMonth",
-                ImmutableMap.of("organizationId", organizationId,
-                "beginOm", beginOm, "endOm", endOm));
+                ImmutableMap.of("organizationId", organizationId, "beginOm", beginOm));
     }
 }

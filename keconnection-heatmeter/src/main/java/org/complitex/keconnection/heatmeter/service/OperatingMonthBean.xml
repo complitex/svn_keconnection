@@ -5,7 +5,6 @@
         <id property="id"/>
         <result property="organizationId"/>
         <result property="beginOm"/>
-        <result property="endOm"/>
         <result property="updated"/>
     </resultMap>
 
@@ -14,20 +13,18 @@
     </select>
 
     <insert id="insertOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
-        insert into `operating_month` (`organization_id`, `begin_om`, `end_om`, `updated`)
-          values (#{organizationId}, #{om}, #{endOm}, #{updated})
+        insert into `operating_month` (`organization_id`, `begin_om`, `updated`)
+          values (#{organizationId}, #{om}, #{updated})
     </insert>
 
     <update id="updateOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
-        update `operating_month` set `organization_id` = #{organizationId}, `begin_om`  = #{beginOm},
-          `end_om`  = #{endOm}, `updated`  = #{updated}
+        update `operating_month` set `organization_id` = #{organizationId}, `begin_om`  = #{beginOm}, `updated`  = #{updated}
     </update>
 
     <sql id="selectOperatingMonthWhere">
         <where>
             <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
             <if test="object.beginOm != null">and `begin_om` = #{object.beginOm}</if>
-            <if test="object.endOm != null">and `end_om` = #{object.endOm}</if>
             <if test="object.updated != null">and `updated` = #{object.updated}</if>
         </where>
     </sql>

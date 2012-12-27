@@ -12,7 +12,6 @@ public class OperatingMonth implements ILongId{
     private Long id;
     private Long organizationId;
     private Date beginOm;
-    private Date endOm;
     private Date updated;
 
     public Long getId() {
@@ -37,14 +36,6 @@ public class OperatingMonth implements ILongId{
 
     public void setBeginOm(Date beginOm) {
         this.beginOm = beginOm;
-    }
-
-    public Date getEndOm() {
-        return endOm;
-    }
-
-    public void setEndOm(Date endOm) {
-        this.endOm = endOm;
     }
 
     public Date getUpdated() {

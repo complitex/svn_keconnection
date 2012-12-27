@@ -325,7 +325,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                     if (previousPayload != null) {
                         HeatmeterPeriod previousPeriod = previousPayload;
                         previousPeriod.setEndDate(previousDay(payload.getBeginDate()));
-                        previousPeriod.setEndOm(heatmeter.getOm());
+//                        previousPeriod.setEndOm(heatmeter.getOm());
                         heatmeterPayloadBean.save(previousPayload);
                     }
                 }
