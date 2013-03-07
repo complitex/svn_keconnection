@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.*;
 
@@ -24,6 +25,15 @@ public class HeatmeterInput extends HeatmeterPeriod {
 
         setHeatmeterId(heatmeterId);
         setBeginOm(beginOm);
+    }
+
+    @Override
+    public boolean isSameValue(HeatmeterPeriod p) {
+        if (p instanceof HeatmeterInput){
+            return super.isSameValue(p) && (Objects.equals(value, ((HeatmeterInput) p).getValue()));
+        }
+
+        return super.isSameValue(p);
     }
 
     public BigDecimal getValue() {

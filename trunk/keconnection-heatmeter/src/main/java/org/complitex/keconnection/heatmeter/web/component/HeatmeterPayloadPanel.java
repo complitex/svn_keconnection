@@ -46,7 +46,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
 
                 return isActiveOm()
                         ? heatmeter.getPayloads()
-                        : payloadBean.getHeatmeterPayloads(heatmeter.getId(), om.getObject());
+                        : payloadBean.getList(heatmeter.getId(), om.getObject());
             }
         };
 

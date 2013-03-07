@@ -60,7 +60,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
 
                         return isActiveOm()
                                 ? heatmeter.getConnections()
-                                : connectionBean.getHeatmeterConnections(heatmeter.getId(), om.getObject());
+                                : connectionBean.getList(heatmeter.getId(), om.getObject());
                     }
                 }) {
             @Override

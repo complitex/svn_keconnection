@@ -2,6 +2,7 @@ package org.complitex.keconnection.heatmeter.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType.PAYLOAD;
 
@@ -25,6 +26,18 @@ public class HeatmeterPayload extends HeatmeterPeriod{
 
         setHeatmeterId(heatmeterId);
         setBeginOm(beginOm);
+    }
+
+    @Override
+    public boolean isSameValue(HeatmeterPeriod p) {
+        if (p instanceof HeatmeterPayload){
+            HeatmeterPayload pp = (HeatmeterPayload) p;
+
+            return super.isSameValue(p) && Objects.equals(payload1, pp.payload1)
+                    && Objects.equals(payload2, pp.payload2) && Objects.equals(payload3, pp.payload3);
+        }
+
+        return super.isSameValue(p);
     }
 
     public Long getTablegramRecordId() {

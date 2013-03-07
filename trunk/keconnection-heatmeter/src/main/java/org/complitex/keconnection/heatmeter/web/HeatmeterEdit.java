@@ -25,6 +25,7 @@ import org.complitex.keconnection.address.strategy.building.KeConnectionBuilding
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
+import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterConnectionPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterInputPanel;
@@ -43,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.complitex.dictionary.util.DateUtil.addMonth;
+import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 import static org.complitex.dictionary.util.DateUtil.nextDay;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.VALID;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
@@ -69,6 +71,9 @@ public class HeatmeterEdit extends FormTemplatePage {
 
     @EJB
     private SessionBean sessionBean;
+
+    @EJB
+    private HeatmeterInputBean inputBean;
 
     private IModel<Date> om = new Model<>();
     private Date minOm = null;
@@ -244,13 +249,28 @@ public class HeatmeterEdit extends FormTemplatePage {
                         }
                     }
 
+                    //changed input
+                    if (heatmeter.getId() != null) {
+                        List<HeatmeterInput> inputs = inputBean.getList(heatmeter.getId(), heatmeter.getOm());
+
+                        for (HeatmeterInput d : inputs){
+                            for (HeatmeterInput input : heatmeter.getInputs()){
+                                if (d.getId().equals(input.getId()) && !d.isSame(input)
+                                        && !isSameMonth(heatmeter.getOm(), d.getBeginOm())){
+                                    input.getConsumptions().clear();
+                                    input.addNewConsumptionIfNecessary();
+                                }
+                            }
+                        }
+                    }
+
                     //recalculate consumptions for inputs
                     {
                         heatmeterService.calculateConsumptions(heatmeter.getPayloads(), heatmeter.getInputs());
                     }
 
                     //save
-                    heatmeterBean.save(heatmeter, heatmeter.getOm());
+                    heatmeterBean.save(heatmeter);
 
                     getSession().info(getStringFormat("info_saved", heatmeter.getLs()));
                 } catch (ConcurrentModificationException e){

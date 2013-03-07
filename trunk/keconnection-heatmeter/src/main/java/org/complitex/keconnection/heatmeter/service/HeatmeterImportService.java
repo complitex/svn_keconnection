@@ -46,12 +46,6 @@ public class HeatmeterImportService extends AbstractImportService {
     private HeatmeterBean heatmeterBean;
 
     @EJB
-    private HeatmeterOperationBean operationBean;
-
-    @EJB
-    private HeatmeterConnectionBean connectionBean;
-
-    @EJB
     private IKeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
@@ -218,16 +212,14 @@ public class HeatmeterImportService extends AbstractImportService {
             //default calculating
             heatmeter.setCalculating(true);
 
-            //save
-            heatmeterBean.save(heatmeter);
-
             //create period
             HeatmeterOperation operation = new HeatmeterOperation(heatmeter.getId(), heatmeaterWrapper.getBeginOm(), OPERATING);
 
             operation.setEndOm(heatmeaterWrapper.getEndOm());
             operation.setBeginDate(heatmeaterWrapper.getBeginDate());
             operation.setEndDate(heatmeaterWrapper.getEndDate());
-            operationBean.save(operation);
+
+            heatmeter.getOperations().add(operation);
         }
 
         //create heatmeter connection
@@ -241,7 +233,10 @@ public class HeatmeterImportService extends AbstractImportService {
         connection.setBeginDate(heatmeaterWrapper.getBeginDate());
         connection.setEndDate(heatmeaterWrapper.getEndDate());
 
-        connectionBean.save(connection);
+        heatmeter.getConnections().add(connection);
+
+        //save
+        heatmeterBean.save(heatmeter);
     }
 
     public List<HeatmeterImportFile> getHeatmeterImportFiles() {

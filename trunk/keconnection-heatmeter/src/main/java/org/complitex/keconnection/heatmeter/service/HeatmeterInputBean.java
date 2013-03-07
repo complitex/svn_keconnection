@@ -51,7 +51,7 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
         }
     }
 
-    public List<HeatmeterInput> getHeatmeterInputs(Long heatmeterId, Date om) {
+    public List<HeatmeterInput> getList(Long heatmeterId, Date om) {
         return sqlSession().selectList("selectHeatmeterInputsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 }

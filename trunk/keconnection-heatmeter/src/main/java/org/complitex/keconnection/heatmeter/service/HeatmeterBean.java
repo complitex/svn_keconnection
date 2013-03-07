@@ -51,7 +51,11 @@ public class HeatmeterBean extends AbstractBean {
 
     @Transactional
     public void save(Heatmeter heatmeter) throws ConcurrentModificationException {
-        if (heatmeter.getId() == null) {
+        Long heatmeterId = heatmeter.getId();
+        Date om = heatmeter.getOm();
+
+        //save heatmeter
+        if (heatmeterId == null) {
             sqlSession().insert("insertHeatmeter", heatmeter);
         } else {
             if (isModified(heatmeter)){
@@ -60,14 +64,8 @@ public class HeatmeterBean extends AbstractBean {
 
             sqlSession().update("updateHeatmeter", heatmeter);
         }
-    }
 
-    @Transactional
-    public void save(Heatmeter heatmeter, Date om) throws ConcurrentModificationException {
-        save(heatmeter);
-
-        Long heatmeterId = heatmeter.getId();
-
+        //save periods
         operationBean.save(heatmeterId, om, heatmeter.getOperations());
         connectionBean.save(heatmeterId, om, heatmeter.getConnections());
         payloadBean.save(heatmeterId, om, heatmeter.getPayloads());

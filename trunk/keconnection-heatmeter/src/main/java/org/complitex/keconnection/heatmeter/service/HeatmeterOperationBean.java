@@ -1,12 +1,12 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import java.util.Date;
-import java.util.List;
+import org.complitex.dictionary.mybatis.XmlMapper;
+import org.complitex.keconnection.heatmeter.entity.HeatmeterOperation;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
 import javax.ejb.Stateless;
-import org.complitex.dictionary.mybatis.XmlMapper;
-import org.complitex.keconnection.heatmeter.entity.HeatmeterOperation;
+import java.util.Date;
+import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
 
@@ -23,7 +23,7 @@ public class HeatmeterOperationBean extends HeatmeterPeriodBean<HeatmeterOperati
         return HeatmeterPeriodType.OPERATION;
     }
 
-    public List<HeatmeterOperation> getHeatmeterOperations(Long heatmeterId, Date om) {
+    public List<HeatmeterOperation> getList(Long heatmeterId, Date om) {
         return sqlSession().selectList("selectHeatmeterOperationsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 }
