@@ -48,7 +48,7 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
 
                 return isActiveOm()
                         ? heatmeter.getInputs()
-                        : inputBean.getHeatmeterInputs(heatmeter.getId(), om.getObject());
+                        : inputBean.getList(heatmeter.getId(), om.getObject());
             }
         };
 

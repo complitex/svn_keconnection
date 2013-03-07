@@ -3,14 +3,15 @@ package org.complitex.keconnection.heatmeter.service;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.dictionary.util.IdListUtil;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
 import java.util.Date;
 import java.util.List;
 
-import static com.google.common.collect.ImmutableMap.of;
+import static org.complitex.dictionary.util.DateUtil.isSameMonth;
+import static org.complitex.dictionary.util.DateUtil.previousMonth;
+import static org.complitex.dictionary.util.IdListUtil.getDiff;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,13 +19,9 @@ import static com.google.common.collect.ImmutableMap.of;
  */
 @XmlMapper
 public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends AbstractBean {
-
     public abstract HeatmeterPeriodType getType();
 
-    public List<Long> getIdList(Long heatmeterId, Date om) {
-        return sqlSession().selectList("selectHeatmeterPeriodIds",
-                of("type", getType(), "heatmeterId", heatmeterId, "om", om));
-    }
+    public abstract List<T> getList(Long heatmeterId, Date om);
 
     @Transactional
     public void save(T object) {
@@ -52,17 +49,34 @@ public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends Abs
 
     @Transactional
     public void save(Long heatmeterId, Date om, List<T> list) {
-        List<Long> db = getIdList(heatmeterId, om);
-        List<Long> remove = IdListUtil.getIdDiff(db, list);
+        List<T> db = getList(heatmeterId, om);
 
-        for (Long id : remove) {
-            delete(id);
+        //remove or fix end om
+        for (T o : getDiff(db, list)) {
+            if (isSameMonth(om, o.getBeginOm())) {
+                delete(o.getId());
+            }else {
+                o.setEndOm(previousMonth(om));
+                list.add(o);
+            }
         }
 
-        for (T object : list) {
-            object.setHeatmeterId(heatmeterId);
+        //save
+        for (T o : list) {
+            o.setHeatmeterId(heatmeterId);
 
-            save(object);
+            //changed
+            for (T d : db){
+                if (d.getId().equals(o.getId()) && !isSameMonth(om, d.getBeginOm()) && !o.isSame(d)){
+                    d.setEndOm(previousMonth(om));
+                    save(d);
+
+                    o.setId(null);
+                    o.setBeginOm(om);
+                }
+            }
+
+            save(o);
         }
     }
 }

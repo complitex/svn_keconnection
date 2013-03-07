@@ -45,7 +45,7 @@ public class HeatmeterPayloadBean extends HeatmeterPeriodBean<HeatmeterPayload> 
         sqlSession().delete("deletePayloadByTablegramId", tablegramId);
     }
 
-    public List<HeatmeterPayload> getHeatmeterPayloads(Long heatmeterId, Date om) {
+    public List<HeatmeterPayload> getList(Long heatmeterId, Date om) {
         return sqlSession().selectList("selectHeatmeterPayloadsByOm", of("heatmeterId", heatmeterId, "om", om));
     }
 }

@@ -44,7 +44,7 @@ public class HeatmeterOperationPanel extends AbstractHeatmeterEditPanel {
 
                 return isActiveOm()
                         ? heatmeter.getOperations()
-                        : operationBean.getHeatmeterOperations(heatmeter.getId(), om.getObject());
+                        : operationBean.getList(heatmeter.getId(), om.getObject());
             }
         };
 

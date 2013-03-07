@@ -3,6 +3,7 @@ package org.complitex.keconnection.heatmeter.entity;
 import org.complitex.dictionary.entity.ILongId;
 
 import java.util.Date;
+import java.util.Objects;
 
 import static org.complitex.dictionary.util.DateUtil.newDate;
 import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.range;
@@ -11,7 +12,7 @@ import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.rang
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 14.09.12 19:25
  */
-public abstract class HeatmeterPeriod implements ILongId{
+public class HeatmeterPeriod implements ILongId{
     public final static Date DEFAULT_BEGIN_DATE = newDate(1, 10, 2012);
     public final static Date DEFAULT_END_DATE = newDate(31, 12, 2054);
 
@@ -30,6 +31,9 @@ public abstract class HeatmeterPeriod implements ILongId{
 
     private Date updated;
 
+    public HeatmeterPeriod() {
+    }
+
     public HeatmeterPeriod(HeatmeterPeriodType type) {
         this.type = type;
     }
@@ -40,6 +44,19 @@ public abstract class HeatmeterPeriod implements ILongId{
 
     public boolean isEncloses(HeatmeterPeriod p){
         return range(this).encloses(range(p));
+    }
+
+    public boolean isSamePeriod(HeatmeterPeriod p){
+        return beginDate.equals(p.beginDate) && endDate.equals(p.endDate);
+    }
+
+    public boolean isSameValue(HeatmeterPeriod p){
+        return Objects.equals(heatmeterId, p.heatmeterId) && Objects.equals(objectId, p.objectId)
+                && Objects.equals(type, p.type) && Objects.equals(subType, p.subType);
+    }
+
+    public boolean isSame(HeatmeterPeriod p){
+        return isSamePeriod(p) && isSameValue(p);
     }
 
     public Long getId() {
