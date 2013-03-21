@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Objects;
 
 import static org.complitex.dictionary.util.DateUtil.newDate;
-import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.range;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -39,11 +38,11 @@ public class HeatmeterPeriod implements ILongId{
     }
 
     public boolean isConnected(HeatmeterPeriod p){
-        return range(this).isConnected(range(p));
+        return beginDate.compareTo(p.endDate) <= 0 && p.beginDate.compareTo(endDate) <= 0;
     }
 
     public boolean isEncloses(HeatmeterPeriod p){
-        return range(this).encloses(range(p));
+        return beginDate.compareTo(p.beginDate) <= 0 && endDate.compareTo(p.endDate) >= 0;
     }
 
     public boolean isSamePeriod(HeatmeterPeriod p){

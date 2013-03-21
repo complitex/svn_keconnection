@@ -5,6 +5,9 @@ import org.complitex.dictionary.entity.ILongId;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import static org.complitex.dictionary.util.DateUtil.getDaysDiff;
+import static org.complitex.dictionary.util.DateUtil.getMax;
+import static org.complitex.dictionary.util.DateUtil.getMin;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterConsumptionStatus.NOT_LOADED;
 
 /**
@@ -16,12 +19,34 @@ public class HeatmeterConsumption implements ILongId {
     private Long id;
     private Long heatmeterInputId;
     private Date om;
-    private BigDecimal consumption1;
-    private BigDecimal consumption2;
-    private BigDecimal consumption3;
+    private BigDecimal consumption1 = BigDecimal.ZERO;
+    private BigDecimal consumption2 = BigDecimal.ZERO;
+    private BigDecimal consumption3 = BigDecimal.ZERO;
     private Date beginDate;
     private Date endDate;
     private HeatmeterConsumptionStatus status = NOT_LOADED;
+
+    public HeatmeterConsumption() {
+    }
+
+    public HeatmeterConsumption(Date om, HeatmeterPayload payload, HeatmeterInput input) {
+        this.om = om;
+
+        int days = getDaysDiff(input.getBeginDate(), input.getEndDate()) + 1;
+
+        beginDate = getMax(input.getBeginDate(), payload.getBeginDate());
+        endDate = getMin(input.getEndDate(), payload.getEndDate());
+
+        BigDecimal d = BigDecimal.valueOf((double)(getDaysDiff(beginDate, endDate) + 1)/(days*100));
+
+        consumption1 = payload.getPayload1().multiply(input.getValue()).multiply(d);
+        consumption2 = payload.getPayload2().multiply(input.getValue()).multiply(d);
+        consumption3 = payload.getPayload3().multiply(input.getValue()).multiply(d);
+    }
+
+    public boolean isPeriodEquals(HeatmeterConsumption c){
+        return beginDate.equals(c.beginDate) && endDate.equals(c.endDate) && om.equals(c.om);
+    }
 
     public Long getId() {
         return id;
