@@ -32,21 +32,42 @@ public class HeatmeterInputBean extends HeatmeterPeriodBean<HeatmeterInput> {
 
     @Transactional
     @Override
-    public void insertAdditionalInfo(HeatmeterInput info) {
-        sqlSession().insert("insertHeatmeterInput", info);
-        updateConsumptions(info.getId(), info.getConsumptions());
+    public void insertAdditionalInfo(HeatmeterInput input, Date om) {
+        sqlSession().insert("insertHeatmeterInput", input);
+
+        updateConsumptions(input.getId(), om, input.getConsumptions());
     }
 
     @Transactional
     @Override
-    public void updateAdditionalInfo(HeatmeterInput info) {
-        sqlSession().update("updateHeatmeterInput", info);
-        updateConsumptions(info.getId(), info.getConsumptions());
+    public void updateAdditionalInfo(HeatmeterInput input, Date om) {
+        sqlSession().update("updateHeatmeterInput", input);
+
+        updateConsumptions(input.getId(), om, input.getConsumptions());
     }
 
-    private void updateConsumptions(long inputId, List<HeatmeterConsumption> consumptions) {
+    private void updateConsumptions(Long heatmeterInputId, Date om, List<HeatmeterConsumption> consumptions) {
+        List<HeatmeterConsumption> db = heatmeterConsumptionBean.getList(heatmeterInputId, om);
+
+        for (HeatmeterConsumption d : db){
+            boolean remove = true;
+
+            for (HeatmeterConsumption c : consumptions){
+                if (c.isPeriodEquals(d)){
+                    c.setId(d.getId());
+
+                    remove = false;
+                }
+            }
+
+            if (remove){
+                heatmeterConsumptionBean.delete(d.getId());
+            }
+        }
+
         for (HeatmeterConsumption consumption : consumptions) {
-            consumption.setHeatmeterInputId(inputId);
+            consumption.setHeatmeterInputId(heatmeterInputId);
+
             heatmeterConsumptionBean.save(consumption);
         }
     }

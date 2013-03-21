@@ -44,8 +44,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.complitex.dictionary.util.DateUtil.addMonth;
-import static org.complitex.dictionary.util.DateUtil.isSameMonth;
-import static org.complitex.dictionary.util.DateUtil.nextDay;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.VALID;
 import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
@@ -236,38 +234,11 @@ public class HeatmeterEdit extends FormTemplatePage {
                     }
 
                     //adjust begin date for previous inputs
-                    {
-                        int size = heatmeter.getInputs().size();
-                        HeatmeterInput prev = null;
-                        for (HeatmeterInput input : heatmeter.getInputs()) {
-                            if (prev != null) {
-                                input.setBeginDate(nextDay(prev.getEndDate()));
-                            } else if (heatmeter.getId() == null || size == 1) {
-                                input.setBeginDate(heatmeter.getOm());
-                            }
-                            prev = input;
-                        }
-                    }
+                    heatmeterService.adjustInputBeginDate(heatmeter);
 
-                    //changed input
-                    if (heatmeter.getId() != null) {
-                        List<HeatmeterInput> inputs = inputBean.getList(heatmeter.getId(), heatmeter.getOm());
-
-                        for (HeatmeterInput d : inputs){
-                            for (HeatmeterInput input : heatmeter.getInputs()){
-                                if (d.getId().equals(input.getId()) && !d.isSame(input)
-                                        && !isSameMonth(heatmeter.getOm(), d.getBeginOm())){
-                                    input.getConsumptions().clear();
-                                    input.addNewConsumptionIfNecessary();
-                                }
-                            }
-                        }
-                    }
 
                     //recalculate consumptions for inputs
-                    {
-                        heatmeterService.calculateConsumptions(heatmeter.getPayloads(), heatmeter.getInputs());
-                    }
+                    heatmeterService.calculateConsumptions(heatmeter);
 
                     //save
                     heatmeterBean.save(heatmeter);

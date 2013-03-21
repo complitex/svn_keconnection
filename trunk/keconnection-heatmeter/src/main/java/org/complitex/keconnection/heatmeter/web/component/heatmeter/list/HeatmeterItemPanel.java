@@ -187,13 +187,13 @@ public abstract class HeatmeterItemPanel extends Panel {
                             payload, isNewPayload && heatmeter.getOm() != null, true);
                 }
 
-                //input and consumption
+                //input and consumption todo fix
                 {
                     boolean isNewInput = heatmeter.getInputs().size() == 1;
                     HeatmeterInput input = isNewInput ? heatmeter.getInputs().get(0)
                             : heatmeter.getInputs().get(heatmeter.getInputs().size() - 2);
-                    addInputConsumption(this, heatmeter,
-                            input, isNewInput && heatmeter.getOm() != null, true);
+
+                    addInputConsumption(this, heatmeter, input, isNewInput && heatmeter.getOm() != null, true);
                 }
 
                 //status
@@ -326,7 +326,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                         HeatmeterPeriod previousPeriod = previousPayload;
                         previousPeriod.setEndDate(previousDay(payload.getBeginDate()));
 //                        previousPeriod.setEndOm(heatmeter.getOm());
-                        heatmeterPayloadBean.save(previousPayload);
+                        heatmeterPayloadBean.save(previousPayload, heatmeter.getOm());
                     }
                 }
 
@@ -351,7 +351,7 @@ public abstract class HeatmeterItemPanel extends Panel {
 
                     try {
                         //save new payload
-                        heatmeterPayloadBean.save(payload);
+                        heatmeterPayloadBean.save(payload, heatmeter.getOm());
 
                         //recalculate consumptions and save it
                         {
@@ -364,10 +364,10 @@ public abstract class HeatmeterItemPanel extends Panel {
                                             return input.getId() != null;
                                         }
                                     });
-                            heatmeterService.calculateConsumptions(heatmeter.getPayloads(), inputs);
+                            heatmeterService.calculateConsumptions(heatmeter);
 
                             for (HeatmeterInput i : inputs) {
-                                heatmeterInputBean.save(i);
+                                heatmeterInputBean.save(i, heatmeter.getOm());
                             }
                         }
 
@@ -397,7 +397,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 new PropertyModel<BigDecimal>(input, "value"),
                 editable).setVisible(inputDataVisible));
         container.add(new HeatmeterInputItem("consumption1",
-                new PropertyModel<BigDecimal>(input, "firstConsumption.consumption1"),
+                new PropertyModel<BigDecimal>(input, "sumConsumption.consumption1"),
                 false).setVisible(inputDataVisible));
         container.add(new HeatmeterDateItem("readoutDate",
                 new PropertyModel<Date>(input, "endDate"),
@@ -441,9 +441,9 @@ public abstract class HeatmeterItemPanel extends Panel {
                                             return payload.getId() != null;
                                         }
                                     });
-                            heatmeterService.calculateConsumptions(payloads, heatmeter.getInputs());
+                            heatmeterService.calculateConsumptions(heatmeter);
                             for (HeatmeterInput i : heatmeter.getInputs()) {
-                                heatmeterInputBean.save(i);
+                                heatmeterInputBean.save(i, heatmeter.getOm());
                             }
                         }
 
@@ -495,7 +495,6 @@ public abstract class HeatmeterItemPanel extends Panel {
             Date om = heatmeter.getOm();
             i.setEndDate(getLastDayOfMonth(getYear(om), getMonth(om) + 1));
         }
-        i.addNewConsumptionIfNecessary();
         heatmeter.getInputs().add(i);
     }
 

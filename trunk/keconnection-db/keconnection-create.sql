@@ -445,7 +445,7 @@ CREATE TABLE `heatmeter_consumption`(
   `end_date` DATETIME NOT NULL COMMENT 'Дата окончания',
   `status` INT COMMENT 'Статус',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `payload_unique_id` (`begin_date`, `end_date`, `om`),
+  UNIQUE KEY `consumption_unique_id` (`heatmeter_input_id`, `begin_date`, `end_date`, `om`),
   KEY `key_heatmeter_input_id` (`heatmeter_input_id`),
   KEY `key_om` (`om`),
   CONSTRAINT `fk_heatmeter_consumption__heatmeter_input` FOREIGN KEY (`heatmeter_input_id`)

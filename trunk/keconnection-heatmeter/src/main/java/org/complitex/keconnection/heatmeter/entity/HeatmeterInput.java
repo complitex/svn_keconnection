@@ -36,6 +36,18 @@ public class HeatmeterInput extends HeatmeterPeriod {
         return super.isSameValue(p);
     }
 
+    public HeatmeterConsumption getSumConsumption(){
+        HeatmeterConsumption consumption = new HeatmeterConsumption();
+
+        for (HeatmeterConsumption c : consumptions){
+            consumption.setConsumption1(consumption.getConsumption1().add(c.getConsumption1()));
+            consumption.setConsumption2(consumption.getConsumption2().add(c.getConsumption2()));
+            consumption.setConsumption3(consumption.getConsumption3().add(c.getConsumption3()));
+        }
+
+        return consumption;
+    }
+
     public BigDecimal getValue() {
         return value;
     }
@@ -50,15 +62,5 @@ public class HeatmeterInput extends HeatmeterPeriod {
 
     public void setConsumptions(List<HeatmeterConsumption> consumptions) {
         this.consumptions = consumptions;
-    }
-
-    public HeatmeterConsumption getFirstConsumption() {
-        return consumptions.get(0);
-    }
-
-    public void addNewConsumptionIfNecessary() {
-        if (consumptions.isEmpty()) {
-            consumptions.add(new HeatmeterConsumption());
-        }
     }
 }

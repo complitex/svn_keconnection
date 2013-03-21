@@ -91,7 +91,7 @@ public class TablegramService {
                 heatmeterPayload.setPayload2(tablegramRecord.getPayload2());
                 heatmeterPayload.setPayload3(tablegramRecord.getPayload3());
 
-                heatmeterPayloadBean.save(heatmeterPayload);
+                heatmeterPayloadBean.save(heatmeterPayload, beginOm);
 
                 //update table record
                 tablegramRecord.setStatus(PROCESSED);

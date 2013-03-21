@@ -6,8 +6,8 @@
         <id column="input_id" property="id"/>
         <result property="value"/>
 
-        <collection property="consumptions" column="id" 
-                select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByHeatmeterInputId"/>
+        <collection property="consumptions" column="inputId=id,om=om"
+                select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByOm"/>
     </resultMap>
     
     <insert id="insertHeatmeterInput" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterInput"
@@ -20,7 +20,7 @@
     </update>
 
     <select id="selectHeatmeterInputsByOm" parameterType="map" resultMap="heatmeterInputResultMap">
-        select i.`id` as input_id, p.*, i.`value`
+        select i.`id` as input_id, p.*, i.`value`, #{om} as om
           from `heatmeter_period` p left join `heatmeter_input` i on p.`id` = i.`id`
         where p.`type` = 4 and p.`heatmeter_id` = #{heatmeterId} and (#{om} between p.`begin_om` and p.`end_om`)
           order by p.`begin_date`

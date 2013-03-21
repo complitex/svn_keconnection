@@ -31,8 +31,7 @@
         delete from `heatmeter_consumption` where `id` = #{id}
     </delete>
 
-    <select id="selectHeatmeterConsumptionsByHeatmeterInputId" parameterType="long" resultMap="heatmeterConsumptionResultMap">
-        select * from `heatmeter_consumption` where `heatmeter_input_id` = #{heatmeterInputId}
+    <select id="selectHeatmeterConsumptionsByOm" parameterType="map" resultMap="heatmeterConsumptionResultMap">
+        select * from `heatmeter_consumption` where `heatmeter_input_id` = #{inputId} and `om` = #{om}
     </select>
-    
 </mapper>

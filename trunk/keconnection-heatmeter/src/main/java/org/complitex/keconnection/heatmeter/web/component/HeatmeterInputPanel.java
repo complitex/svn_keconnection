@@ -57,7 +57,7 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
             @Override
             protected void populateItem(ListItem<HeatmeterInput> item) {
                 final HeatmeterInput input = item.getModelObject();
-                final HeatmeterConsumption consumption = input.getFirstConsumption();
+                final HeatmeterConsumption consumption = input.getSumConsumption();
 
                 item.add(new LabelDateField("readoutDate", new PropertyModel<Date>(input, "endDate"), false));
                 item.add(new LabelTextField<>("consumption", 15, new PropertyModel<BigDecimal>(input, "value"), BIG_DECIMAL_CONVERTER_7));
@@ -116,7 +116,6 @@ public class HeatmeterInputPanel extends AbstractHeatmeterEditPanel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 HeatmeterInput input = new HeatmeterInput(model.getObject().getId(), om.getObject());
                 input.setEndOm(om.getObject());
-                input.addNewConsumptionIfNecessary();
                 model.getObject().getInputs().add(input);
 
                 target.add(HeatmeterInputPanel.this);

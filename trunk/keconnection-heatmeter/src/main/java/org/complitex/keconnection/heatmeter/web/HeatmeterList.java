@@ -333,7 +333,6 @@ public class HeatmeterList extends TemplatePage {
                         Date om = heatmeter.getOm();
                         i.setEndDate(getLastDayOfMonth(getYear(om), getMonth(om)+1));
                     }
-                    i.addNewConsumptionIfNecessary();
                     heatmeter.getInputs().add(i);
                 }
                 return heatmeters;
@@ -639,17 +638,6 @@ public class HeatmeterList extends TemplatePage {
             bindAll.setOutputMarkupId(true);
             filterForm.add(bindAll);
         }
-    }
-
-    private Date getOperatingMonthDate(Heatmeter heatmeter) {
-        Long organizationId = null;
-        if (!heatmeter.getConnections().isEmpty()) {
-            organizationId = heatmeter.getConnections().get(0).getOrganizationId();
-        }
-        if (organizationId != null && organizationId > 0) {
-            return organizationStrategy.getOperatingMonthDate(organizationId);
-        }
-        return null;
     }
 
     @Override

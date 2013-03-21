@@ -21,7 +21,7 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.keconnection.heatmeter.entity.*;
-import org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean;
+import org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
@@ -54,10 +54,13 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
         }
     }
     private static final Logger log = LoggerFactory.getLogger(DeactivateHeatmeterDialog.class);
+
     @EJB
     private HeatmeterService heatmeterService;
+
     @EJB
-    private HeatmeterPeriodBean heatmeterPeriodBean;
+    private HeatmeterOperationBean operationBean;
+
     private final Dialog dialog;
     private final WebMarkupContainer container;
     private final IModel<DeactivateHeatmeterEntity> model;
@@ -104,7 +107,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                HeatmeterPeriod period = preparePeriod(model.getObject());
+                HeatmeterOperation period = preparePeriod(model.getObject());
 
                 //TODO: fix validation:
                 HeatmeterValidate validate = new HeatmeterValidate(HeatmeterValidateStatus.VALID); //heatmeterService.validatePeriods(heatmeter);
@@ -114,7 +117,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
                 } else {
                     try {
                         //save heatmeter period
-                        heatmeterPeriodBean.save(period);
+                        operationBean.save(period, heatmeter.getOm());
 
                         onDeactivate(heatmeter, target);
 
@@ -134,9 +137,9 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
         });
     }
 
-    private HeatmeterPeriod preparePeriod(DeactivateHeatmeterEntity info) {
+    private HeatmeterOperation preparePeriod(DeactivateHeatmeterEntity info) {
         if (info.deactivateType == HeatmeterPeriodSubType.OPERATING) {
-            HeatmeterPeriod lastOperationalPeriod = Iterables.find(heatmeter.getOperations(),
+            HeatmeterOperation lastOperationalPeriod = Iterables.find(heatmeter.getOperations(),
                     new Predicate<HeatmeterPeriod>() {
 
                         @Override
@@ -147,6 +150,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
                     });
             lastOperationalPeriod.setEndDate(info.deactivateDate);
             lastOperationalPeriod.setEndOm(heatmeter.getOm());
+
             return lastOperationalPeriod;
         } else if (info.deactivateType == ADJUSTMENT) {
             HeatmeterOperation adjustmentPeriod = new HeatmeterOperation(heatmeter.getId(), heatmeter.getOm(), ADJUSTMENT);

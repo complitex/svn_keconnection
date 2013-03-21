@@ -27,14 +27,14 @@ public class HeatmeterPayloadBean extends HeatmeterPeriodBean<HeatmeterPayload> 
 
     @Transactional
     @Override
-    public void insertAdditionalInfo(HeatmeterPayload info) {
-        sqlSession().insert("insertHeatmeterPayload", info);
+    public void insertAdditionalInfo(HeatmeterPayload payload, Date om) {
+        sqlSession().insert("insertHeatmeterPayload", payload);
     }
 
     @Transactional
     @Override
-    public void updateAdditionalInfo(HeatmeterPayload info) {
-        sqlSession().update("updateHeatmeterPayload", info);
+    public void updateAdditionalInfo(HeatmeterPayload payload, Date om) {
+        sqlSession().update("updateHeatmeterPayload", payload);
     }
 
     public boolean isExist(Long heatmeterId) {

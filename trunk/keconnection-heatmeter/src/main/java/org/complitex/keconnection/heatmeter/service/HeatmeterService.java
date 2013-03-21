@@ -1,22 +1,21 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import com.google.common.collect.Lists;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
-import static org.complitex.dictionary.util.DateUtil.*;
+import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.ADJUSTMENT;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.*;
+import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.firstEnclosesPeriod;
+import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.lastConnectedPeriod;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -256,11 +255,12 @@ public class HeatmeterService {
         return new HeatmeterValidate(VALID);
     }
     
-    public void calculateConsumptions(Iterable<HeatmeterPayload> payloads, Iterable<HeatmeterInput> inputs) {
-        List<HeatmeterPayload> payloadsList = Lists.newArrayList(payloads);
+    public void calculateConsumptions(Heatmeter heatmeter) {
+        List<HeatmeterPayload> payloads = heatmeter.getPayloads();
+        List<HeatmeterInput> inputs = heatmeter.getInputs();
 
-        //sort payload in ascending order by begin date
-        Collections.sort(payloadsList, new Comparator<HeatmeterPayload>() {
+        //sort payload
+        Collections.sort(payloads, new Comparator<HeatmeterPayload>() {
 
             @Override
             public int compare(HeatmeterPayload p1, HeatmeterPayload p2) {
@@ -268,50 +268,53 @@ public class HeatmeterService {
             }
         });
 
-        for (HeatmeterInput input : inputs) {
-            calculateConsumption(payloadsList, input);
+        //clear input
+        for (HeatmeterInput i : inputs){
+            i.getConsumptions().clear();
         }
-    }
 
-    private void calculateConsumption(List<HeatmeterPayload> payloads, HeatmeterInput input) {
-        HeatmeterConsumption c = input.getFirstConsumption();
-        if (c.getId() == null) { // new consumption
-            c.setBeginDate(input.getBeginDate());
-            c.setEndDate(input.getEndDate());
-            c.setOm(input.getEndOm());
-        }
-        c.setConsumption1(BigDecimal.ZERO);
-        c.setConsumption2(BigDecimal.ZERO);
-        c.setConsumption3(BigDecimal.ZERO);
-
-        int inputPeriodLength = getDaysDiff(input.getBeginDate(), input.getEndDate());
-
-        if (inputPeriodLength != 0) {
-            for (HeatmeterPayload p : payloads) {
-                if (!p.getBeginDate().after(input.getBeginDate())
-                        && p.getEndDate().after(input.getBeginDate())) {
-                    Date subPeriodEndDate = getMin(p.getEndDate(), input.getEndDate());
-                    int subPeriodLength = getDaysDiff(input.getBeginDate(), subPeriodEndDate);
-                    addSubPeriodCalculations(input.getValue(), inputPeriodLength, subPeriodLength, c,
-                            p.getPayload2(), p.getPayload3());
-                } else if (p.getBeginDate().after(input.getBeginDate())
-                        && p.getBeginDate().before(input.getEndDate())) {
-                    Date subPeriodEndDate = getMin(p.getEndDate(), input.getEndDate());
-                    int subPeriodLength = getDaysDiff(p.getBeginDate(), subPeriodEndDate);
-                    addSubPeriodCalculations(input.getValue(), inputPeriodLength, subPeriodLength, c,
-                            p.getPayload2(), p.getPayload3());
+        //add consumption
+        for (HeatmeterPayload p : payloads){
+            for (HeatmeterInput i : inputs){
+                if (p.isConnected(i)){
+                    i.getConsumptions().add(new HeatmeterConsumption(heatmeter.getOm(), p, i));
                 }
             }
-            c.setConsumption1(input.getValue().subtract(c.getConsumption2()).subtract(c.getConsumption3()));
         }
     }
 
-    private void addSubPeriodCalculations(BigDecimal value, int periodLength, int subPeriodLength,
-            HeatmeterConsumption consumption, BigDecimal payload2, BigDecimal payload3) {
-        consumption.setConsumption2(consumption.getConsumption2().add(BigDecimal.valueOf(
-                (value.doubleValue() * subPeriodLength * payload2.doubleValue()) / (periodLength * 100))));
+    public void adjustInputBeginDate(Heatmeter heatmeter){
+        List<HeatmeterInput> inputs = heatmeter.getInputs();
 
-        consumption.setConsumption3(consumption.getConsumption3().add(BigDecimal.valueOf(
-                (value.doubleValue() * subPeriodLength * payload3.doubleValue()) / (periodLength * 100))));
+        if (inputs.isEmpty()){
+            return;
+        }
+
+        Collections.sort(inputs, new Comparator<HeatmeterInput>() {
+            @Override
+            public int compare(HeatmeterInput o1, HeatmeterInput o2) {
+                return o1.getEndDate().compareTo(o2.getEndDate());
+            }
+        });
+
+        HeatmeterInput previous = inputs.get(0);
+        HeatmeterOperation previousOperation = firstEnclosesPeriod(heatmeter.getOperations(), previous);
+
+        previous.setBeginDate(previousOperation.getBeginDate());
+
+        for (int i = 1; i < inputs.size(); ++i){
+            HeatmeterInput input = inputs.get(i);
+
+            HeatmeterOperation operation = lastConnectedPeriod(heatmeter.getOperations(), input);
+
+            if (previousOperation.equals(operation)){
+                input.setBeginDate(DateUtil.nextDay(previous.getEndDate()));
+            }else {
+                input.setBeginDate(operation.getBeginDate());
+            }
+
+            previous = input;
+            previousOperation = operation;
+        }
     }
 }

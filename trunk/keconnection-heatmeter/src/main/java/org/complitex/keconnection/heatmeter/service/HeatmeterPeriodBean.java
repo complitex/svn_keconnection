@@ -24,22 +24,22 @@ public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends Abs
     public abstract List<T> getList(Long heatmeterId, Date om);
 
     @Transactional
-    public void save(T object) {
+    public void save(T object, Date om) {
         if (object.getId() == null) {
             sqlSession().insert("insertHeatmeterPeriod", object);
-            insertAdditionalInfo(object);
+            insertAdditionalInfo(object, om);
         } else {
             sqlSession().update("updateHeatmeterPeriod", object);
-            updateAdditionalInfo(object);
+            updateAdditionalInfo(object, om);
         }
     }
 
     @Transactional
-    public void insertAdditionalInfo(T info) {
+    public void insertAdditionalInfo(T o, Date om) {
     }
 
     @Transactional
-    public void updateAdditionalInfo(T info) {
+    public void updateAdditionalInfo(T o, Date om) {
     }
 
     @Transactional
@@ -69,14 +69,14 @@ public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends Abs
             for (T d : db){
                 if (d.getId().equals(o.getId()) && !isSameMonth(om, d.getBeginOm()) && !o.isSame(d)){
                     d.setEndOm(previousMonth(om));
-                    save(d);
+                    save(d, om);
 
                     o.setId(null);
                     o.setBeginOm(om);
                 }
             }
 
-            save(o);
+            save(o, om);
         }
     }
 }
