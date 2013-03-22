@@ -57,6 +57,8 @@ public class HeatmeterBean extends AbstractBean {
         //save heatmeter
         if (heatmeterId == null) {
             sqlSession().insert("insertHeatmeter", heatmeter);
+
+            heatmeterId = heatmeter.getId();
         } else {
             if (isModified(heatmeter)){
                 throw new ConcurrentModificationException();
@@ -114,11 +116,13 @@ public class HeatmeterBean extends AbstractBean {
 
     public List<Heatmeter> getHeatmeters(FilterWrapper<Heatmeter> filterWrapper) {
         addUnboundStatusParameter(filterWrapper);
+
         return sqlSession().selectList("selectHeatmeters", filterWrapper);
     }
 
     public int getHeatmeterCount(FilterWrapper<Heatmeter> filterWrapper) {
         addUnboundStatusParameter(filterWrapper);
+
         return sqlSession().selectOne("selectHeatmetersCount", filterWrapper);
     }
 

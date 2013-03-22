@@ -6,6 +6,7 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public abstract class HeatmeterPeriodBean<T extends HeatmeterPeriod> extends Abs
 
     @Transactional
     public void save(Long heatmeterId, Date om, List<T> list) {
-        List<T> db = getList(heatmeterId, om);
+        List<T> db = om != null ? getList(heatmeterId, om) : new ArrayList<T>();
 
         //remove or fix end om
         for (T o : getDiff(db, list)) {
