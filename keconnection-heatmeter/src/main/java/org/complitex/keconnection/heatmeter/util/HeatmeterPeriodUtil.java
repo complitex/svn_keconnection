@@ -9,9 +9,9 @@ import java.util.List;
  *         Date: 22.11.12 17:32
  */
 public class HeatmeterPeriodUtil {
-    public static <T extends HeatmeterPeriod> T firstEnclosesPeriod(List<T> list, HeatmeterPeriod period){
+    public static <T extends HeatmeterPeriod> T firstConnectedPeriod(List<T> list, HeatmeterPeriod period){
         for (T t : list){
-            if (t.isEncloses(period)){
+            if (t.isConnected(period)){
                 return t;
             }
         }

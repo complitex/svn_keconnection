@@ -12,6 +12,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.web.component.LabelDateField;
 import org.complitex.dictionary.web.component.LabelTextField;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
@@ -113,6 +114,7 @@ public class HeatmeterPayloadPanel extends AbstractHeatmeterEditPanel {
                 HeatmeterPayload payload = new HeatmeterPayload();
                 payload.setHeatmeterId(model.getObject().getId());
                 payload.setBeginOm(om.getObject());
+                payload.setBeginDate(DateUtil.getCurrentDate());
                 model.getObject().getPayloads().add(payload);
 
                 target.add(HeatmeterPayloadPanel.this);
