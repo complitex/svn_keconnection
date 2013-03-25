@@ -14,7 +14,7 @@ import static org.complitex.dictionary.util.DateUtil.isSameMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.ADJUSTMENT;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterPeriodSubType.OPERATING;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.*;
-import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.firstEnclosesPeriod;
+import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.firstConnectedPeriod;
 import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.lastConnectedPeriod;
 
 /**
@@ -192,35 +192,51 @@ public class HeatmeterService {
     public HeatmeterValidate validatePayloads(Heatmeter heatmeter){
         List<HeatmeterPayload> payloads = heatmeter.getPayloads();
         for (int i = 0; i < payloads.size(); ++i){
-            HeatmeterPayload hp = payloads.get(i);
+            HeatmeterPayload p = payloads.get(i);
 
-            if (hp.getBeginDate() == null){
+            if (p.getBeginDate() == null){
                 return new HeatmeterValidate(ERROR_PAYLOAD_BEGIN_DATE_REQUIRED);
             }
 
-            if (hp.getEndDate() != null && hp.getBeginDate().after(hp.getEndDate())){
-                return new HeatmeterValidate(ERROR_PAYLOAD_BEGIN_DATE_AFTER_END_DATE, hp);
+            if (p.getEndDate() != null && p.getBeginDate().after(p.getEndDate())){
+                return new HeatmeterValidate(ERROR_PAYLOAD_BEGIN_DATE_AFTER_END_DATE, p);
             }
 
-            if (hp.getPayload1() == null || hp.getPayload2() == null || hp.getPayload3() == null){
+            if (p.getPayload1() == null || p.getPayload2() == null || p.getPayload3() == null){
                 return new HeatmeterValidate(ERROR_PAYLOAD_VALUES_REQUIRED);
             }
 
-            if (hp.getPayload1().add(hp.getPayload2()).add(hp.getPayload3()).doubleValue() != 100){
-                return new HeatmeterValidate(ERROR_PAYLOAD_SUM_100, hp);
+            if (p.getPayload1().add(p.getPayload2()).add(p.getPayload3()).doubleValue() != 100){
+                return new HeatmeterValidate(ERROR_PAYLOAD_SUM_100, p);
             }
 
             //периоды распределений не должны пересекаться
             if (i < payloads.size() - 1) {
                 for (int j = i + 1; j < payloads.size(); ++j){
-                    HeatmeterPayload hp2 = payloads.get(j);
+                    HeatmeterPayload p2 = payloads.get(j);
 
-                    if(isSameMonth(hp.getBeginOm(), hp2.getBeginOm())
-                            && hp2.getBeginDate() != null
-                            && hp.isConnected(hp2)){
-                        return new HeatmeterValidate(ERROR_PAYLOAD_INTERSECTION, hp, hp2);
+                    if(isSameMonth(p.getBeginOm(), p2.getBeginOm())
+                            && p2.getBeginDate() != null
+                            && p.isConnected(p2)){
+                        return new HeatmeterValidate(ERROR_PAYLOAD_INTERSECTION, p, p2);
                     }
                 }
+            }
+
+
+            //период распределения должен принадлежать периоду функционирования
+            boolean encloses = false;
+
+            for (HeatmeterOperation operation : heatmeter.getOperations()){
+                if (operation.isEncloses(p)){
+                    encloses = true;
+
+                    break;
+                }
+            }
+
+            if (!encloses){
+                return new HeatmeterValidate(ERROR_PAYLOAD_MUST_ENCLOSES_OPERATION, p);
             }
         }
 
@@ -298,7 +314,7 @@ public class HeatmeterService {
         });
 
         HeatmeterInput previous = inputs.get(0);
-        HeatmeterOperation previousOperation = firstEnclosesPeriod(heatmeter.getOperations(), previous);
+        HeatmeterOperation previousOperation = firstConnectedPeriod(heatmeter.getOperations(), previous);
 
         previous.setBeginDate(previousOperation.getBeginDate());
 

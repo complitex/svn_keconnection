@@ -107,8 +107,8 @@ public class HeatmeterList extends TemplatePage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.renderCSSReference(new PackageResourceReference(HeatmeterList.class,
-                HeatmeterList.class.getSimpleName() + ".css"));
+
+        response.renderCSSReference(new PackageResourceReference(HeatmeterList.class, "HeatmeterList.css"));
     }
 
     public HeatmeterList() {
@@ -272,7 +272,7 @@ public class HeatmeterList extends TemplatePage {
                 filterModel.getObject().add(HeatmeterBean.CONSUMPTION1_FILTER_PARAM, object);
             }
         };
-        filterForm.add(new TextField<>("cosumption1Filter", consumption1FilterModel));
+        filterForm.add(new TextField<>("consumption1Filter", consumption1FilterModel));
 
         IModel<Date> beginDateFilterModel = new Model<Date>() {
 
@@ -321,20 +321,22 @@ public class HeatmeterList extends TemplatePage {
                 }
 
                 List<Heatmeter> heatmeters = heatmeterBean.getHeatmeters(filter);
+
                 for (Heatmeter heatmeter : heatmeters) {
                     //add new empty payload
-                    HeatmeterPayload p = new HeatmeterPayload(heatmeter.getId(), heatmeter.getOm());
-                    p.setBeginDate(null);
-                    heatmeter.getPayloads().add(p);
+                    heatmeter.getPayloads().add(new HeatmeterPayload(heatmeter.getId(), heatmeter.getOm()));
 
                     //add new empty input
                     HeatmeterInput i = new HeatmeterInput(heatmeter.getId(), heatmeter.getOm());
+
                     if (heatmeter.getOm() != null) {
                         Date om = heatmeter.getOm();
                         i.setEndDate(getLastDayOfMonth(getYear(om), getMonth(om)+1));
                     }
+
                     heatmeter.getInputs().add(i);
                 }
+
                 return heatmeters;
             }
 
@@ -348,6 +350,7 @@ public class HeatmeterList extends TemplatePage {
                 return new Model<>(object);
             }
         };
+
         dataProvider.setSort("h2.id", SortOrder.DESCENDING);
 
         //Data Container
@@ -539,105 +542,103 @@ public class HeatmeterList extends TemplatePage {
         });
 
         //Bind all section
-        {
-            final WebMarkupContainer bindAllIndicator = new WebMarkupContainer("bindAllIndicator");
-            bindAllIndicator.setOutputMarkupId(true);
-            final Image bindAllIndicatorImage = new StaticImage("bindAllIndicatorImage",
-                    AbstractDefaultAjaxBehavior.INDICATOR);
-            bindAllIndicatorImage.setVisible(false);
-            bindAllIndicator.add(bindAllIndicatorImage);
-            filterForm.add(bindAllIndicator);
+        final WebMarkupContainer bindAllIndicator = new WebMarkupContainer("bindAllIndicator");
+        bindAllIndicator.setOutputMarkupId(true);
+        final Image bindAllIndicatorImage = new StaticImage("bindAllIndicatorImage",
+                AbstractDefaultAjaxBehavior.INDICATOR);
+        bindAllIndicatorImage.setVisible(false);
+        bindAllIndicator.add(bindAllIndicatorImage);
+        filterForm.add(bindAllIndicator);
 
-            class BindAllTimerBehavior extends AjaxSelfUpdatingTimerBehavior {
+        class BindAllTimerBehavior extends AjaxSelfUpdatingTimerBehavior {
 
-                final AtomicBoolean stopCondition;
-                final Component bindAll;
+            final AtomicBoolean stopCondition;
+            final Component bindAll;
 
-                BindAllTimerBehavior(AtomicBoolean stopCondition, Component bindAll) {
-                    super(Duration.seconds(BIND_ALL_AJAX_TIMER));
-                    this.stopCondition = stopCondition;
-                    this.bindAll = bindAll;
-                }
-
-                @Override
-                protected void onPostProcessTarget(AjaxRequestTarget target) {
-                    target.add(messages);
-                    target.add(paging);
-
-                    if (stopCondition.get()) {
-                        stop();
-                        getComponent().remove(this);
-                        bindAllIndicatorImage.setVisible(false);
-                        bindAll.setEnabled(true);
-                        target.add(bindAll);
-                        target.add(bindAllIndicator);
-                    }
-                }
+            BindAllTimerBehavior(AtomicBoolean stopCondition, Component bindAll) {
+                super(Duration.seconds(BIND_ALL_AJAX_TIMER));
+                this.stopCondition = stopCondition;
+                this.bindAll = bindAll;
             }
 
-            AjaxLink<Void> bindAll = new AjaxLink<Void>("bindAll") {
+            @Override
+            protected void onPostProcessTarget(AjaxRequestTarget target) {
+                target.add(messages);
+                target.add(paging);
 
-                @Override
-                public boolean isVisible() {
-                    return sessionBean.isAdmin();
+                if (stopCondition.get()) {
+                    stop();
+                    getComponent().remove(this);
+                    bindAllIndicatorImage.setVisible(false);
+                    bindAll.setEnabled(true);
+                    target.add(bindAll);
+                    target.add(bindAllIndicator);
+                }
+            }
+        }
+
+        AjaxLink<Void> bindAll = new AjaxLink<Void>("bindAll") {
+
+            @Override
+            public boolean isVisible() {
+                return sessionBean.isAdmin();
+            }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if (heatmeterBindService.isProcessing()) {
+                    return;
                 }
 
-                @Override
-                public void onClick(AjaxRequestTarget target) {
-                    if (heatmeterBindService.isProcessing()) {
-                        return;
+                bindAllIndicatorImage.setVisible(true);
+                this.setEnabled(false);
+                target.add(bindAllIndicator);
+                target.add(this);
+
+                stopBindingAllCondition.getAndSet(false);
+
+                heatmeterBindService.bindAll(new IProcessListener<Heatmeter>() {
+
+                    private int processedCount;
+                    private int errorCount;
+                    private ThreadContext threadContext = ThreadContext.get(false);
+
+                    @Override
+                    public void processed(Heatmeter object) {
+                        processedCount++;
                     }
 
-                    bindAllIndicatorImage.setVisible(true);
-                    this.setEnabled(false);
-                    target.add(bindAllIndicator);
-                    target.add(this);
+                    @Override
+                    public void skip(Heatmeter object) {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
 
-                    stopBindingAllCondition.getAndSet(false);
+                    @Override
+                    public void error(Heatmeter object, Exception ex) {
+                        ThreadContext.restore(threadContext);
+                        errorCount++;
 
-                    heatmeterBindService.bindAll(new IProcessListener<Heatmeter>() {
+                        getSession().error(HeatmeterBindError.message(object, ex, getLocale()));
+                    }
 
-                        private int processedCount;
-                        private int errorCount;
-                        private ThreadContext threadContext = ThreadContext.get(false);
+                    @Override
+                    public void done() {
+                        ThreadContext.restore(threadContext);
+                        getSession().info(getStringFormat("heatmeter_bind_done", processedCount, errorCount));
+                        stopTimer();
+                    }
 
-                        @Override
-                        public void processed(Heatmeter object) {
-                            processedCount++;
-                        }
+                    private void stopTimer() {
+                        stopBindingAllCondition.getAndSet(true);
+                    }
+                });
 
-                        @Override
-                        public void skip(Heatmeter object) {
-                            throw new UnsupportedOperationException("Not supported yet.");
-                        }
-
-                        @Override
-                        public void error(Heatmeter object, Exception ex) {
-                            ThreadContext.restore(threadContext);
-                            errorCount++;
-
-                            getSession().error(HeatmeterBindError.message(object, ex, getLocale()));
-                        }
-
-                        @Override
-                        public void done() {
-                            ThreadContext.restore(threadContext);
-                            getSession().info(getStringFormat("heatmeter_bind_done", processedCount, errorCount));
-                            stopTimer();
-                        }
-
-                        private void stopTimer() {
-                            stopBindingAllCondition.getAndSet(true);
-                        }
-                    });
-
-                    dataContainer.add(new BindAllTimerBehavior(stopBindingAllCondition, this));
-                    target.add(dataContainer);
-                }
-            };
-            bindAll.setOutputMarkupId(true);
-            filterForm.add(bindAll);
-        }
+                dataContainer.add(new BindAllTimerBehavior(stopBindingAllCondition, this));
+                target.add(dataContainer);
+            }
+        };
+        bindAll.setOutputMarkupId(true);
+        filterForm.add(bindAll);
     }
 
     @Override

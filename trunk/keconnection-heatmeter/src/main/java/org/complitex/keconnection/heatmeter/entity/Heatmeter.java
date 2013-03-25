@@ -57,6 +57,8 @@ public class Heatmeter implements ILongId {
         return Collections.unmodifiableList(list);
     }
 
+
+
     public Long getId() {
         return id;
     }
