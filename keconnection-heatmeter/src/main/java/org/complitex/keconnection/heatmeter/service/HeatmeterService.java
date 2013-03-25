@@ -1,6 +1,7 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.service.exception.ConcurrentModificationException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.entity.*;
 
@@ -25,6 +26,9 @@ import static org.complitex.keconnection.heatmeter.util.HeatmeterPeriodUtil.last
 public class HeatmeterService {
     @EJB
     private SessionBean sessionBean;
+
+    @EJB
+    private HeatmeterBean heatmeterBean;
 
     public HeatmeterValidate validate(Heatmeter heatmeter){
         HeatmeterValidate heatmeterValidate;
@@ -270,6 +274,15 @@ public class HeatmeterService {
 
         return new HeatmeterValidate(VALID);
     }
+
+    public Heatmeter recalculateConsumptions(Long heatmeterId) throws ConcurrentModificationException {
+        Heatmeter heatmeter = heatmeterBean.getHeatmeter(heatmeterId);
+        calculateConsumptions(heatmeter);
+
+        heatmeterBean.save(heatmeter);
+
+        return heatmeter;
+    }
     
     public void calculateConsumptions(Heatmeter heatmeter) {
         List<HeatmeterPayload> payloads = heatmeter.getPayloads();
@@ -292,7 +305,7 @@ public class HeatmeterService {
         //add consumption
         for (HeatmeterPayload p : payloads){
             for (HeatmeterInput i : inputs){
-                if (p.isConnected(i)){
+                if (p.isConnected(i) && i.getValue() != null){
                     i.getConsumptions().add(new HeatmeterConsumption(heatmeter.getOm(), p, i));
                 }
             }
