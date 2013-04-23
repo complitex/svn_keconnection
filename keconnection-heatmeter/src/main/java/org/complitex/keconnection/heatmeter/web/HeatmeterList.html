@@ -51,6 +51,8 @@
                 </div>
             </div>
 
+            <div wicket:id="city_search_panel"></div>
+
             <form action="#" wicket:id="filter_form">
                 <table border="0" cellspacing="0" cellpadding="0" class="tbColor no_border table_input">
                     <thead>
@@ -65,10 +67,10 @@
                             <th class="center" wicket:id="header.bc.code">
                                 <wicket:message key="buildingCode"/>
                             </th>
-                            <th class="center" wicket:id="header.h2.ls">
+                            <th class="center" wicket:id="header.h.ls">
                                 <wicket:message key="ls"/>
                             </th>
-                            <th class="center" wicket:id="header.h2.type_id">
+                            <th class="center" wicket:id="header.h.type_id">
                                 <wicket:message key="type"/>
                             </th>
                             <th class="center">
@@ -92,7 +94,7 @@
                             <th class="center" wicket:id="header.hcons.readout_date">
                                 <wicket:message key="readoutDate"/>
                             </th>
-                            <th class="center" wicket:id="header.h2.status">
+                            <th class="center" wicket:id="header.h.status">
                                 <wicket:message key="status"/>
                             </th>
                             <th class="center">
@@ -113,7 +115,7 @@
                             </th>
                             <th>
                                 <!-- address filter -->
-                                <input type="text" wicket:id="map.address"/>
+                                <div wicket:id="building_search_panel" style="margin-top: -8px;"></div>
                             </th>
                             <th>
                                 <!-- building code filter -->
