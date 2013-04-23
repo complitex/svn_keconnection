@@ -1,10 +1,14 @@
 package org.complitex.keconnection.heatmeter.service;
 
+import com.google.common.collect.ImmutableSet;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mybatis.XmlMapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.exception.ConcurrentModificationException;
+import org.complitex.dictionary.web.DictionaryFwSession;
+import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod;
@@ -15,6 +19,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.collect.ImmutableMap.of;
 
@@ -111,7 +117,7 @@ public class HeatmeterBean extends AbstractBean {
     }
 
     private void addUnboundStatusParameter(FilterWrapper<Heatmeter> filter) {
-        filter.addMapEntry("unboundBindingStatus", HeatmeterBindingStatus.UNBOUND);
+        filter.add("unboundBindingStatus", HeatmeterBindingStatus.UNBOUND);
     }
 
     public List<Heatmeter> getHeatmeters(FilterWrapper<Heatmeter> filterWrapper) {
@@ -150,5 +156,29 @@ public class HeatmeterBean extends AbstractBean {
 
     public Date getMinOm(Long heatmeterId){
         return sqlSession().selectOne("selectHeatmeterMinOm", heatmeterId);
+    }
+
+    private static final Set<String> SEARCH_STATE_ENTITIES = ImmutableSet.of("country", "region", "city", "street", "building");
+
+    public SearchComponentState restoreSearchState(DictionaryFwSession session) {
+        SearchComponentState searchComponentState = new SearchComponentState();
+
+        for (Map.Entry<String, DomainObject> searchFilterEntry : session.getGlobalSearchComponentState().entrySet()) {
+            final String searchFilter = searchFilterEntry.getKey();
+            final DomainObject filterObject = searchFilterEntry.getValue();
+            if (SEARCH_STATE_ENTITIES.contains(searchFilter)) {
+                if (filterObject != null && filterObject.getId() != null && filterObject.getId() > 0) {
+                    searchComponentState.put(searchFilter, filterObject);
+                }
+            }
+        }
+
+        return searchComponentState;
+    }
+
+    public void storeSearchState(DictionaryFwSession session, SearchComponentState searchComponentState) {
+        SearchComponentState globalSearchComponentState = session.getGlobalSearchComponentState();
+        globalSearchComponentState.updateState(searchComponentState);
+        session.storeGlobalSearchComponentState();
     }
 }

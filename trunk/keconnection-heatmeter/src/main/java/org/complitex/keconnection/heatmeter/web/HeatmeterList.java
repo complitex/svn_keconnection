@@ -30,6 +30,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.service.IProcessListener;
@@ -37,10 +38,14 @@ import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.dateinput.MaskedDateInput;
 import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
+import org.complitex.dictionary.web.component.search.ISearchCallback;
+import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBindService;
@@ -65,9 +70,13 @@ import javax.ejb.EJB;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.google.common.collect.ImmutableList.of;
 import static org.complitex.dictionary.util.DateUtil.*;
 import static org.complitex.dictionary.util.PageUtil.newSorting;
 import static org.complitex.dictionary.util.PageUtil.newTextFields;
@@ -124,28 +133,26 @@ public class HeatmeterList extends TemplatePage {
                 FilterWrapper.of(new Heatmeter()));
         final IModel<FilterWrapper<Heatmeter>> filterModel = new CompoundPropertyModel<>(filterWrapper);
 
+        final SearchComponentState searchComponentState = heatmeterBean.restoreSearchState(getTemplateSession());
+
+        final WiQuerySearchComponent citySearch = new WiQuerySearchComponent("city_search_panel", searchComponentState,
+                of("country", "region", "city"), new ISearchCallback() {
+            @Override
+            public void found(Component component, Map<String, Long> ids, AjaxRequestTarget target) {
+                filterModel.getObject().getMap().putAll(ids);
+
+                heatmeterBean.storeSearchState(getTemplateSession(), searchComponentState);
+
+            }}, ShowMode.ACTIVE, true);
+        citySearch.setVisible(searchComponentState.isEmptyState());
+        citySearch.setUserPermissionString(sessionBean.getPermissionString("building_address"));
+
+        add(citySearch);
+
         //Filter Form
         final Form filterForm = new Form<>("filter_form", filterModel);
         filterForm.setOutputMarkupId(true);
         add(filterForm);
-
-        //Filter Reset Button
-        AjaxButton filterReset = new AjaxButton("filter_reset") {
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                filterModel.setObject(FilterWrapper.of(new Heatmeter()));
-                filterForm.clearInput();
-                target.add(filterForm);
-            }
-
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                //skip
-            }
-        };
-        filterReset.setDefaultFormProcessing(false);
-        filterForm.add(filterReset);
 
         //Filter Find
         AjaxButton filterFind = new AjaxButton("filter_find") {
@@ -154,6 +161,8 @@ public class HeatmeterList extends TemplatePage {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 target.add(filterForm);
                 target.add(messages);
+
+                getTemplateSession().putPreferenceFilter(HeatmeterList.class.getName(), filterModel.getObject());
             }
 
             @Override
@@ -196,7 +205,55 @@ public class HeatmeterList extends TemplatePage {
                 }).setNullValid(true));
 
         filterForm.add(new TextField<>("map.organizationCode"));
-        filterForm.add(new TextField<>("map.address"));
+
+        final WiQuerySearchComponent buildingSearch = new WiQuerySearchComponent("building_search_panel", searchComponentState,
+                of("street", "building"), new ISearchCallback() {
+            @Override
+            public void found(Component component, Map<String, Long> ids, AjaxRequestTarget target) {
+                filterModel.getObject().getMap().putAll(ids);
+
+                heatmeterBean.storeSearchState(getTemplateSession(), searchComponentState);
+
+            }}, ShowMode.ACTIVE, true, false){
+            @Override
+            protected Map<String, DomainObject> getState(int index) {
+                Map<String, DomainObject> map =  super.getState(index);
+
+                map.put("country", citySearch.getModelObject("country"));
+                map.put("region", citySearch.getModelObject("region"));
+                map.put("city", citySearch.getModelObject("city"));
+
+                return map;
+            }
+        };
+        buildingSearch.setUserPermissionString(sessionBean.getPermissionString("building_address"));
+        filterForm.add(buildingSearch);
+
+        //Filter Reset Button
+        AjaxButton filterReset = new AjaxButton("filter_reset") {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                filterModel.setObject(FilterWrapper.of(new Heatmeter()));
+                filterForm.clearInput();
+
+                searchComponentState.clear();
+                buildingSearch.reinitialize(target);
+
+                heatmeterBean.storeSearchState(getTemplateSession(), searchComponentState);
+                getTemplateSession().putPreferenceFilter(HeatmeterList.class.getName(), filterModel.getObject());
+
+                target.add(filterForm);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                //skip
+            }
+        };
+        filterReset.setDefaultFormProcessing(false);
+        filterForm.add(filterReset);
+
         filterForm.add(new TextField<>("map.buildingCode"));
 
         IModel<String> tg1FilterModel = new Model<String>() {
@@ -351,7 +408,7 @@ public class HeatmeterList extends TemplatePage {
             }
         };
 
-        dataProvider.setSort("h2.id", SortOrder.DESCENDING);
+        dataProvider.setSort("h.id", SortOrder.DESCENDING);
 
         //Data Container
         final WebMarkupContainer dataContainer = new WebMarkupContainer("data_container");
@@ -429,8 +486,8 @@ public class HeatmeterList extends TemplatePage {
         filterForm.add(paging);
 
         //Sorting
-        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "address", "org_sc.value", "bc.code", "h2.ls",
-                "h2.type_id", "h2.status", "hp.begin_date", "hcons.readout_date"));
+        filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, "address", "org_sc.value", "bc.code", "h.ls",
+                "h.type_id", "h.status", "hp.begin_date", "hcons.readout_date"));
 
         //Import Dialog
         final WebMarkupContainer importDialogContainer = new WebMarkupContainer("import_dialog_container");
