@@ -585,7 +585,7 @@ public class HeatmeterList extends TemplatePage {
                     target.add(dataContainer);
 
                     heatmeterImportService.asyncUploadHeatmeters(fileUpload.getClientFileName(), inputStream,
-                            getFirstDayOfMonth(getYear(getCurrentDate()), beginOmModel.getObject()),
+                            newDate(getYear(getCurrentDate()), beginOmModel.getObject()),
                             beginDateModel.getObject(), listener);
                 } catch (IOException e) {
                     log.error("Ошибка чтения файла", e);

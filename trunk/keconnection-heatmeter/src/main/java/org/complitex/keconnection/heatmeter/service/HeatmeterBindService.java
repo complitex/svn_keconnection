@@ -270,7 +270,7 @@ public class HeatmeterBindService {
 
     private Date getDateParameter() {
         final Date currentDate = getCurrentDate();
-        return getFirstDayOfMonth(getYear(currentDate), getMonth(currentDate) + 1);
+        return newDate(getYear(currentDate), getMonth(currentDate) + 1);
     }
 
     public List<ExternalHeatmeter> getExternalHeatmeters(Heatmeter heatmeter) throws DBException,
