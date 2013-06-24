@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.organization.entity;
 
 import java.io.Serializable;
@@ -13,7 +9,7 @@ import java.io.Serializable;
 public class OrganizationImport implements Serializable {
 
     private Long pkId;
-    private Long organizationId;
+    private String organizationId;
     private String code;
     private String shortName;
     private String fullName;
@@ -22,7 +18,7 @@ public class OrganizationImport implements Serializable {
     public OrganizationImport() {
     }
 
-    public OrganizationImport(Long organizationId, String code, String shortName, String fullName, Long hlevel) {
+    public OrganizationImport(String organizationId, String code, String shortName, String fullName, Long hlevel) {
         this.organizationId = organizationId;
         this.code = code;
         this.shortName = shortName;
@@ -62,11 +58,11 @@ public class OrganizationImport implements Serializable {
         this.hlevel = hlevel;
     }
 
-    public Long getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Long organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 
