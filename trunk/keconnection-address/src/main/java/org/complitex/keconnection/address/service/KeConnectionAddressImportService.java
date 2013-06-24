@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.address.service;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -52,25 +48,33 @@ import static org.complitex.dictionary.util.StringUtil.toCyrillic;
  */
 @Stateless
 public class KeConnectionAddressImportService extends AbstractImportService {
-
     private static final Logger log = LoggerFactory.getLogger(KeConnectionAddressImportService.class);
     private static final String RESOURCE_BUNDLE = KeConnectionAddressImportService.class.getName();
+
     @EJB
     private AddressImportService addressImportService;
+
     @EJB
     private LocaleBean localeBean;
+
     @EJB
     private DistrictStrategy districtStrategy;
+
     @EJB
     private StreetStrategy streetStrategy;
+
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
+
     @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
     private IKeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private CityStrategy cityStrategy;
+
     @EJB
     private StreetTypeStrategy streetTypeStrategy;
+
     @EJB
     private KeConnectionBuildingImportBean buildingImportBean;
 
@@ -270,13 +274,13 @@ public class KeConnectionAddressImportService extends AbstractImportService {
             while ((line = reader.readNext()) != null) {
                 recordIndex++;
 
-                final long externalId = Long.parseLong(line[0].trim());
+                final String externalId = line[0].trim();
 
                 DomainObject newObject = null;
                 DomainObject oldObject = null;
 
                 // Ищем по externalId в базе.
-                Long objectId = streetStrategy.getObjectId(externalId);
+                Long objectId = streetStrategy.getObjectId(Long.valueOf(externalId));
                 if (objectId != null) {
                     oldObject = streetStrategy.findById(objectId, true);
                     if (oldObject != null) {
@@ -315,7 +319,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 if (existingStreetId != null) {
                     // нашли дубликат
                     DomainObject existingStreet = streetStrategy.findById(existingStreetId, true);
-                    long existingStreetExternalId = existingStreet.getExternalId();
+                    String existingStreetExternalId = existingStreet.getExternalId();
                     listener.warn(STREET, ResourceUtil.getFormatString(RESOURCE_BUNDLE, "street_duplicate_warn",
                             localeBean.getLocale(localeId),
                             line[3], externalId, existingStreetId, existingStreetExternalId));

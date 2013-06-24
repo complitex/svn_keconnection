@@ -65,7 +65,7 @@ public class OrganizationImportService extends AbstractImportService {
         try {
             String[] line;
             while ((line = reader.readNext()) != null) {
-                final long organizationId = Long.parseLong(line[0].trim());
+                final String organizationId = line[0].trim();
                 final String code = line[1].trim();
                 final String shortName = line[2].trim();
                 final String fullName = line[3].trim();
@@ -87,7 +87,7 @@ public class OrganizationImportService extends AbstractImportService {
         final long systemLocaleId = localeBean.getSystemLocaleObject().getId();
         recordIndex = 0;
 
-        final Queue<Long> workQueue = new LinkedList<>();
+        final Queue<String> workQueue = new LinkedList<>();
 
         //find root of organization tree
         List<OrganizationImport> rootOrgs = organizationImportBean.find(null);
@@ -102,10 +102,10 @@ public class OrganizationImportService extends AbstractImportService {
         while (!workQueue.isEmpty()) {
             recordIndex++;
 
-            final long externalOrganizationId = workQueue.poll();
+            final String externalOrganizationId = workQueue.poll();
 
             //put children in work queue
-            List<OrganizationImport> orgs = organizationImportBean.find(externalOrganizationId);
+            List<OrganizationImport> orgs = organizationImportBean.find(Long.valueOf(externalOrganizationId));
             if (orgs != null && !orgs.isEmpty()) {
                 for (OrganizationImport oi : orgs) {
                     workQueue.add(oi.getOrganizationId());
@@ -113,7 +113,7 @@ public class OrganizationImportService extends AbstractImportService {
             }
 
             //handle organization
-            final OrganizationImport organization = organizationImportBean.findById(externalOrganizationId);
+            final OrganizationImport organization = organizationImportBean.findById(Long.valueOf(externalOrganizationId));
 
             // Ищем по organization id в базе.
             DomainObject newObject = null;
