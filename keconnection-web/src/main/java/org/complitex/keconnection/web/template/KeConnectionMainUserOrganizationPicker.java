@@ -7,10 +7,10 @@ package org.complitex.keconnection.web.template;
 import org.apache.wicket.model.IModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.template.web.component.MainUserOrganizationPicker;
 
+import javax.ejb.EJB;
 import java.util.Locale;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -20,6 +20,9 @@ import static com.google.common.base.Strings.isNullOrEmpty;
  * @author Artem
  */
 public class KeConnectionMainUserOrganizationPicker extends MainUserOrganizationPicker {
+    @EJB(name = "OrganizationStrategy")
+    private IOrganizationStrategy organizationStrategy;
+
 
     public KeConnectionMainUserOrganizationPicker(String id, IModel<DomainObject> model) {
         super(id, model);
@@ -29,7 +32,6 @@ public class KeConnectionMainUserOrganizationPicker extends MainUserOrganization
     protected String displayOrganization(DomainObject organization) {
         Organization o = (Organization) organization;
 
-        IOrganizationStrategy organizationStrategy = getOrgaizationStrategy();
         final Locale locale = getLocale();
         final String name = organizationStrategy.displayDomainObject(o, locale);
         final String code = organizationStrategy.getUniqueCode(o);
@@ -46,10 +48,5 @@ public class KeConnectionMainUserOrganizationPicker extends MainUserOrganization
         } else {
             return code + " - " + name + " (" + operatingMonth + ")";
         }
-    }
-
-    @Override
-    protected String getOrganizationStrategyName() {
-        return IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME;
     }
 }
