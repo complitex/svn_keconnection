@@ -4,8 +4,8 @@ import org.apache.wicket.Page;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.util.EjbBeanLocator;
-import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.organization.web.OrganizationMenu;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.ITemplateLink;
@@ -23,7 +23,7 @@ public class KeConnectionOrganizationMenu extends OrganizationMenu {
 
     @Override
     protected IStrategy getStrategy() {
-        return EjbBeanLocator.getBean(KeConnectionOrganizationStrategy.class);
+        return EjbBeanLocator.getBean(IOrganizationStrategy.BEAN_NAME);
     }
 
     @Override

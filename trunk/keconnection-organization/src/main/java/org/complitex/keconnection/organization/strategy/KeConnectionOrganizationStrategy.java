@@ -17,13 +17,14 @@ import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization.strategy.web.edit.KeConnectionOrganizationEditComponent;
 import org.complitex.keconnection.organization.strategy.web.list.OrganizationList;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
-import org.complitex.organization.strategy.OrganizationStrategy;
+import org.complitex.organization.strategy.AbstractOrganizationStrategy;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -39,9 +40,8 @@ import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
  *
  * @author Artem
  */
-@Stateless
-public class KeConnectionOrganizationStrategy extends OrganizationStrategy implements IKeConnectionOrganizationStrategy {
-
+@Stateless(name = IOrganizationStrategy.BEAN_NAME)
+public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrategy implements IKeConnectionOrganizationStrategy {
     private static final String MAPPING_NAMESPACE = KeConnectionOrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.of(READY_CLOSE_OPER_MONTH);
     public static final String PARENT_SHORT_NAME_FILTER = "parentShortName";
@@ -129,6 +129,11 @@ public class KeConnectionOrganizationStrategy extends OrganizationStrategy imple
         configureExample(example, ImmutableMap.<String, Long>of(), null);
 
         return find(example);
+    }
+
+    @Override
+    public Long getModuleId() {
+        return null;
     }
 
     @Override
