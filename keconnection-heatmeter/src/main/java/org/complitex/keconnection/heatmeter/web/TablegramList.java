@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.Locale;
 
 import static org.complitex.dictionary.util.PageUtil.*;
 
@@ -62,6 +63,11 @@ public class TablegramList extends TemplatePage{
         FilterWrapper<Tablegram> filterWrapper = getTemplateSession().getPreferenceFilter(TablegramList.class.getName(),
                 FilterWrapper.of(new Tablegram()));
         final IModel<FilterWrapper<Tablegram>> filterModel = new CompoundPropertyModel<>(filterWrapper);
+
+        Locale locale = getLocale();
+        locale.getCountry();
+
+
 
         //Filter Form
         final Form filterForm = new Form<>("filter_form", filterModel);

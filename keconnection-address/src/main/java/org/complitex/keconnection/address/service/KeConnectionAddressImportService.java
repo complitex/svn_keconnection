@@ -168,7 +168,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
             for (BuildingImport b : imports) {
                 recordIndex++;
 
-                final long streetExternalId = b.getStreetId();
+                String streetExternalId = b.getStreetId().toString();
 
                 Long streetId = streetStrategy.getObjectId(streetExternalId);
                 if (streetId == null) {
@@ -180,7 +180,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 KeConnectionBuilding building = buildingStrategy.newInstance();
 
                 //DISTRICT_ID
-                final long districtExternalId = b.getDistrId();
+                String districtExternalId = b.getDistrId().toString();
                 Long districtId = districtStrategy.getObjectId(districtExternalId);
                 if (districtId == null) {
                     throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, String.valueOf(b.getDistrId()));
@@ -217,10 +217,10 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                     Set<Long> subjectIds = new HashSet<>();
 
                     for (BuildingPartImport part : b.getBuildingParts()) {
-                        final long gekId = part.getGek();
-                        final String buildingCode = part.getCode();
+                        String gekId = part.getGek().toString();
+                        String buildingCode = part.getCode();
 
-                        final Long organizationId = organizationStrategy.getObjectId(gekId);
+                        Long organizationId = organizationStrategy.getObjectId(gekId);
                         if (organizationId == null) {
                             throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, String.valueOf(gekId));
                         }
@@ -234,7 +234,6 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                         if (buildingCodeInt == null) {
                             listener.warn(BUILDING, ResourceUtil.getFormatString(RESOURCE_BUNDLE, "building_code_format_warn",
                                     localeBean.getLocale(localeId), b.getNum(), b.getBuildingPartId(), buildingCode));
-                            continue;
                         } else {
                             BuildingCode association = new BuildingCode();
                             association.setOrganizationId(organizationId);
@@ -280,7 +279,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 DomainObject oldObject = null;
 
                 // Ищем по externalId в базе.
-                Long objectId = streetStrategy.getObjectId(Long.valueOf(externalId));
+                Long objectId = streetStrategy.getObjectId(externalId);
                 if (objectId != null) {
                     oldObject = streetStrategy.findById(objectId, true);
                     if (oldObject != null) {
@@ -300,7 +299,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 }
 
                 //CITY_ID
-                Long cityId = cityStrategy.getObjectId(Long.parseLong(line[1].trim()));
+                Long cityId = cityStrategy.getObjectId(line[1].trim());
                 if (cityId == null) {
                     throw new ImportObjectLinkException(STREET.getFileName(), recordIndex, line[1]);
                 }
@@ -308,7 +307,7 @@ public class KeConnectionAddressImportService extends AbstractImportService {
                 newObject.setParentId(cityId);
 
                 //STREET_TYPE_ID
-                Long streetTypeId = streetTypeStrategy.getObjectId(Long.parseLong(line[2].trim()));
+                Long streetTypeId = streetTypeStrategy.getObjectId(line[2].trim());
                 if (streetTypeId == null) {
                     throw new ImportObjectLinkException(STREET.getFileName(), recordIndex, line[2]);
                 }
