@@ -158,7 +158,7 @@ public class OrganizationImportService extends AbstractImportService {
             //parent
             Long parentId = organization.getHlevel();
             if (parentId != null) {
-                long parentObjectId = organizationStrategy.getObjectId(parentId);
+                long parentObjectId = organizationStrategy.getObjectId(parentId.toString());
                 newObject.getAttribute(IKeConnectionOrganizationStrategy.USER_ORGANIZATION_PARENT).
                         setValueId(parentObjectId);
             }

@@ -1,15 +1,17 @@
 package org.complitex.keconnection.heatmeter.service;
 
-import org.complitex.keconnection.heatmeter.entity.BuildingCorrection;
-import org.complitex.keconnection.heatmeter.entity.Correction;
-import org.complitex.keconnection.heatmeter.entity.StreetCorrection;
-import org.complitex.keconnection.heatmeter.entity.example.CorrectionExample;
 import com.google.common.collect.Maps;
+import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
+import org.complitex.keconnection.heatmeter.entity.BuildingCorrection;
+import org.complitex.keconnection.heatmeter.entity.Correction;
+import org.complitex.keconnection.heatmeter.entity.StreetCorrection;
+import org.complitex.keconnection.heatmeter.entity.example.CorrectionExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +20,6 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.complitex.address.strategy.street_type.StreetTypeStrategy;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 
 /**
  * Класс для работы с коррекциями адресов.
@@ -352,13 +352,13 @@ public class AddressCorrectionBean extends CorrectionBean {
 //     * @return
 //     */
 //    @Transactional
-//    private List<Long> findInternalObjectIds(String entity, String correction, long attributeTypeId) {
+//    private List<Long> getObjectIds(String entity, String correction, long attributeTypeId) {
 //        Map<String, Object> params = Maps.newHashMap();
 //        params.put("entity", entity);
 //        String toCyrillicCorrection = toCyrillic(correction);
 //        params.put("correction", toCyrillicCorrection != null ? toCyrillicCorrection : "");
 //        params.put("attributeTypeId", attributeTypeId);
-//        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalObjectIds", params);
+//        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".getObjectIds", params);
 //    }
 //
 //    /**
@@ -369,12 +369,12 @@ public class AddressCorrectionBean extends CorrectionBean {
 //     */
 //    @Transactional
 //    public List<Long> findInternalCityIds(String city) {
-//        return findInternalObjectIds("city", city, 400);
+//        return getObjectIds("city", city, 400);
 //    }
 //
 //    @Transactional
 //    public List<Long> findInternalStreetTypeIds(String streetType) {
-//        return findInternalObjectIds("street_type", streetType, 1400);
+//        return getObjectIds("street_type", streetType, 1400);
 //    }
 //
 //    /**

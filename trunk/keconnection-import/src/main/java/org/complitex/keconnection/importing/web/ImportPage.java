@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.importing.web;
 
 import com.google.common.collect.ImmutableList;
@@ -40,9 +36,7 @@ import org.complitex.template.web.template.TemplatePage;
 import javax.ejb.EJB;
 import java.util.*;
 
-import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
-import static org.complitex.dictionary.util.DateUtil.getFirstDayOfCurrentMonth;
-import static org.complitex.dictionary.util.DateUtil.getFirstDayOfMonth;
+import static org.complitex.dictionary.util.DateUtil.*;
 
 /**
  *
