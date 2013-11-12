@@ -14,7 +14,7 @@ import java.util.List;
 import static org.complitex.dictionary.util.DateUtil.getFirstDayOfMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterType.HEATING;
 import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.*;
-import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
+import static org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

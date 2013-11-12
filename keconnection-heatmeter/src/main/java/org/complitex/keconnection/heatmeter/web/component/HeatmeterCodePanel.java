@@ -14,6 +14,7 @@ import org.complitex.address.strategy.building.entity.Building;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.ShowMode;
@@ -24,7 +25,7 @@ import org.complitex.keconnection.address.strategy.building.KeConnectionBuilding
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 
 import javax.ejb.EJB;
 import java.util.ArrayList;
@@ -46,8 +47,8 @@ public class HeatmeterCodePanel extends Panel {
     @EJB
     private CityStrategy cityStrategy;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     public HeatmeterCodePanel(String id, final IModel<List<HeatmeterConnection>> model) {
         super(id, model);

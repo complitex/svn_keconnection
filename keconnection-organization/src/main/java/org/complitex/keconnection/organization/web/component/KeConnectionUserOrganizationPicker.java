@@ -1,15 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.organization.web.component;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.strategy.StrategyFactory;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 
 import javax.ejb.EJB;
@@ -20,8 +16,8 @@ import javax.ejb.EJB;
  */
 public class KeConnectionUserOrganizationPicker extends Panel {
 
-    @EJB
-    private StrategyFactory strategyFactory;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     public KeConnectionUserOrganizationPicker(String id, final IModel<Long> organizationIdModel) {
         super(id);
@@ -32,7 +28,7 @@ public class KeConnectionUserOrganizationPicker extends Panel {
             public DomainObject getObject() {
                 Long id = organizationIdModel.getObject();
                 if (id != null) {
-                    return getOrganizationStrategy().findById(id, true);
+                    return organizationStrategy.findById(id, true);
                 }
                 return null;
             }
@@ -42,10 +38,5 @@ public class KeConnectionUserOrganizationPicker extends Panel {
                 organizationIdModel.setObject(object != null ? object.getId() : null);
             }
         }, OrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
-    }
-
-    private IKeConnectionOrganizationStrategy getOrganizationStrategy() {
-        return (IKeConnectionOrganizationStrategy) strategyFactory.getStrategy(
-                IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization");
     }
 }

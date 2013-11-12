@@ -18,7 +18,7 @@ import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.keconnection.organization.entity.OrganizationImport;
 import org.complitex.keconnection.organization.service.exception.RootOrganizationNotFound;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +41,13 @@ import static org.complitex.keconnection.organization.entity.OrganizationImportF
 public class OrganizationImportService extends AbstractImportService {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationImportService.class);
+
     @EJB
     private OrganizationImportBean organizationImportBean;
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private KeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private LocaleBean localeBean;
 
@@ -132,26 +135,26 @@ public class OrganizationImportService extends AbstractImportService {
             }
 
             //code
-            AttributeUtil.setStringValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.CODE),
+            AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.CODE),
                     organization.getCode().toUpperCase(), localeId);
-            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.CODE)) == null) {
-                AttributeUtil.setStringValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.CODE),
+            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(KeConnectionOrganizationStrategy.CODE)) == null) {
+                AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.CODE),
                         organization.getCode().toUpperCase(), systemLocaleId);
             }
 
             //short name
-            AttributeUtil.setStringValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.SHORT_NAME),
+            AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.SHORT_NAME),
                     organization.getShortName().toUpperCase(), localeId);
-            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.SHORT_NAME)) == null) {
-                AttributeUtil.setStringValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.SHORT_NAME),
+            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(KeConnectionOrganizationStrategy.SHORT_NAME)) == null) {
+                AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.SHORT_NAME),
                         organization.getShortName().toUpperCase(), systemLocaleId);
             }
 
             //full name
-            AttributeUtil.setStringValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.NAME),
+            AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.NAME),
                     organization.getFullName().toUpperCase(), localeId);
-            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.NAME)) == null) {
-                AttributeUtil.setStringValue(newObject.getAttribute(IKeConnectionOrganizationStrategy.NAME),
+            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(KeConnectionOrganizationStrategy.NAME)) == null) {
+                AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.NAME),
                         organization.getFullName().toUpperCase(), systemLocaleId);
             }
 
@@ -159,7 +162,7 @@ public class OrganizationImportService extends AbstractImportService {
             Long parentId = organization.getHlevel();
             if (parentId != null) {
                 long parentObjectId = organizationStrategy.getObjectId(parentId.toString());
-                newObject.getAttribute(IKeConnectionOrganizationStrategy.USER_ORGANIZATION_PARENT).
+                newObject.getAttribute(KeConnectionOrganizationStrategy.USER_ORGANIZATION_PARENT).
                         setValueId(parentObjectId);
             }
 
@@ -185,7 +188,7 @@ public class OrganizationImportService extends AbstractImportService {
     }
 
     private void addOrganizationTypes(DomainObject organization) {
-        organization.removeAttribute(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
+        organization.removeAttribute(KeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
         organization.addAttribute(newOrganizationTypeAttribute(1L, KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION));
         organization.addAttribute(newOrganizationTypeAttribute(2L, KeConnectionOrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
     }
@@ -193,14 +196,14 @@ public class OrganizationImportService extends AbstractImportService {
     private Attribute newOrganizationTypeAttribute(long attributeId, long organizationTypeId) {
         Attribute a = new Attribute();
         a.setAttributeId(attributeId);
-        a.setAttributeTypeId(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
-        a.setValueTypeId(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
+        a.setAttributeTypeId(KeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
+        a.setValueTypeId(KeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
         a.setValueId(organizationTypeId);
         return a;
     }
 
     private void addReadyCloseOperatingMonthFlag(DomainObject organization, long systemLocaleId) {
-        final Attribute attribute = organization.getAttribute(IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH);
+        final Attribute attribute = organization.getAttribute(KeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH);
         String value = AttributeUtil.getSystemStringCultureValue(attribute);
         if (Strings.isNullOrEmpty(value)) {
             value = new BooleanConverter().toString(Boolean.FALSE);

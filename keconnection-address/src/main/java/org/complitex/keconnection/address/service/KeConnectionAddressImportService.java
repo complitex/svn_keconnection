@@ -25,7 +25,7 @@ import org.complitex.keconnection.address.entity.BuildingPartImport;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +66,8 @@ public class KeConnectionAddressImportService extends AbstractImportService {
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
     private CityStrategy cityStrategy;

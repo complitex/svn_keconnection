@@ -35,6 +35,7 @@ import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
@@ -56,7 +57,7 @@ import org.complitex.keconnection.heatmeter.web.component.heatmeter.bind.Heatmet
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.ActivateHeatmeterDialog;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.DeactivateHeatmeterDialog;
 import org.complitex.keconnection.heatmeter.web.component.heatmeter.list.HeatmeterItemPanel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.component.toolbar.UploadButton;
@@ -98,8 +99,8 @@ public class HeatmeterList extends TemplatePage {
     @EJB
     private HeatmeterImportService heatmeterImportService;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
     private HeatmeterBindingStatusRenderer heatmeterBindingStatusRenderer;

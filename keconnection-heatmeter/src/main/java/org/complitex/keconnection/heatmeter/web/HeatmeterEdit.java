@@ -20,6 +20,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.service.exception.ConcurrentModificationException;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
@@ -32,7 +33,7 @@ import org.complitex.keconnection.heatmeter.web.component.HeatmeterInputPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterOperationPanel;
 import org.complitex.keconnection.heatmeter.web.component.HeatmeterPayloadPanel;
 import org.complitex.keconnection.heatmeter.web.correction.component.HeatmeterCorrectionDialog;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ import java.util.List;
 
 import static org.complitex.dictionary.util.DateUtil.addMonth;
 import static org.complitex.keconnection.heatmeter.entity.HeatmeterValidateStatus.VALID;
-import static org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
+import static org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy.KE_ORGANIZATION_OBJECT_ID;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -61,8 +62,8 @@ public class HeatmeterEdit extends FormTemplatePage {
     @EJB
     private HeatmeterService heatmeterService;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;

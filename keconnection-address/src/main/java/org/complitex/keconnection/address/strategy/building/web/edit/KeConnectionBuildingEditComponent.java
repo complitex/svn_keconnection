@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.address.strategy.building.web.edit;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -16,6 +12,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.complitex.address.strategy.building.web.edit.BuildingEditComponent;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
@@ -25,11 +22,11 @@ import org.complitex.keconnection.address.strategy.building.KeConnectionBuilding
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCodeList;
 import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.entity.Organization;
 
 import javax.ejb.EJB;
 import java.util.List;
-import org.complitex.keconnection.organization.strategy.entity.Organization;
 
 /**
  *
@@ -37,8 +34,8 @@ import org.complitex.keconnection.organization.strategy.entity.Organization;
  */
 public class KeConnectionBuildingEditComponent extends AbstractComplexAttributesPanel {
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     public KeConnectionBuildingEditComponent(String id, boolean disabled) {
         super(id, disabled);

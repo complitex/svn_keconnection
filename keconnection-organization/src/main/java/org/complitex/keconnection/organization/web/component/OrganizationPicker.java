@@ -1,13 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.organization.web.component;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
-import javax.ejb.EJB;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
@@ -16,11 +10,7 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.RadioGroup;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -33,14 +23,17 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.AttributeExample;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
+
+import javax.ejb.EJB;
+import java.util.Collections;
 
 /**
  *
@@ -50,12 +43,14 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
 
     private static final TextTemplate CENTER_DIALOG_JS =
             new PackageTextTemplate(OrganizationPicker.class, "CenterDialog.js");
-    @EJB
-    private StrategyFactory strategyFactory;
+
     @EJB
     private LocaleBean localeBean;
     private boolean showData;
     private final DomainObjectExample example;
+
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy keConnectionOrganizationStrategy;
 
     @Override
     public void renderHead(IHeaderResponse response) {
@@ -83,7 +78,7 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
                     public String getObject() {
                         DomainObject organization = getModelObject();
                         if (organization != null) {
-                            return getOrganizationStrategy().displayShortNameAndCode(organization, getLocale());
+                            return keConnectionOrganizationStrategy.displayShortNameAndCode(organization, getLocale());
                         } else {
                             return getString("organization_not_selected");
                         }
@@ -127,7 +122,7 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
                 example.setLocaleId(localeBean.convert(getLocale()).getId());
                 example.setStart(first);
                 example.setSize(count);
-                return getOrganizationStrategy().find(example);
+                return keConnectionOrganizationStrategy.find(example);
             }
 
             @Override
@@ -136,7 +131,7 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
                     return 0;
                 }
                 example.setLocaleId(localeBean.convert(getLocale()).getId());
-                return getOrganizationStrategy().count(example);
+                return keConnectionOrganizationStrategy.count(example);
             }
         };
 
@@ -144,24 +139,24 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
 
             @Override
             public String getObject() {
-                return example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).getValue();
+                return example.getAttributeExample(KeConnectionOrganizationStrategy.NAME).getValue();
             }
 
             @Override
             public void setObject(String name) {
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).setValue(name);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.NAME).setValue(name);
             }
         }));
         filterForm.add(new TextField<String>("codeFilter", new Model<String>() {
 
             @Override
             public String getObject() {
-                return example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).getValue();
+                return example.getAttributeExample(KeConnectionOrganizationStrategy.CODE).getValue();
             }
 
             @Override
             public void setObject(String code) {
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).setValue(code);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.CODE).setValue(code);
             }
         }));
 
@@ -202,8 +197,8 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
 
                 item.add(new Radio<DomainObject>("radio", item.getModel(), radioGroup));
                 item.add(new Label("name", AttributeUtil.getStringCultureValue(organization,
-                        IKeConnectionOrganizationStrategy.NAME, getLocale())));
-                item.add(new Label("code", getOrganizationStrategy().getUniqueCode(organization)));
+                        KeConnectionOrganizationStrategy.NAME, getLocale())));
+                item.add(new Label("code", keConnectionOrganizationStrategy.getUniqueCode(organization)));
             }
         };
         radioGroup.add(data);
@@ -254,11 +249,6 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
         add(choose);
     }
 
-    protected final IKeConnectionOrganizationStrategy getOrganizationStrategy() {
-        return (IKeConnectionOrganizationStrategy) strategyFactory.getStrategy(
-                IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization");
-    }
-
     private void toggleSelectButton(Component select, AjaxRequestTarget target, IModel<DomainObject> organizationModel) {
         boolean wasVisible = select.isVisible();
         select.setVisible(organizationModel.getObject() != null);
@@ -279,16 +269,16 @@ public class OrganizationPicker extends FormComponentPanel<DomainObject> {
 
     private DomainObjectExample newExample(long organizationTypeId) {
         DomainObjectExample e = new DomainObjectExample();
-        e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.NAME));
-        e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.CODE));
-        e.addAdditionalParam(IKeConnectionOrganizationStrategy.ORGANIZATION_TYPE_PARAMETER,
+        e.addAttributeExample(new AttributeExample(KeConnectionOrganizationStrategy.NAME));
+        e.addAttributeExample(new AttributeExample(KeConnectionOrganizationStrategy.CODE));
+        e.addAdditionalParam(KeConnectionOrganizationStrategy.ORGANIZATION_TYPE_PARAMETER,
                 ImmutableList.of(organizationTypeId));
         return e;
     }
 
     private void clearExample() {
-        example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).setValue(null);
-        example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).setValue(null);
+        example.getAttributeExample(KeConnectionOrganizationStrategy.NAME).setValue(null);
+        example.getAttributeExample(KeConnectionOrganizationStrategy.CODE).setValue(null);
     }
 
     @Override

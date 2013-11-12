@@ -22,12 +22,12 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.PermissionBean;
-import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.fieldset.CollapsibleFieldset;
 import org.complitex.dictionary.web.component.list.AjaxRemovableListView;
 import org.complitex.dictionary.web.component.permission.AbstractDomainObjectPermissionPanel;
 import org.complitex.dictionary.web.component.permission.DomainObjectPermissionParameters;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 
 import javax.ejb.EJB;
@@ -46,8 +46,8 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
         
         ALL, SELECT
     }
-    @EJB
-    private StrategyFactory strategyFactory;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
     
     @Override
     public void renderHead(IHeaderResponse response) {
@@ -194,7 +194,7 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
         List<DomainObject> selectedSubjects = new ArrayList<>();
         for (long selecetSubjectId : selectedSubjectIds) {
             if (selecetSubjectId > 0) {
-                DomainObject o = getOrganizationStrategy().findById(selecetSubjectId, false);
+                DomainObject o = organizationStrategy.findById(selecetSubjectId, false);
                 if (o != null) {
                     selectedSubjects.add(o);
                 }
@@ -202,12 +202,7 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
         }
         return selectedSubjects;
     }
-    
-    protected final IKeConnectionOrganizationStrategy getOrganizationStrategy() {
-        return (IKeConnectionOrganizationStrategy) strategyFactory.getStrategy(
-                IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization");
-    }
-    
+
     private void setupSubjectIds(Set<Long> subjectIds, List<DomainObject> selectedSubjects) {
         subjectIds.clear();
         for (DomainObject selectedSubject : selectedSubjects) {

@@ -11,8 +11,9 @@ import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DomainObjectInputPanel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
@@ -25,8 +26,9 @@ import javax.ejb.EJB;
  */
 public class KeConnectionOrganizationEditComponent extends OrganizationEditComponent {
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private StringCultureBean stringBean;
     private WebMarkupContainer readyCloseOmSection;
@@ -55,7 +57,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
             readyCloseOmSection.setOutputMarkupPlaceholderTag(true);
             add(readyCloseOmSection);
 
-            final long attributeTypeId = IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH;
+            final long attributeTypeId = KeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH;
             Attribute attribute = organization.getAttribute(attributeTypeId);
             if (attribute == null) {
                 attribute = new Attribute();
@@ -118,7 +120,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
     @Override
     protected String getStrategyName() {
-        return IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME;
+        return KeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME;
     }
 
     public boolean isServicingOrganization() {
@@ -133,7 +135,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
     @Override
     protected boolean isOrganizationTypeEnabled() {
         Long organizationId = getDomainObject().getId();
-        return !(organizationId != null && (organizationId == IKeConnectionOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID))
+        return !(organizationId != null && (organizationId == KeConnectionOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID))
                 && super.isOrganizationTypeEnabled();
     }
 
@@ -145,7 +147,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
         if (!isServicingOrganization()) {
             //Readiness to close operating month.
-            organization.removeAttribute(IKeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH);
+            organization.removeAttribute(KeConnectionOrganizationStrategy.READY_CLOSE_OPER_MONTH);
         }
     }
 }
