@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.organization.strategy;
 
 import com.google.common.base.Strings;
@@ -41,10 +37,37 @@ import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
  * @author Artem
  */
 @Stateless(name = IOrganizationStrategy.BEAN_NAME)
-public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrategy implements IKeConnectionOrganizationStrategy {
+public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrategy {
+    public final static String KECONNECTION_ORGANIZATION_STRATEGY_NAME = "KeConnectionOrganizationStrategy";
+    /*
+     * Attribute type ids
+     */
+    /**
+     * Organization's short name.
+     */
+    public final static long SHORT_NAME = 920;
+    /**
+     * Flag of organization being performer.
+     */
+    public final static long PERFORMER = 921;
+    /**
+     * Flag of readiness to close operating month.
+     */
+    public final static long READY_CLOSE_OPER_MONTH = 922;
+    /**
+     * Itself organization instance id.
+     */
+    public final static long ITSELF_ORGANIZATION_OBJECT_ID = 0;
+    /**
+     * КИЕВЭНЕРГО
+     */
+    public final static long KE_ORGANIZATION_OBJECT_ID = 1;
+
     private static final String MAPPING_NAMESPACE = KeConnectionOrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.of(READY_CLOSE_OPER_MONTH);
     public static final String PARENT_SHORT_NAME_FILTER = "parentShortName";
+
+
     @EJB
     private LocaleBean localeBean;
     @EJB
@@ -74,7 +97,6 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
         return OrganizationList.class;
     }
 
-    @Override
     public List<Organization> getAllServicingOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
@@ -88,18 +110,16 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
         return find(example);
     }
 
-    @Override
     public String displayShortName(Long organizationId, Locale locale) {
         DomainObject domainObject = findById(organizationId, true);
 
         if (domainObject != null) {
-            return AttributeUtil.getStringCultureValue(domainObject, IKeConnectionOrganizationStrategy.SHORT_NAME, locale);
+            return AttributeUtil.getStringCultureValue(domainObject, SHORT_NAME, locale);
         }
 
         return "";
     }
 
-    @Override
     protected void extendOrderBy(DomainObjectExample example) {
         super.extendOrderBy(example);
         if (example.getOrderByAttributeTypeId() != null
@@ -108,7 +128,6 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
         }
     }
 
-    @Override
     public DomainObject getItselfOrganization() {
         return findById(ITSELF_ORGANIZATION_OBJECT_ID, true);
     }
@@ -210,12 +229,10 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
         organization.setOperatingMonthDate(getOperatingMonthDate(organization.getId()));
     }
 
-    @Override
     public Date getOperatingMonthDate(long organizationId) {
         return sqlSession().selectOne(MAPPING_NAMESPACE + ".findOperatingMonthDate", organizationId);
     }
 
-    @Override
     public Date getMinOperatingMonthDate(long organizationId) {
         return sqlSession().selectOne(MAPPING_NAMESPACE + ".findMinOperatingMonthDate", organizationId);
     }
@@ -268,7 +285,6 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
     }
 
     @Transactional
-    @Override
     public void setReadyCloseOperatingMonthFlag(Organization organization) {
         AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
                 new BooleanConverter().toString(Boolean.TRUE),
@@ -277,7 +293,6 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
     }
 
     @Transactional
-    @Override
     public void closeOperatingMonth(Organization organization) {
         AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
                 new BooleanConverter().toString(Boolean.FALSE),
@@ -290,7 +305,6 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
                         "updated", getCurrentDate()));
     }
 
-    @Override
     public String displayShortNameAndCode(DomainObject organization, Locale locale) {
         final String fullName = AttributeUtil.getStringCultureValue(organization, NAME, locale);
         final String shortName = AttributeUtil.getStringCultureValue(organization, SHORT_NAME, locale);

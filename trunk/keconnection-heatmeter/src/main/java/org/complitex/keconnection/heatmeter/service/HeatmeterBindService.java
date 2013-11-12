@@ -4,21 +4,9 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.transaction.UserTransaction;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.service.IProcessListener;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.ExternalHeatmeter;
@@ -29,9 +17,15 @@ import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.Ext
 import org.complitex.keconnection.heatmeter.service.exception.CriticalHeatmeterBindException;
 import org.complitex.keconnection.heatmeter.service.exception.DBException;
 import org.complitex.keconnection.heatmeter.service.exception.HeatmeterBindException;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.transaction.UserTransaction;
+import java.util.*;
+
 import static org.complitex.dictionary.util.DateUtil.*;
 
 /**
@@ -50,8 +44,10 @@ public class HeatmeterBindService {
     private HeatmeterBean heatmeterBean;
     @Resource
     private UserTransaction userTransaction;
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
+
     @EJB
     private KeConnectionBuildingStrategy buildingStrategy;
     @EJB

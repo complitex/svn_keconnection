@@ -4,18 +4,18 @@ import com.google.common.collect.Sets;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.web.DictionaryFwSession;
+import org.complitex.keconnection.heatmeter.entity.example.CorrectionExample;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 
+import javax.annotation.Resource;
+import javax.annotation.security.DeclareRoles;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Resource;
-import javax.annotation.security.DeclareRoles;
-import javax.ejb.SessionContext;
-import org.complitex.dictionary.web.DictionaryFwSession;
-import org.complitex.keconnection.heatmeter.entity.example.CorrectionExample;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -31,8 +31,9 @@ public class KeConnectionSessionBean {
     private SessionBean sessionBean;
     @EJB
     protected StrategyFactory strategyFactory;
+
     @EJB
-    protected IKeConnectionOrganizationStrategy organizationStrategy;
+    protected KeConnectionOrganizationStrategy organizationStrategy;
 
     public boolean isAdmin() {
         return sessionBean.isAdmin();
@@ -53,15 +54,11 @@ public class KeConnectionSessionBean {
     private List<Long> getAllOuterOrganizationObjectIds() {
         List<Long> objectIds = new ArrayList<Long>();
 
-        for (DomainObject o : getOrganizationStrategy().getAllOuterOrganizations(null)) {
+        for (DomainObject o : organizationStrategy.getAllOuterOrganizations(null)) {
             objectIds.add(o.getId());
         }
 
         return objectIds;
-    }
-
-    private IKeConnectionOrganizationStrategy getOrganizationStrategy() {
-        return organizationStrategy;
     }
 
     private boolean hasOuterOrganization(Long objectId) {

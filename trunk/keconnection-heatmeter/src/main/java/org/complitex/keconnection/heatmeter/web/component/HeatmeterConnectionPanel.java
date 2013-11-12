@@ -17,6 +17,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.complitex.address.service.AddressRendererBean;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.LabelDateField;
 import org.complitex.dictionary.web.component.LabelTextField;
 import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
@@ -24,7 +25,7 @@ import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 import org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 
 import javax.ejb.EJB;
 import java.util.Date;
@@ -35,8 +36,8 @@ import java.util.List;
  *         Date: 24.10.12 16:24
  */
 public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
     private AddressRendererBean addressRendererBean;

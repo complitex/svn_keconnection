@@ -6,7 +6,9 @@ package org.complitex.keconnection.heatmeter.web.correction.component.edit;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -16,32 +18,27 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
-import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import java.util.List;
-import java.util.Locale;
-import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
+import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.keconnection.heatmeter.entity.Correction;
 import org.complitex.keconnection.heatmeter.service.CorrectionBean;
 import org.complitex.keconnection.heatmeter.service.KeConnectionSessionBean;
 import org.complitex.keconnection.heatmeter.web.correction.AbstractCorrectionList;
 import org.complitex.keconnection.heatmeter.web.correction.component.model.OrganizationModel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.template.web.template.TemplateSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Абстрактная панель для редактирования коррекций.
@@ -52,10 +49,12 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     private static final Logger log = LoggerFactory.getLogger(AbstractCorrectionEditPanel.class);
     @EJB
     private CorrectionBean correctionBean;
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
     @EJB
-    private KeConnectionSessionBean keConncetionSessionBean;
+    private KeConnectionSessionBean keConnectionSessionBean;
+
     private Long correctionId;
     private Correction correction;
     private WebMarkupContainer form;
@@ -72,7 +71,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             correction.setEntity(entity);
 
             //Проверка доступа к данным
-            if (!keConncetionSessionBean.isAuthorized(correction.getOrganizationId(), correction.getUserOrganizationId())) {
+            if (!keConnectionSessionBean.isAuthorized(correction.getOrganizationId(), correction.getUserOrganizationId())) {
                 throw new UnauthorizedInstantiationException(this.getClass());
             }
         }
@@ -90,7 +89,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
     protected Correction newObjectCorrection(String entity) {
         Correction c = new Correction(entity);
-        c.setUserOrganizationId(keConncetionSessionBean.getCurrentUserOrganizationId(getSession()));
+        c.setUserOrganizationId(keConnectionSessionBean.getCurrentUserOrganizationId(getSession()));
         return c;
     }
 
@@ -348,11 +347,11 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         final DisableAwareDropDownChoice<DomainObject> userOrganization = new DisableAwareDropDownChoice<DomainObject>("userOrganization",
                 userOrganizationModel, allUserOrganizationsModel, organizationRenderer);
         userOrganization.setNullValid(true);
-        userOrganization.setEnabled(isNew() && keConncetionSessionBean.isAdmin());
+        userOrganization.setEnabled(isNew() && keConnectionSessionBean.isAdmin());
         form.add(userOrganization);
 
         if (isNew()) {
-            correction.setInternalOrganizationId(IKeConnectionOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+            correction.setInternalOrganizationId(KeConnectionOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
         }
 
         final List<DomainObject> internalOrganizations = Lists.newArrayList(organizationStrategy.getItselfOrganization());

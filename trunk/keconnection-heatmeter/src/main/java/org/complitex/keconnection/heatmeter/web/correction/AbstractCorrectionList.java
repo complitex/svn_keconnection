@@ -6,12 +6,13 @@ package org.complitex.keconnection.heatmeter.web.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -21,34 +22,34 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
-import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
-
-import javax.ejb.EJB;
-import java.util.List;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.keconnection.heatmeter.entity.Correction;
 import org.complitex.keconnection.heatmeter.entity.example.CorrectionExample;
 import org.complitex.keconnection.heatmeter.service.CorrectionBean;
 import org.complitex.keconnection.heatmeter.web.correction.component.model.OrganizationModel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.AddItemButton;
+import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.pages.ScrollListPage;
+import org.complitex.template.web.security.SecurityRole;
+
+import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Абстрактный класс для списка коррекций.
@@ -61,8 +62,8 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
     private CorrectionBean correctionBean;
     @EJB
     private LocaleBean localeBean;
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
     private String entity;
     private IModel<CorrectionExample> example;
 

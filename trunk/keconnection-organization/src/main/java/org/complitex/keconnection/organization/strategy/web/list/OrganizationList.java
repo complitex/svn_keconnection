@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.organization.strategy.web.list;
 
 import com.google.common.collect.ImmutableList;
@@ -25,6 +21,7 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.example.AttributeExample;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.StringUtil;
@@ -34,7 +31,6 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.dictionary.web.component.search.CollapsibleSearchPanel;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.template.web.component.toolbar.AddItemButton;
@@ -60,8 +56,8 @@ public class OrganizationList extends ScrollListPage {
     private DataView<Organization> dataView;
     private CollapsibleSearchPanel searchPanel;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     public OrganizationList() {
         init();
@@ -86,9 +82,9 @@ public class OrganizationList extends ScrollListPage {
 
     private DomainObjectExample newExample() {
         DomainObjectExample e = new DomainObjectExample();
-        e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.NAME));
-        e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.CODE));
-        e.addAttributeExample(new AttributeExample(IKeConnectionOrganizationStrategy.SHORT_NAME));
+        e.addAttributeExample(new AttributeExample(KeConnectionOrganizationStrategy.NAME));
+        e.addAttributeExample(new AttributeExample(KeConnectionOrganizationStrategy.CODE));
+        e.addAttributeExample(new AttributeExample(KeConnectionOrganizationStrategy.SHORT_NAME));
         return e;
     }
 
@@ -168,36 +164,36 @@ public class OrganizationList extends ScrollListPage {
 
             @Override
             public String getObject() {
-                return example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).getValue();
+                return example.getAttributeExample(KeConnectionOrganizationStrategy.NAME).getValue();
             }
 
             @Override
             public void setObject(String name) {
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).setValue(name);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.NAME).setValue(name);
             }
         }));
         filterForm.add(new TextField<String>("codeFilter", new Model<String>() {
 
             @Override
             public String getObject() {
-                return example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).getValue();
+                return example.getAttributeExample(KeConnectionOrganizationStrategy.CODE).getValue();
             }
 
             @Override
             public void setObject(String code) {
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).setValue(code);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.CODE).setValue(code);
             }
         }));
         filterForm.add(new TextField<String>("shortNameFilter", new Model<String>() {
 
             @Override
             public String getObject() {
-                return example.getAttributeExample(IKeConnectionOrganizationStrategy.SHORT_NAME).getValue();
+                return example.getAttributeExample(KeConnectionOrganizationStrategy.SHORT_NAME).getValue();
             }
 
             @Override
             public void setObject(String shortName) {
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.SHORT_NAME).setValue(shortName);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.SHORT_NAME).setValue(shortName);
             }
         }));
         filterForm.add(new TextField<String>("parentShortNameFilter", new Model<String>() {
@@ -232,10 +228,10 @@ public class OrganizationList extends ScrollListPage {
 
                 item.add(new Label("order", StringUtil.valueOf(getFirstItemOffset() + item.getIndex() + 1)));
                 item.add(new Label("name", AttributeUtil.getStringCultureValue(organization,
-                        IKeConnectionOrganizationStrategy.NAME, getLocale())));
+                        KeConnectionOrganizationStrategy.NAME, getLocale())));
                 item.add(new Label("code", organizationStrategy.getUniqueCode(organization)));
                 item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization,
-                        IKeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
+                        KeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
                 item.add(new Label("parentShortName", organization.getParentShortName()));
                 item.add(new Label("om", organization.getOperatingMonth(getLocale())));
 
@@ -289,11 +285,11 @@ public class OrganizationList extends ScrollListPage {
         filterForm.add(dataView);
 
         filterForm.add(new ArrowOrderByBorder("nameHeader",
-                String.valueOf(IKeConnectionOrganizationStrategy.NAME), dataProvider, dataView, content));
+                String.valueOf(KeConnectionOrganizationStrategy.NAME), dataProvider, dataView, content));
         filterForm.add(new ArrowOrderByBorder("codeHeader",
-                String.valueOf(IKeConnectionOrganizationStrategy.CODE), dataProvider, dataView, content));
+                String.valueOf(KeConnectionOrganizationStrategy.CODE), dataProvider, dataView, content));
         filterForm.add(new ArrowOrderByBorder("shortNameHeader",
-                String.valueOf(IKeConnectionOrganizationStrategy.SHORT_NAME), dataProvider, dataView, content));
+                String.valueOf(KeConnectionOrganizationStrategy.SHORT_NAME), dataProvider, dataView, content));
 
         //Reset Action
         AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
@@ -302,9 +298,9 @@ public class OrganizationList extends ScrollListPage {
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
                 example.setId(null);
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.NAME).setValue(null);
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.CODE).setValue(null);
-                example.getAttributeExample(IKeConnectionOrganizationStrategy.SHORT_NAME).setValue(null);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.NAME).setValue(null);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.CODE).setValue(null);
+                example.getAttributeExample(KeConnectionOrganizationStrategy.SHORT_NAME).setValue(null);
                 example.addAdditionalParam(KeConnectionOrganizationStrategy.PARENT_SHORT_NAME_FILTER, null);
                 target.add(content);
             }
@@ -341,7 +337,7 @@ public class OrganizationList extends ScrollListPage {
             @Override
             protected void onBeforeRender() {
                 if (!DomainObjectAccessUtil.canAddNew(
-                        IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization")) {
+                        KeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization")) {
                     setVisible(false);
                 }
                 super.onBeforeRender();

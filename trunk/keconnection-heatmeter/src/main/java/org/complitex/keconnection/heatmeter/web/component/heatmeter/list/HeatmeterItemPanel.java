@@ -25,11 +25,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.address.service.AddressRendererBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.*;
 import org.complitex.keconnection.heatmeter.web.HeatmeterEdit;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +80,8 @@ public abstract class HeatmeterItemPanel extends Panel {
     @EJB
     private AddressRendererBean addressRendererBean;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
     private HeatmeterBindingStatusRenderer heatmeterBindingStatusRenderer;

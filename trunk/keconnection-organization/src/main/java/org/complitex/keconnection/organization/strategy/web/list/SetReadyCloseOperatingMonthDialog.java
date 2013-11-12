@@ -4,26 +4,28 @@
  */
 package org.complitex.keconnection.organization.strategy.web.list;
 
-import java.text.MessageFormat;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.Model;
-import org.complitex.keconnection.organization.strategy.IKeConnectionOrganizationStrategy;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.odlabs.wiquery.ui.dialog.Dialog;
+
+import javax.ejb.EJB;
+import java.text.MessageFormat;
 
 /**
  *
  * @author Artem
  */
 public abstract class SetReadyCloseOperatingMonthDialog extends Panel {
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private KeConnectionOrganizationStrategy organizationStrategy;
 
-    @EJB(name = IKeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME)
-    private IKeConnectionOrganizationStrategy organizationStrategy;
     private final Dialog dialog;
     private final Label caption;
     private Organization organization;
