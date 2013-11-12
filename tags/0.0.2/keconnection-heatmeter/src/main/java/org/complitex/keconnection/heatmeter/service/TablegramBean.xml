@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.TablegramBean">
+    <resultMap id="tablegramResultMap" type="org.complitex.keconnection.heatmeter.entity.Tablegram">
+        <id property="id"/>
+        <result property="fileName"/>
+        <result property="begin_date"/>
+        <result property="uploaded"/>
+        <result property="count"/>
+        <result property="processedCount"/>
+    </resultMap>
+
+    <insert id="insertTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `tablegram` (`file_name`, `begin_date`) value (#{fileName}, #{beginDate})
+    </insert>
+
+    <update id="updateTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram">
+        update `tablegram` set `file_name` = #{fileName}, `begin_date` = #{beginDate}
+    </update>
+
+    <select id="selectTablegram" parameterType="long" resultMap="tablegramResultMap">
+        select * from `tablegram` where `id` = #{id}
+    </select>
+
+    <sql id="selectTablegramsWhere">
+
+    </sql>
+
+    <select id="selectTablegrams" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultMap="tablegramResultMap">
+        select *,
+        (select count(*) from `tablegram_record` r where r.`tablegram_id` = t.`id`) as `count`,
+        (select count(*) from `tablegram_record` r where r.`tablegram_id` = t.`id` and r.`status` = 2) as `processed_count`
+        from `tablegram` t <include refid="selectTablegramsWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectTablegramsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `tablegram` <include refid="selectTablegramsWhere"/>
+    </select>
+
+    <select id="isExistTablegram" parameterType="org.complitex.keconnection.heatmeter.entity.Tablegram"
+            resultType="boolean">
+        select count(*) > 0 from `tablegram` where `file_name` = #{fileName} and `begin_date` = #{beginDate}
+    </select>
+
+    <delete id="deleteTablegram" parameterType="long">
+        delete from `tablegram` where `id` = #{id}
+    </delete>
+</mapper>

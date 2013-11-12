@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean">
+    <resultMap id="heatmeterPeriodResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
+        <id property="id"/>
+        <result property="heatmeterId"/>
+        <result property="type"/>
+        <result property="subType"/>
+        <result property="objectId"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="beginOm"/>
+        <result property="endOm"/>
+        <result property="updated"/>
+    </resultMap>
+
+    <insert id="insertHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter_period`
+          (`heatmeter_id`, `object_id`, `type`, `sub_type`, `begin_date`, `end_date`, `begin_om`, `end_om`)
+        values
+          (#{heatmeterId}, #{objectId}, #{type}, #{subType}, #{beginDate}, #{endDate}, #{beginOm}, #{endOm})
+    </insert>
+
+    <update id="updateHeatmeterPeriod" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterPeriod">
+        update `heatmeter_period`
+          set `begin_date` = #{beginDate}, `end_date` = #{endDate}, `begin_om` = #{beginOm}, `end_om` = #{endOm}
+        where `id` = #{id}
+    </update>
+
+    <delete id="deleteHeatmeterPeriod" parameterType="long">
+        delete from `heatmeter_period` where `id` = #{id}
+    </delete>
+
+    <select id="selectHeatmeterPeriods" parameterType="map" resultMap="heatmeterPeriodResultMap">
+        select * from `heatmeter_period` where `type` = #{type} and `heatmeter_id` = #{heatmeterId}
+          and #{om} between `begin_om` and `end_om`
+    </select>
+</mapper>

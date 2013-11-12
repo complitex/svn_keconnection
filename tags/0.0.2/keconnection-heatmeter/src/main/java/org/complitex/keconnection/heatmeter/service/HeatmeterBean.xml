@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterBean">
+    <resultMap id="heatmeterResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id"/>
+        <result property="ls"/>
+        <result property="type"/>
+        <result property="calculating"/>
+        <result property="organizationId"/>
+        <result property="status"/>
+        <result property="bindingStatus"/>
+
+        <result property="om"/>
+    </resultMap>
+
+    <resultMap id="heatmeterWithActiveCollectionsResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <result property="bindingStatus" column="binding_status"/>
+        <result property="updated"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByOm"
+                    column="heatmeterId=id,om=om"/>
+        <collection property="operations"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean.selectHeatmeterOperationsByOm"
+                    column="heatmeterId=id,om=om"/>
+        <collection property="payloads"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterPayloadBean.selectHeatmeterPayloadsByOm"
+                    column="heatmeterId=id,om=om"/>
+        <collection property="inputs"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterInputBean.selectHeatmeterInputsByOm"
+                    column="heatmeterId=id,om=om"/>
+    </resultMap>
+
+    <resultMap id="heatmeterForBindingResultMap" type="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        <id property="id" column="id"/>
+        <result property="ls" column="ls"/>
+        <result property="type" column="type"/>
+        <result property="calculating" column="calculating"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status"/>
+        <collection property="connections"
+                    select="org.complitex.keconnection.heatmeter.service.HeatmeterConnectionBean.selectHeatmeterConnectionsByHeatmeterId"
+                    column="id"/>
+    </resultMap>
+
+    <insert id="insertHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter` (`ls`, `organization_id`, `type`, `calculating`)
+            values (#{ls}, #{organizationId}, #{type}, #{calculating})
+    </insert>
+
+    <update id="updateHeatmeter" parameterType="org.complitex.keconnection.heatmeter.entity.Heatmeter">
+        update `heatmeter` set `ls` = #{ls}, `organization_id` = #{organizationId}, `type` = #{type},
+          `calculating` = #{calculating} where `id` = #{id}
+    </update>
+
+    <sql id="selectHeatmetersWhere">
+        <where>
+            <if test="object.ls != null">`ls` = #{object.ls}</if>
+            <if test="object.type != null">and `type` = #{object.type}</if>
+            <if test="object.calculating != null">and `calculating` = #{object.calculating}</if>
+            <if test="object.status != null">and `status` = #{object.status}</if>
+            <if test="object.bindingStatus != null">
+                <choose>
+                    <when test="object.bindingStatus == map.unboundBindingStatus">
+                        AND (`binding_status` = #{object.bindingStatus} OR `binding_status` IS NULL)
+                    </when>
+                    <otherwise>
+                        AND `binding_status` = #{object.bindingStatus}
+                    </otherwise>
+                </choose>
+            </if>
+
+            <if test="map.payloadBeginDate != null">
+                AND payload_p.`begin_date` = #{map.payloadBeginDate}
+            </if>
+            <if test="map.payload1 != null">
+                AND payload.`payload1` = #{map.payload1}
+            </if>
+            <if test="map.payload2 != null">
+                AND payload.`payload2` = #{map.payload2}
+            </if>
+            <if test="map.payload3 != null">
+                AND payload.`payload3` = #{map.payload3}
+            </if>
+
+            <if test="map.inputReadoutDate != null">
+                AND input_p.`end_date` = #{map.inputReadoutDate}
+            </if>
+            <if test="map.input != null">
+                AND input.`value` = #{map.input}
+            </if>
+            <if test="map.consumption1 != null">
+                AND consumption.`consumption1` = #{map.consumption1}
+            </if>
+
+            <if test="map.organizations != null">
+                AND bc.`organization_id` IN ${map.organizations}
+            </if>
+
+            <if test="map.buildingCode != null">
+                AND bc.`code` = #{map.buildingCode}
+            </if>
+
+            <if test="map.organizationCode != null">
+                AND org_sc.`value` = #{map.organizationCode}
+            </if>
+
+            <if test="map.address != null">
+                AND concat(ssc.`value`, ' ', basc.`value`) like concat('%', #{map.address}, '%')
+            </if>
+
+            <if test="map.building != null">
+                AND bc.`building_id` = #{map.building}
+            </if>
+
+            <if test="map.street != null">
+                AND ba.`parent_id` = #{map.street}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="selectHeatmeterJoin">
+        <if test="map.payloadBeginDate != null or map.payload1 != null or map.payload2 != null or map.payload3 != null">
+            LEFT JOIN `heatmeter_period` payload_p ON (payload_p.`heatmeter_id` = h.`id` AND payload_p.`type` = 3
+            AND (h.`om` BETWEEN payload_p.`begin_om` AND payload_p.`end_om`)
+            AND payload_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE
+                p.`heatmeter_id` = h.`id` AND p.`type` = 3 AND (h.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
+            <if test="map.payload1 != null or map.payload2 != null or map.payload3 != null">
+                LEFT JOIN `heatmeter_payload` payload ON payload.`id` = payload_p.`id`
+            </if>
+        </if>
+        <if test="map.inputReadoutDate != null or map.input != null or map.consumption1 != null">
+            LEFT JOIN `heatmeter_period` input_p ON (input_p.`heatmeter_id` = h.`id` AND input_p.`type` = 4
+            AND (h.`om` BETWEEN input_p.`begin_om` AND input_p.`end_om`)
+            AND input_p.`begin_date` = (SELECT MAX(p.`begin_date`) FROM `heatmeter_period` p WHERE
+                p.`heatmeter_id` = h.`id` AND p.`type` = 4 AND (h.`om` BETWEEN p.`begin_om` AND p.`end_om`)))
+            <if test="map.input != null or map.consumption1 != null">
+                LEFT JOIN `heatmeter_input` input ON input.`id` = input_p.`id`
+                <if test="map.consumption1 != null">
+                    LEFT JOIN `heatmeter_consumption` consumption ON consumption.`heatmeter_input_id` = input.`id`
+                </if>
+            </if>
+        </if>
+
+        LEFT JOIN `heatmeter_period` connection_p ON (connection_p.`heatmeter_id` = h.`id` and connection_p.`type` = 2)
+        LEFT JOIN `building_code` bc ON (bc.`id` = connection_p.`object_id`)
+        JOIN `organization_attribute` org_a ON (org_a.`object_id` = bc.`organization_id` AND org_a.`status` = 'ACTIVE'
+          AND org_a.`attribute_type_id` = 901)
+        LEFT JOIN `organization_string_culture` org_sc ON (org_sc.`id` = org_a.`value_id` AND
+          org_sc.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+
+        <if test="map.address != null or sortProperty == 'address'">
+            LEFT JOIN `building` b ON (b.`object_id` = bc.`building_id`)
+            LEFT JOIN `building_address` ba ON (ba.`object_id` = b.`parent_id`)
+            LEFT JOIN `street_attribute` sa ON (sa.`object_id` = ba.`parent_id`)
+            JOIN `street_string_culture` ssc ON (ssc.`id` = sa.`value_id` AND sa.`attribute_type_id` = 300)
+            LEFT JOIN `building_address_attribute` baa ON (baa.`object_id` = ba.`object_id`)
+            JOIN `building_address_string_culture` basc ON (basc.`id` = baa.`value_id` AND baa.`attribute_type_id` = 1500)
+         </if>
+
+        <if test="map.street != null">
+            LEFT JOIN `building` b ON (b.`object_id` = bc.`building_id`)
+            LEFT JOIN `building_address` ba ON (ba.`object_id` = b.`parent_id`)
+        </if>
+    </sql>
+
+    <select id="selectHeatmeter" parameterType="long" resultMap="heatmeterWithActiveCollectionsResultMap">
+        select h.*, heatmeter_status(h.`id`) as `status`, heatmeter_active_om(h.`id`) as `om`,
+            hc.`binding_status`
+        from `heatmeter` h
+            LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
+        where h.`id` = #{id}
+    </select>
+
+    <select id="selectHeatmeterForBinding" parameterType="long" resultMap="heatmeterForBindingResultMap">
+        SELECT * FROM `heatmeter` WHERE `id` = #{id}
+    </select>
+
+    <select id="selectHeatmeters" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="heatmeterWithActiveCollectionsResultMap">
+        select distinct h.*, heatmeter_status(h.`id`) as `status`, heatmeter_active_om(h.`id`) as `om`,
+            hc.`binding_status`
+        from `heatmeter` h
+            LEFT JOIN `heatmeter_correction` hc ON (h.`id` = hc.`system_heatmeter_id` AND hc.`history` = 0)
+        <include refid="selectHeatmeterJoin"/>
+        <include refid="selectHeatmetersWhere"/>
+        <choose>
+            <when test="sortProperty == 'address'">
+                order by ssc.`value` ${asc}, basc.`value` + 0 ${asc}
+            </when>
+            <otherwise>order by ${sortProperty} ${asc}</otherwise>
+        </choose>
+        limit #{first}, #{count}
+    </select>
+
+    <select id="selectHeatmetersCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(distinct h.id) from `heatmeter` h
+        <include refid="selectHeatmeterJoin"/>
+        <include refid="selectHeatmetersWhere"/>
+    </select>
+
+    <delete id="deleteHeatmeter" parameterType="long">
+        delete from `heatmeter` where `id` = #{id}
+    </delete>
+
+    <select id="isExistHeatmeter" parameterType="map" resultType="boolean">
+        select count(*) > 0 from `heatmeter` h
+          left join `heatmeter_period` p on p.`heatmeter_id` = h.`id` and p.`type` = 2
+        where  h.`ls` = #{ls} and p.`object_id` = #{buildingCodeId}
+    </select>
+
+    <select id="selectHeatmeterByLs" parameterType="map" resultMap="heatmeterResultMap">
+        select * from `heatmeter` where `ls` = #{ls} and `organization_id` = #{organizationId}
+    </select>
+
+    <update id="updateHeatmeterType" parameterType="map">
+        update `heatmeter` set `type` = #{type} where `id` = #{id}
+    </update>
+
+    <select id="isOnlyHeatmeterForBuildingCode" parameterType="map" resultType="int">
+        SELECT COUNT(1) FROM `heatmeter` h
+            LEFT JOIN `heatmeter_period` p ON (p.`heatmeter_id` = h.`id` and p.`type` = 2)
+            LEFT JOIN `building_code` bc ON bc.`id` = p.`object_id`
+            LEFT JOIN `operating_month` om ON om.`organization_id` = bc.`organization_id`
+            WHERE bc.`id` = #{buildingCodeId} AND h.`id` != #{heatmeterId} AND (om.`begin_om` BETWEEN p.`begin_om` AND p.`end_om`)
+    </select>
+
+    <select id="selectHeatmeterMinOm" parameterType="long" resultType="date">
+        select min(om.`begin_om`) from `heatmeter` h
+            left join `heatmeter_period` p on (p.`heatmeter_id` = h.`id` and p.`type` = 2)
+            left join `building_code` bc on bc.`id` = p.`object_id`
+            left join `operating_month` om on om.`organization_id` = bc.`organization_id`
+    </select>
+</mapper>

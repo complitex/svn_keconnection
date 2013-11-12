@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+
+<body>
+<wicket:panel>
+    <fieldset>
+        <legend><wicket:message key="connections"/></legend>
+        <table class="tbColor" style="width: auto">
+            <tr wicket:id="header">
+                <th class="center"><wicket:message key="begin_date"/></th>
+                <th class="center"><wicket:message key="end_date"/></th>
+                <th class="center" colspan="2"><wicket:message key="organization_code"/></th>
+                <th class="center" colspan="2"><wicket:message key="code"/></th>
+                <th></th>
+            </tr>
+            <tr wicket:id="list_view">
+                <td><span wicket:id="begin_date"></span></td>
+                <td><span wicket:id="end_date"></span></td>
+                <td><span wicket:id="organization_code"></span></td>
+                <td><span wicket:id="organization"></span></td>
+                <td><span wicket:id="code"></span></td>
+                <td><span wicket:id="address"></span></td>
+                <td><a wicket:id="remove"><wicket:message key="remove"/></a></td>
+            </tr>
+        </table>
+        <div>
+            <a wicket:id="add"><wicket:message key="add"/></a>
+        </div>
+    </fieldset>
+</wicket:panel>
+</body>
+</html>

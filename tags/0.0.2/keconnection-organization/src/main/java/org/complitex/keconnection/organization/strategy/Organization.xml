@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.keconnection.organization.strategy.Organization">
+
+    <resultMap id="organization" type="org.complitex.keconnection.organization.strategy.entity.Organization"
+                    extends="org.complitex.dictionary.entity.DomainObject.DomainObject">
+           <result column="parent_short_name" property="parentShortName"/>
+    </resultMap>
+    
+    <sql id="join">
+        LEFT JOIN `organization_attribute` pa ON (pa.`object_id` = e.`object_id` 
+            AND pa.`attribute_type_id` = ${additionalParams.parentAT} AND pa.`status` = 'ACTIVE')
+        LEFT JOIN `organization` p ON (p.`object_id` = pa.`value_id` AND p.`status` IN ('ACTIVE', 'INACTIVE'))
+        LEFT JOIN `organization_attribute` p_name ON (p_name.`object_id` = p.`object_id` 
+            AND p_name.`attribute_type_id` = ${additionalParams.organizationShortNameAT} AND p_name.`status` = 'ACTIVE')
+        LEFT JOIN `organization_string_culture` pn ON (pn.`id` = p_name.`value_id` AND pn.`locale_id` = ${localeId})
+        LEFT JOIN `organization_string_culture` pn_sys ON (pn_sys.`id` = p_name.`value_id` 
+            AND pn_sys.`locale_id` = (SELECT `id` FROM `locales` WHERE `system` = 1))
+    </sql>
+    
+    <sql id="filter">
+        <include refid="org.complitex.organization.strategy.Organization.filter"/>
+        <if test="additionalParams['parentShortName'] != null">
+            AND (pn.`value` LIKE CONCAT('%', #{additionalParams.parentShortName}, '%') OR 
+                 pn_sys.`value` LIKE CONCAT('%', #{additionalParams.parentShortName}, '%'))
+        </if>
+    </sql>
+    
+    <select id="find" resultMap="org.complitex.keconnection.organization.strategy.Organization.organization" 
+                parameterType="DomainObjectExample">
+        SELECT e.*, IFNULL(pn.`value`, pn_sys.`value`) `parent_short_name` 
+        FROM `organization` e
+            <include refid="org.complitex.keconnection.organization.strategy.Organization.join"/>
+        WHERE
+        <include refid="org.complitex.dictionary.entity.DomainObject.statusFilter"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.permissionFilter"/>
+        <include refid="org.complitex.keconnection.organization.strategy.Organization.filter"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.orderBy"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.limit"/>
+    </select>
+    
+    <select id="count" resultType="int" parameterType="DomainObjectExample">
+        SELECT COUNT(1) FROM `organization` e 
+            <include refid="org.complitex.keconnection.organization.strategy.Organization.join"/>
+        WHERE
+        <include refid="org.complitex.dictionary.entity.DomainObject.statusFilter"/>
+        <include refid="org.complitex.dictionary.entity.DomainObject.permissionFilter"/>
+        <include refid="org.complitex.keconnection.organization.strategy.Organization.filter"/>
+    </select>
+    
+    <select id="findOperatingMonthDate" parameterType="long" resultType="date">
+        SELECT MAX(`begin_om`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
+    </select>
+
+    <select id="findMinOperatingMonthDate" parameterType="long" resultType="date">
+        SELECT MIN(`begin_om`) FROM `operating_month` WHERE `organization_id` = #{organizationId}
+    </select>
+
+    <insert id="insertOperatingMonth" parameterType="map">
+        INSERT INTO `operating_month` (`organization_id`, `begin_om`, `updated`)
+          VALUES (#{organizationId}, #{beginOm}, #{updated})
+    </insert>
+</mapper>

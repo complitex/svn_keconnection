@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>keconnection</artifactId>
+        <groupId>org.complitex.keconnection</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>keconnection-web</artifactId>
+    <packaging>war</packaging>
+
+    <name>keconnection-web</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-dictionary</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-template</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-admin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-address</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-organization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-organization-type</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-resources</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-images</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-heatmeter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-organization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-organization-type</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-address</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-import</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.keconnection</groupId>
+            <artifactId>keconnection-tarif</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+    </dependencies>
+    <properties>
+        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
+    </properties>
+</project>

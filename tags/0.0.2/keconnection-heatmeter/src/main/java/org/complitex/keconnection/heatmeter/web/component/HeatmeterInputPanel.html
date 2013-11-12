@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+
+<body>
+<wicket:panel>
+    <fieldset>
+        <legend><wicket:message key="inputs"/></legend>
+        <table class="tbColor" style="width: auto">
+            <tr wicket:id="header">
+                <th class="center"><wicket:message key="readoutDate"/></th>
+                <th class="center"><wicket:message key="consumption"/></th>
+                <th class="center"><wicket:message key="consumption1"/></th>
+                <th class="center"><wicket:message key="consumption2"/></th>
+                <th class="center"><wicket:message key="consumption3"/></th>
+                <!--            <th><wicket:message key="status"/></th>-->
+                <th></th>
+            </tr>
+            <tr wicket:id="list_view">
+                <td><div wicket:id="readoutDate"></div></td>
+                <td><div wicket:id="consumption"></div></td>
+                <td><span wicket:id="consumption1"></span></td>
+                <td><span wicket:id="consumption2"></span></td>
+                <td><span wicket:id="consumption3"></span></td>
+                <!--            <td><span wicket:id="status"></span></td>-->
+                <td>
+                    <a wicket:id="remove"><wicket:message key="remove"/></a>
+                </td>
+            </tr>
+        </table>
+        <div>
+            <a wicket:id="add"><wicket:message key="add"/></a>
+        </div>
+    </fieldset>
+</wicket:panel>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean">
+    <resultMap id="heatmeterConsumptionResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
+        <id property="id"/>
+        <result property="heatmeterInputId"/>
+        <result property="om"/>
+        <result property="consumption1"/>
+        <result property="consumption2"/>
+        <result property="consumption3"/>
+        <result property="beginDate"/>
+        <result property="endDate"/>
+        <result property="status"/>
+    </resultMap>
+
+    <insert id="insertHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter_consumption` (`heatmeter_input_id`, `om`, `consumption1`, `consumption2`, `consumption3`,
+          `status`, `begin_date`, `end_date`)
+        values (#{heatmeterInputId}, #{om}, #{consumption1}, #{consumption2}, #{consumption3}, #{status}, #{beginDate},
+          #{endDate})
+    </insert>
+
+    <update id="updateHeatmeterConsumption" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterConsumption">
+        update `heatmeter_consumption` set `begin_date` = #{beginDate}, `end_date` = #{endDate}, `om` = #{om},
+            `consumption1` = #{consumption1}, `consumption2` = #{consumption2}, `consumption3` = #{consumption3}, 
+            `status` = #{status} where `id` = #{id}
+    </update>
+
+    <delete id="deleteHeatmeterConsumption" parameterType="long">
+        delete from `heatmeter_consumption` where `id` = #{id}
+    </delete>
+
+    <select id="selectHeatmeterConsumptionsByOm" parameterType="map" resultMap="heatmeterConsumptionResultMap">
+        select * from `heatmeter_consumption` where `heatmeter_input_id` = #{inputId} and `om` = #{om}
+    </select>
+</mapper>

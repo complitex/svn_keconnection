@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterInputBean">
+    <resultMap id="heatmeterInputResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterInput"
+            extends="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.heatmeterPeriodResultMap">
+        <id column="input_id" property="id"/>
+        <result property="value"/>
+
+        <collection property="consumptions" column="inputId=id,om=om"
+                select="org.complitex.keconnection.heatmeter.service.HeatmeterConsumptionBean.selectHeatmeterConsumptionsByOm"/>
+    </resultMap>
+    
+    <insert id="insertHeatmeterInput" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterInput"
+        useGeneratedKeys="true" keyProperty="id">
+        insert into `heatmeter_input` (`id`, `value`) values (#{id}, #{value})
+    </insert>
+
+    <update id="updateHeatmeterInput" parameterType="org.complitex.keconnection.heatmeter.entity.HeatmeterInput">
+        update `heatmeter_input` set `value` = #{value} where `id` = #{id}
+    </update>
+
+    <select id="selectHeatmeterInputsByOm" parameterType="map" resultMap="heatmeterInputResultMap">
+        select i.`id` as input_id, p.*, i.`value`, #{om} as om
+          from `heatmeter_period` p left join `heatmeter_input` i on p.`id` = i.`id`
+        where p.`type` = 4 and p.`heatmeter_id` = #{heatmeterId} and (#{om} between p.`begin_om` and p.`end_om`)
+          order by p.`begin_date`
+    </select>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<template>
+    <web-components>
+        <main-user-organization-picker-component>
+            org.complitex.keconnection.web.template.KeConnectionMainUserOrganizationPicker
+        </main-user-organization-picker-component>
+        <domain-object-permission-panel>
+            org.complitex.keconnection.organization.web.component.KeConnectionDomainObjectPermissionPanel
+        </domain-object-permission-panel>
+        <organization-permission-panel>
+            org.complitex.keconnection.organization.web.component.KeConnectionOrganizationPermissionPanel
+        </organization-permission-panel>
+        <user-organization-picker>
+            org.complitex.keconnection.organization.web.component.KeConnectionUserOrganizationPicker
+        </user-organization-picker>
+    </web-components>
+    <sidebar>
+        <menu class="org.complitex.keconnection.web.admin.AdminMenu"/>
+        <menu class="org.complitex.keconnection.heatmeter.web.HeatmeterMenu"/>
+        <menu class="org.complitex.keconnection.address.menu.KeConnectionAddressMenu"/>
+        <menu class="org.complitex.keconnection.heatmeter.web.correction.CorrectionMenu"/>
+        <menu class="org.complitex.keconnection.organization.menu.KeConnectionOrganizationMenu"/>
+        
+        <menu class="org.complitex.keconnection.tarif.menu.TarifMenu"/>
+
+        <menu class="org.complitex.keconnection.heatmeter.web.HeatmeterTypeMenu"/>
+        <menu class="org.complitex.keconnection.organization_type.menu.KeConnectionOrganizationTypeMenu"/>
+
+<!--        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>-->
+        <menu class="org.complitex.keconnection.tarif.menu.TarifDescriptionMenu"/>
+        <menu class="org.complitex.organization.web.OrganizationDescriptionTemplateMenu"/>
+        
+    </sidebar>
+</template>

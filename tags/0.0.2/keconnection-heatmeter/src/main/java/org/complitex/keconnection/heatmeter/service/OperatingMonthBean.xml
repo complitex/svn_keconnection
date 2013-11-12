@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.OperatingMonthBean">
+    <resultMap id="operatingMonthResultMap" type="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
+        <id property="id"/>
+        <result property="organizationId"/>
+        <result property="beginOm"/>
+        <result property="updated"/>
+    </resultMap>
+
+    <select id="selectOperatingMonth" parameterType="long" resultMap="operatingMonthResultMap">
+        select * from `operating_month` where `id` = #{id}
+    </select>
+
+    <insert id="insertOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
+        insert into `operating_month` (`organization_id`, `begin_om`, `updated`)
+          values (#{organizationId}, #{om}, #{updated})
+    </insert>
+
+    <update id="updateOperatingMonth" parameterType="org.complitex.keconnection.heatmeter.entity.OperatingMonth">
+        update `operating_month` set `organization_id` = #{organizationId}, `begin_om`  = #{beginOm}, `updated`  = #{updated}
+    </update>
+
+    <sql id="selectOperatingMonthWhere">
+        <where>
+            <if test="object.organizationId != null">and `organization_id` = #{object.organizationId}</if>
+            <if test="object.beginOm != null">and `begin_om` = #{object.beginOm}</if>
+            <if test="object.updated != null">and `updated` = #{object.updated}</if>
+        </where>
+    </sql>
+
+    <select id="selectOperatingMonths" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+        resultMap="operatingMonthResultMap">
+        select * from `operating_month` <include refid="selectOperatingMonthWhere"/>
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectOperatingMonthsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+        resultType="int">
+        select count(*) from `operating_month` <include refid="selectOperatingMonthWhere"/>
+    </select>
+
+</mapper>

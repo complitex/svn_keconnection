@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head><title wicket:id="title"></title></wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h2><wicket:message key="title"/></h2>
+    <div id="messages" wicket:id="messages"></div>
+
+    <form wicket:id="form" action="#">
+        <table  border="0" cellspacing="0" cellpadding="0" class="tbForm">
+            <tr>
+                <th><label for="ls"><wicket:message key="ls"/><b class="blue">*</b>:</label></th>
+                <td><input id="ls" wicket:id="ls" type="text" size="7"/></td>
+                <th><wicket:message key="type"/><b class="blue">*</b>:</th>
+                <td><select wicket:id="type"></select></td>
+                <th><wicket:message key="calculating"/></th>
+                <td><input type="checkbox" wicket:id="calculating"/></td>
+            </tr>
+        </table>
+        <div wicket:id="container">
+            <fieldset>
+                <legend><wicket:message key="parameters"/></legend>
+                <div wicket:id="om_container">
+                    <input type="button" wicket:id="previous_month" value="<"/>
+                    <span wicket:id="current_operation_month"></span>
+                    <input type="button" wicket:id="next_month" value=">"/>
+                </div>
+
+                <div wicket:id="operations"></div>
+
+                <div wicket:id="connections"></div>
+
+                <div wicket:id="payloads"></div>
+
+                <div wicket:id="inputs"></div>
+            </fieldset>
+        </div>
+
+        <div>
+            <div>
+                <a href="#" wicket:id="correctionsLink" style="margin-top: 20px;">
+                    <wicket:message key="corrections"/>
+                </a>
+            </div>
+        </div>
+
+        <div style="padding-top: 20px">
+            <input type="submit" class="btnMiddle" wicket:message="value:save" wicket:id="save"/>
+            <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
+    </form>
+
+    <div wicket:id="heatmeterCorrectionDialog"></div>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="remote">
+        <environment id="remote">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+
+                <!--<property name="driver" value="oracle.jdbc.OracleDriver"/>-->
+                <property name="driver" value="com.p6spy.engine.spy.P6SpyDriver"/>
+
+                <property name="url" value="jdbc:oracle:thin:@192.168.1.102:1521:cnkiev"/>
+                <property name="username" value="comp"/>
+                <property name="password" value="comp"/>
+
+                <property name="poolMaximumActiveConnections" value="10"/>
+                <property name="poolMaximumIdleConnections" value="5"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="org/complitex/keconnection/heatmeter/service/ExternalHeatmeterService.xml"/>
+    </mappers>
+</configuration>

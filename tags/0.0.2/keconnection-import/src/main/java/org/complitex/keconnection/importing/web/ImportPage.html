@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org">
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:extend>
+            <div>
+                <h1>
+                    <wicket:message key="title"/>
+                </h1>
+
+                <div wicket:id="container">
+                    <div wicket:id="messages"></div>
+
+                    <div>
+                        <ul>
+                            <li wicket:id="error" class="feedbackPanelERROR"></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <ul type="disc">
+                            <li wicket:id="warnings" type="disc" class="feedbackPanelWARNING">
+                                <span wicket:id="warning"></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <form action="#" wicket:id="form">
+                        <table class="tbForm">
+                            <tr>
+                                <th>
+                                    <wicket:message key="language"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <div wicket:id="localePicker"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginOm"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <input type="text" size="10" wicket:id="beginOm"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginDate"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <span style="white-space: nowrap;">
+                                        <input type="text" size="10" wicket:id="beginDate"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <h2 style="margin-top: 5px;">
+                            <wicket:message key="organizationData"/>
+                        </h2>
+                        <div wicket:id="organizationData"></div>
+
+                        <h2 style="margin-top: 15px;">
+                            <wicket:message key="addressData"/>
+                        </h2>
+                        <div wicket:id="addressData"></div>
+
+                        <h2 style="margin-top: 15px;">
+                            <wicket:message key="heatmeterData"/>
+                        </h2>
+                        <div wicket:id="heatmeterData"></div>
+
+                        <h2 style="margin-top: 15px;">
+                            <wicket:message key="payloadData"/>
+                        </h2>
+                        <div wicket:id="payloadData"></div>
+
+                        <div style="margin-top: 15px;">
+                            <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </wicket:extend>
+    </body>
+</html>

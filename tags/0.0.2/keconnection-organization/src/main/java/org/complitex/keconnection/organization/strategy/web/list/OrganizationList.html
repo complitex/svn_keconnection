@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org">
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:extend>
+            <h2 wicket:id="label"></h2>
+            <div wicket:id="searchPanel"></div>
+
+            <div wicket:id="content">
+                <form action="#" wicket:id="filterForm">
+                    <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>
+                                    <span wicket:id="nameHeader">
+                                        <wicket:message key="name"/>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span wicket:id="codeHeader">
+                                        <wicket:message key="code"/>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span wicket:id="shortNameHeader">
+                                        <wicket:message key="shortName"/>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span>
+                                        <wicket:message key="parentShortName"/>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span>
+                                        <wicket:message key="om"/>
+                                    </span>
+                                </th>
+                                <th style="width:110px">
+                                    <input wicket:id="reset" type="button" wicket:message="value:reset" class="btnSmall"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="filter-td" style="width:30px"></td>
+                                <td class="filter-td">
+                                    <input type="text" wicket:id="nameFilter"/>
+                                </td>
+                                <td class="filter-td">
+                                    <input type="text" wicket:id="codeFilter"/>
+                                </td>
+                                <td class="filter-td">
+                                    <input type="text" wicket:id="shortNameFilter"/>
+                                </td>
+                                <td class="filter-td">
+                                    <input type="text" wicket:id="parentShortNameFilter"/>
+                                </td>
+                                <td class="filter-td">
+                                </td>
+                                <td class="filter-td">
+                                    <input wicket:id="submit" type="submit" wicket:message="value:find" class="btnSmall"/>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr wicket:id="data">
+                                <td><span wicket:id="order"></span></td>
+                                <td>
+                                    <div wicket:id="name" 
+                                         style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
+                                </td>
+                                <td>
+                                    <div wicket:id="code"></div>
+                                </td>
+                                <td>
+                                    <div wicket:id="shortName"></div>
+                                </td>
+                                <td>
+                                    <div wicket:id="parentShortName"></div>
+                                </td>
+                                <td>
+                                    <div wicket:id="om"></div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <a wicket:id="detailsLink">
+                                            <span wicket:id="editMessage"></span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="#" wicket:id="setReadyCloseOperatingMonthLink" style="margin-top: 3px;">
+                                            <wicket:message key="setReadyCloseOperatingMonth"/>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="#" wicket:id="closeOperatingMonthLink" style="margin-top: 3px;">
+                                            <wicket:message key="closeOperatingMonth"/>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div wicket:id="navigator"></div>
+            </div>
+            
+            <div wicket:id="setReadyCloseOperatingMonthDialog"></div>
+        </wicket:extend>
+    </body>
+</html>

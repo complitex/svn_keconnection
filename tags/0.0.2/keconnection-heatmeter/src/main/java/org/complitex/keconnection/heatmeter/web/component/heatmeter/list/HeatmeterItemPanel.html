@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <wicket:panel>
+            <tr wicket:id="primaryRow">
+                <td></td>
+                <td wicket:id="organization"></td>
+                <td>
+                    <div wicket:id="addresses" style="white-space: nowrap;"></div>
+                </td>
+                <td>
+                    <div wicket:id="buildingCodes"></div>
+                </td>
+                <td>
+                    <a wicket:id="heatmeterEditLink">
+                        <span wicket:id="ls"></span>
+                    </a>
+                </td>
+                <td wicket:id="type"></td>
+
+                <td>
+                    <div wicket:id="tg1"></div>
+                </td>
+                <td>
+                    <div wicket:id="tg2"></div>
+                </td>
+                <td>
+                    <div wicket:id="tg3"></div>
+                </td>
+                <td>
+                    <div style="white-space: nowrap;">
+                        <span wicket:id="beginDate"></span>
+                        <a href="#" wicket:id="savePayload" class="save">
+                            ✓
+                            <!--<wicket:message key="savePayload"/>-->
+                        </a>
+                    </div>
+                </td>
+
+                <td>
+                    <div wicket:id="input"></div>
+                </td>
+                <td>
+                    <div wicket:id="consumption1"></div>
+                </td>
+                <td>
+                    <div style="white-space: nowrap;">
+                        <span wicket:id="readoutDate"></span>
+                        <a href="#" wicket:id="saveInput" class="save">
+                            ✓
+                            <!--<wicket:message key="saveInput"/>-->
+                        </a>
+                    </div>
+                </td>
+
+                <td wicket:id="status"></td>
+                <td wicket:id="bindingStatus"></td>
+                <td>
+                    <span wicket:id="calculating"></span>
+                </td>
+                <td>
+                    <a href="#" wicket:id="bindHeatmeterLink">
+                        <wicket:message key="bindHeatmeter"/>
+                    </a>
+                    <a hreaf="#" wicket:id="deactivateHeatmeter">
+                        <wicket:message key="deactivateHeatmeter"/>
+                    </a>
+                    <a hreaf="#" wicket:id="activateHeatmeter">
+                        <wicket:message key="activateHeatmeter"/>
+                    </a>
+                </td>
+            </tr>
+            <tr wicket:id="secondaryRow">
+                <td colspan="6"></td>
+
+                <td>
+                    <div wicket:id="tg1"></div>
+                </td>
+                <td>
+                    <div wicket:id="tg2"></div>
+                </td>
+                <td>
+                    <div wicket:id="tg3"></div>
+                </td>
+                <td>
+                    <div style="white-space: nowrap;">
+                        <span wicket:id="beginDate"></span>
+                        <a href="#" wicket:id="savePayload" class="save">
+                            ✓
+                            <!--<wicket:message key="savePayload"/>-->
+                        </a>
+                    </div>
+                </td>
+
+                <td>
+                    <div wicket:id="input"></div>
+                </td>
+                <td>
+                    <div wicket:id="consumption1"></div>
+                </td>
+                <td>
+                    <div style="white-space: nowrap;">
+                        <span wicket:id="readoutDate"></span>
+                        <a href="#" wicket:id="saveInput" class="save">
+                            ✓
+                            <!--<wicket:message key="saveInput"/>-->
+                        </a>
+                    </div>
+                </td>
+
+                <td colspan="4"></td>
+            </tr>
+            <tr wicket:id="errorStatusRow">
+                <td colspan="6"></td>
+
+                <td colspan="4">
+                    <div wicket:id="payloadErrorStatus" class="errorStatus"></div>
+                </td>
+
+                <td colspan="3">
+                    <div wicket:id="inputErrorStatus" class="errorStatus"></div>
+                </td>
+
+                <td colspan="4"></td>
+            </tr>
+        </wicket:panel>
+    </body>
+</html>

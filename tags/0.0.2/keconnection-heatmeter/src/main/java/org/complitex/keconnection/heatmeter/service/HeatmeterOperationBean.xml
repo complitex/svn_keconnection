@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.keconnection.heatmeter.service.HeatmeterOperationBean">
+    <resultMap id="heatmeterOperationResultMap" type="org.complitex.keconnection.heatmeter.entity.HeatmeterOperation"
+            extends="org.complitex.keconnection.heatmeter.service.HeatmeterPeriodBean.heatmeterPeriodResultMap">
+    </resultMap>
+    
+    <select id="selectHeatmeterOperationsByOm" parameterType="map" resultMap="heatmeterOperationResultMap">
+        select p.* from `heatmeter_period` p
+        where p.`type` = 1 and p.`heatmeter_id` = #{heatmeterId} and (#{om} between p.`begin_om` and p.`end_om`)
+          order by p.`begin_date`
+    </select>
+</mapper>

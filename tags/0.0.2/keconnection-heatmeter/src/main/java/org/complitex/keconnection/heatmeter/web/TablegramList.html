@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+<body>
+<wicket:extend>
+    <h1><wicket:message key="title"/></h1>
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="filter_form">
+        <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+            <thead>
+            <tr>
+                <th></th>
+                <th class="center" wicket:id="header.id"><wicket:message key="id"/></th>
+                <th class="center" wicket:id="header.file_name"><wicket:message key="fileName"/></th>
+                <th class="center" wicket:id="header.begin_date"><wicket:message key="beginDate"/></th>
+                <th class="center" wicket:id="header.uploaded"><wicket:message key="uploaded"/></th>
+                <th class="center" wicket:id="header.count"><wicket:message key="count"/></th>
+                <th class="center" wicket:id="header.processed_count"><wicket:message key="processedCount"/></th>
+
+                <th class="center">
+                    <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                </th>
+            </tr>
+            <tr>
+                <th></th>
+                <th><input type="text" wicket:id="object.id"/></th>
+                <th><input type="text" wicket:id="object.fileName"/></th>
+                <th><input type="text" wicket:id="object.beginDate"/></th>
+                <th><input type="text" wicket:id="object.uploaded"/></th>
+                <th><input type="text" wicket:id="object.count"/></th>
+                <th><input type="text" wicket:id="object.processedCount"/></th>
+
+                <th class="center">
+                    <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
+                </th>
+            </tr>
+            </thead>
+            <tbody wicket:id="data_container">
+            <tr wicket:id="data_view">
+                <td></td>
+                <td wicket:id="id"></td>
+                <td>
+                    <a wicket:id="tablegram_record_link">
+                        <span wicket:id="fileName"></span>
+                    </a>
+                </td>
+                <td wicket:id="beginDate"></td>
+                <td wicket:id="uploaded"></td>
+                <td wicket:id="count"></td>
+                <td wicket:id="processedCount"></td>
+                <td>
+                    <a href="#" wicket:id="process"><wicket:message key="process"/></a>
+                    <a href="#" wicket:id="rollback"><wicket:message key="rollback"/></a>
+                    <a href="#" wicket:id="delete" onclick="return confirm('Удалить запись?')">
+                        <wicket:message key="delete"/>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div wicket:id="paging"></div>
+    </form>
+</wicket:extend>
+</body>
+</html>

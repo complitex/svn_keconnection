@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:extend>
+            <h1><wicket:message key="title"/></h1>
+            <div wicket:id="messages"></div>
+
+            <div wicket:id="import_dialog_container">
+                <div wicket:id="import_dialog">
+                    <form action="#" wicket:id="upload_form">
+                        <div wicket:id="uploadFormMessages"></div>
+                        <table class="tbForm">
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginOm"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <select wicket:id="beginOm"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="beginDate"/><b class="blue">*</b>:
+                                </th>
+                                <td wicket:id="beginDateContainer">
+                                    <span style="white-space: nowrap;">
+                                        <input type="text" wicket:id="beginDate" style="width: 90px;"/>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <wicket:message key="file_upload_field"/><b class="blue">*</b>:
+                                </th>
+                                <td>
+                                    <input type="file" wicket:id="file_upload_field"/>
+                                </td> 
+                            </tr>
+                        </table>
+                        <div>
+                            <input type="button" wicket:id="upload" class="btnMiddle" wicket:message="value:upload"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div wicket:id="city_search_panel"></div>
+
+            <form action="#" wicket:id="filter_form">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbColor no_border table_input">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th class="center" wicket:id="header.org_sc.value">
+                                <wicket:message key="organization"/>
+                            </th>
+                            <th class="center" wicket:id="header.address">
+                                <wicket:message key="address"/>
+                            </th>
+                            <th class="center" wicket:id="header.bc.code">
+                                <wicket:message key="buildingCode"/>
+                            </th>
+                            <th class="center" wicket:id="header.h.ls">
+                                <wicket:message key="ls"/>
+                            </th>
+                            <th class="center" wicket:id="header.h.type_id">
+                                <wicket:message key="type"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="tg1"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="tg2"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="tg3"/>
+                            </th>
+                            <th class="center" wicket:id="header.hp.begin_date">
+                                <wicket:message key="beginDate"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="consumption"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="consumption1"/>
+                            </th>
+                            <th class="center" wicket:id="header.hcons.readout_date">
+                                <wicket:message key="readoutDate"/>
+                            </th>
+                            <th class="center" wicket:id="header.h.status">
+                                <wicket:message key="status"/>
+                            </th>
+                            <th class="center">
+                                <wicket:message key="bindingStatus"/>
+                            </th>
+                            <th>
+                                <wicket:message key="calculating"/>
+                            </th>
+                            <th class="center">
+                                <input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>
+                                <!-- organization filter -->
+                                <input type="text" wicket:id="map.organizationCode"/>
+                            </th>
+                            <th>
+                                <!-- address filter -->
+                                <div wicket:id="building_search_panel" style="margin-top: -8px;"></div>
+                            </th>
+                            <th>
+                                <!-- building code filter -->
+                                <input type="text" wicket:id="map.buildingCode"/>
+                            </th>
+                            <th>
+                                <input type="text" wicket:id="object.ls"/>
+                            </th>
+                            <th>
+                                <select wicket:id="object.type"></select>
+                            </th>
+                            <th>
+                                <!-- tg1 filter -->
+                                <input type="text" wicket:id="tg1Filter"/>
+                            </th>
+                            <th>
+                                <!-- tg2 filter -->
+                                <input type="text" wicket:id="tg2Filter"/>
+                            </th>
+                            <th>
+                                <!-- tg3 filter -->
+                                <input type="text" wicket:id="tg3Filter"/>
+                            </th>
+                            <th style="text-align: center;">
+                                <span style="white-space: nowrap;">
+                                    <input type="text" wicket:id="beginDateFilter" style="width: 80px;"/>
+                                </span>
+                            </th>
+                            <th>
+                                <!-- input filter -->
+                                <input type="text" wicket:id="inputFilter"/>
+                            </th>
+                            <th>
+                                <!-- consumption1 filter -->
+                                <input type="text" wicket:id="consumption1Filter"/>
+                            </th>
+                            <th style="text-align: center;">
+                                <span style="white-space: nowrap;">
+                                    <input type="text" wicket:id="readoutDateFilter" style="width: 80px;"/>
+                                </span>
+                            </th>
+                            <th>
+                                <select wicket:id="object.status"></select>
+                            </th>
+                            <th>
+                                <select wicket:id="object.bindingStatus"></select>
+                            </th>
+                            <th>
+                                <select wicket:id="object.calculating"></select>
+                            </th>
+                            <th class="center">
+                                <input wicket:id="filter_find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody wicket:id="data_container">
+                        <wicket:container wicket:id="data_view">
+                            <wicket:container wicket:id="heatmeterItemPanel"></wicket:container>
+                        </wicket:container>
+                    </tbody>
+                </table>
+
+                <div wicket:id="paging"></div>
+
+                <div style="margin-top: 20px;">
+                    <div align="left">
+                        <input type="button" wicket:id="bindAll" class="btnMiddle" wicket:message="value:bindAll"/>
+                        <span wicket:id="bindAllIndicator">
+                            <img alt="" wicket:id="bindAllIndicatorImage"/>
+                        </span>
+                    </div>
+                </div>
+            </form>
+
+            <div wicket:id="heatmeterBindPanel"></div>
+            <div wicket:id="activateHeatmeterDialog"></div>
+            <div wicket:id="deactivateHeatmeterDialog"></div>
+        </wicket:extend>
+    </body>
+</html>
