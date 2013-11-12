@@ -17,14 +17,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.address.strategy.building.BuildingStrategy;
+import org.complitex.address.strategy.building.entity.BuildingCode;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.service.exception.ConcurrentModificationException;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
-import org.complitex.dictionary.web.component.EnumDropDownChoice;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
-import org.complitex.keconnection.heatmeter.entity.*;
+import org.complitex.dictionary.web.component.EnumDropDownChoice;import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.HeatmeterBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterInputBean;
 import org.complitex.keconnection.heatmeter.service.HeatmeterService;
@@ -66,7 +65,7 @@ public class HeatmeterEdit extends FormTemplatePage {
     private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
-    private KeConnectionBuildingStrategy buildingStrategy;
+    private BuildingStrategy buildingStrategy;
 
     @EJB
     private SessionBean sessionBean;

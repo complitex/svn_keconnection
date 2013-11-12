@@ -38,7 +38,7 @@ import static org.complitex.dictionary.util.DateUtil.getCurrentDate;
  */
 @Stateless(name = IOrganizationStrategy.BEAN_NAME)
 public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrategy {
-    public final static String KECONNECTION_ORGANIZATION_STRATEGY_NAME = "KeConnectionOrganizationStrategy";
+    public final static String KECONNECTION_ORGANIZATION_STRATEGY_NAME =  IOrganizationStrategy.BEAN_NAME;
     /*
      * Attribute type ids
      */
@@ -144,7 +144,8 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
 
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
                 ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICE_PROVIDER,
-                KeConnectionOrganizationTypeStrategy.CALCULATION_MODULE));
+                    KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION,
+                    KeConnectionOrganizationTypeStrategy.CALCULATION_MODULE));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
 
         return find(example);

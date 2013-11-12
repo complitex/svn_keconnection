@@ -1,6 +1,7 @@
 package org.complitex.keconnection.importing.service;
 
 import org.complitex.address.entity.AddressImportFile;
+import org.complitex.address.service.AddressImportService;
 import org.complitex.dictionary.entity.DictionaryConfig;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
@@ -10,7 +11,6 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.AbstractException;
 import org.complitex.dictionary.service.exception.ImportCriticalException;
-import org.complitex.keconnection.address.service.KeConnectionAddressImportService;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterImportFile;
 import org.complitex.keconnection.heatmeter.entity.PayloadImportFile;
 import org.complitex.keconnection.heatmeter.service.HeatmeterImportService;
@@ -37,16 +37,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportService {
     private static final Logger log = LoggerFactory.getLogger(ImportService.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     private ConfigBean configBean;
+
     @EJB
     private LogBean logBean;
+
     @EJB
     private OrganizationImportService organizationImportService;
+
     @EJB
-    private KeConnectionAddressImportService addressImportService;
+    private AddressImportService addressImportService;
 
     @EJB
     private HeatmeterImportService heatmeterImportService;

@@ -243,7 +243,7 @@ public class OrganizationList extends ScrollListPage {
 
                     @Override
                     public String getObject() {
-                        if (DomainObjectAccessUtil.canAddNew(null, "organization")) {
+                        if (DomainObjectAccessUtil.canAddNew(organizationStrategy, "organization")) {
                             return getString("edit");
                         } else {
                             return getString("view");
@@ -336,8 +336,7 @@ public class OrganizationList extends ScrollListPage {
 
             @Override
             protected void onBeforeRender() {
-                if (!DomainObjectAccessUtil.canAddNew(
-                        KeConnectionOrganizationStrategy.KECONNECTION_ORGANIZATION_STRATEGY_NAME, "organization")) {
+                if (!DomainObjectAccessUtil.canAddNew(organizationStrategy, "organization")) {
                     setVisible(false);
                 }
                 super.onBeforeRender();
