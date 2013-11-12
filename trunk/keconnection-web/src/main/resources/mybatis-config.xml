@@ -39,7 +39,6 @@
         <mapper resource="org/complitex/dictionary/service/NameBean.xml"/>
         <mapper resource="org/complitex/dictionary/service/ConfigBean.xml"/>
 
-        <mapper resource="org/complitex/keconnection/address/strategy/building/KeConnectionBuilding.xml"/>
         <mapper resource="org/complitex/address/strategy/building/Building.xml"/>
         <mapper resource="org/complitex/address/strategy/building_address/BuildingAddress.xml"/>
         <mapper resource="org/complitex/address/strategy/street/Street.xml"/>
@@ -53,8 +52,7 @@
         <mapper resource="org/complitex/organization/strategy/Organization.xml"/>
         
         <mapper resource="org/complitex/keconnection/organization/service/OrganizationImportBean.xml"/>
-        <mapper resource="org/complitex/keconnection/address/service/KeConnectionBuildingImportBean.xml"/>
-        
+
         <mapper resource="org/complitex/keconnection/tarif/strategy/TarifGroup.xml"/>
         <mapper resource="org/complitex/keconnection/tarif/strategy/Tarif.xml"/>
         <mapper resource="org/complitex/keconnection/organization/strategy/Organization.xml"/>

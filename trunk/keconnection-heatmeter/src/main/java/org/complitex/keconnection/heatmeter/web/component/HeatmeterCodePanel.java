@@ -10,7 +10,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.complitex.address.strategy.building.BuildingStrategy;
 import org.complitex.address.strategy.building.entity.Building;
+import org.complitex.address.strategy.building.entity.BuildingCode;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.DomainObject;
@@ -21,9 +23,6 @@ import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.CollapsibleInputSearchComponent;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
-import org.complitex.keconnection.address.strategy.building.entity.KeConnectionBuilding;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterConnection;
 import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 
@@ -39,7 +38,7 @@ import java.util.Map;
  */
 public class HeatmeterCodePanel extends Panel {
     @EJB
-    private KeConnectionBuildingStrategy buildingStrategy;
+    private BuildingStrategy buildingStrategy;
 
     @EJB
     private StreetStrategy streetStrategy;
@@ -111,7 +110,7 @@ public class HeatmeterCodePanel extends Panel {
                                 DomainObject b = searchComponentState.get("building");
 
                                 if (b != null) {
-                                    KeConnectionBuilding building = buildingStrategy.findById(b.getId(), true);
+                                    Building building = buildingStrategy.findById(b.getId(), true);
 
                                     if (building != null && building.getBuildingCodeList() != null){
                                         for (BuildingCode buildingCode : building.getBuildingCodeList()){

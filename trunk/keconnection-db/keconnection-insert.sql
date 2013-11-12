@@ -77,14 +77,6 @@ INSERT INTO `organization_string_culture`(`id`, `locale_id`, `value`) VALUES
 INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
 (1,1,900,3,900), (1,1,901,4,901), (1,1,904,5,904);
 
--- --------------------------------
--- Building
--- --------------------------------
-
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (503, 1, UPPER('Список кодов дома')), (503, 2, UPPER('Список кодов дома'));
-INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (502, 500, 0, 503, 1);
-INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (502, 502, 'building_organization_association');
-
 -- ------------------------------
 -- Tarif group
 -- ------------------------------

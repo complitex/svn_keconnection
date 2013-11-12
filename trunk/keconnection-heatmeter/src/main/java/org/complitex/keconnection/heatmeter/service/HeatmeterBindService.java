@@ -5,10 +5,10 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.strategy.building.BuildingStrategy;
+import org.complitex.address.strategy.building.entity.BuildingCode;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
-import org.complitex.keconnection.address.strategy.building.entity.BuildingCode;
 import org.complitex.keconnection.heatmeter.entity.ExternalHeatmeter;
 import org.complitex.keconnection.heatmeter.entity.Heatmeter;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterBindingStatus;
@@ -49,7 +49,7 @@ public class HeatmeterBindService {
     private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
-    private KeConnectionBuildingStrategy buildingStrategy;
+    private BuildingStrategy buildingStrategy;
     @EJB
     private HeatmeterCorrectionBean heatmeterCorrectionBean;
     @EJB

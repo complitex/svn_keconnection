@@ -7,7 +7,6 @@ import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.BuildingCorrection;
 import org.complitex.keconnection.heatmeter.entity.Correction;
 import org.complitex.keconnection.heatmeter.entity.StreetCorrection;
@@ -513,8 +512,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
         IStrategy streetStrategy = strategyFactory.getStrategy("street");
-        IStrategy buildingStrategy = 
-                strategyFactory.getStrategy(KeConnectionBuildingStrategy.KECONNECTION_BUILDING_STRATEGY_NAME, "building");
+        IStrategy buildingStrategy = strategyFactory.getStrategy("building");
         Locale locale = localeBean.convert(localeBean.getLocaleObject(example.getLocaleId()));
 
         for (Correction c : list) {

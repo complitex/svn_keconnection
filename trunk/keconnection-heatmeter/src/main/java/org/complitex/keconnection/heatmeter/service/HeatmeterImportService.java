@@ -1,6 +1,7 @@
 package org.complitex.keconnection.heatmeter.service;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.complitex.address.strategy.building.BuildingStrategy;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.ConfigBean;
@@ -10,7 +11,6 @@ import org.complitex.dictionary.service.exception.ConcurrentModificationExceptio
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.keconnection.address.strategy.building.KeConnectionBuildingStrategy;
 import org.complitex.keconnection.heatmeter.entity.*;
 import org.complitex.keconnection.heatmeter.service.exception.*;
 import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
@@ -49,7 +49,7 @@ public class HeatmeterImportService extends AbstractImportService {
     private KeConnectionOrganizationStrategy organizationStrategy;
 
     @EJB
-    private KeConnectionBuildingStrategy buildingStrategy;
+    private BuildingStrategy buildingStrategy;
 
     @Asynchronous
     public void asyncUploadHeatmeters(String fileName, InputStream inputStream, Date beginOm, Date beginDate,
