@@ -22,7 +22,7 @@ CREATE TABLE `organization_import` (
   PRIMARY KEY (`pk_id`),
   KEY `key_organization_id` (`organization_id`),
   KEY `key_hlevel` (`hlevel`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта организаций';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Вспомогательная таблица для импорта организаций';
 
 -- ------------------------------
 -- Tarif group
@@ -51,7 +51,7 @@ CREATE TABLE `tarif_group` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_tarif_group__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_tarif_group__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Тарифная группа';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тарифная группа';
 
 DROP TABLE IF EXISTS `tarif_group_attribute`;
 
@@ -79,7 +79,7 @@ CREATE TABLE `tarif_group_attribute` (
   REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_tarif_group_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
   REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта тарифная группа';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты объекта тарифная группа';
 
 DROP TABLE IF EXISTS `tarif_group_string_culture`;
 
@@ -93,7 +93,7 @@ CREATE TABLE `tarif_group_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_tarif_group_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута тарифной группы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализированное значение атрибута тарифной группы';
 
 -- ------------------------------
 -- Tarif
@@ -122,7 +122,7 @@ CREATE TABLE `tarif` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_tarif__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_tarif__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Тарифная группа';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тарифная группа';
 
 DROP TABLE IF EXISTS `tarif_attribute`;
 
@@ -150,7 +150,7 @@ CREATE TABLE `tarif_attribute` (
   REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_tarif_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
   REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта тариф';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты объекта тариф';
 
 DROP TABLE IF EXISTS `tarif_string_culture`;
 
@@ -164,7 +164,7 @@ CREATE TABLE `tarif_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_tarif_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута тарифа';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализированное значение атрибута тарифа';
 
 -- ------------------------------
 -- Heatmeter Type
@@ -193,7 +193,7 @@ CREATE TABLE `heatmeter_type` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_heatmeter_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_heatmeter_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Тип теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип теплосчетчика';
 
 DROP TABLE IF EXISTS `heatmeter_type_attribute`;
 
@@ -221,7 +221,7 @@ CREATE TABLE `heatmeter_type_attribute` (
   REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_heatmeter_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
   REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты типа теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа теплосчетчика';
 
 DROP TABLE IF EXISTS `heatmeter_type_string_culture`;
 
@@ -235,7 +235,7 @@ CREATE TABLE `heatmeter_type_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_heatmeter_type_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута типа теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализированное значение атрибута типа теплосчетчика';
 
 -- ------------------------------
 -- heatmeter Period Type
@@ -264,7 +264,7 @@ CREATE TABLE `heatmeter_period_type` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_heatmeter_period_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_heatmeter_period_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Тип периода теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип периода теплосчетчика';
 
 DROP TABLE IF EXISTS `heatmeter_period_type_attribute`;
 
@@ -292,7 +292,7 @@ CREATE TABLE `heatmeter_period_type_attribute` (
   REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_heatmeter_period_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
   REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты типа периода теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты типа периода теплосчетчика';
 
 DROP TABLE IF EXISTS `heatmeter_period_type_string_culture`;
 
@@ -306,7 +306,7 @@ CREATE TABLE `heatmeter_period_type_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_heatmeter_period_type_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута типа периода теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализированное значение атрибута типа периода теплосчетчика';
 
 -- ------------------------------
 -- Heatmeter
@@ -326,7 +326,7 @@ CREATE TABLE `heatmeter`(
   KEY `key_organization_id` (`organization_id`),
   CONSTRAINT `fk_heatmeter__heatmeter_type` FOREIGN KEY (`type`) REFERENCES `heatmeter_type` (`object_id`),
   CONSTRAINT `fk_heatmeter__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Теплосчетчик';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Теплосчетчик';
 
 -- ------------------------------
 -- Period
@@ -354,7 +354,7 @@ CREATE TABLE `heatmeter_period`(
   KEY `key_begin_om` (`begin_om`),
   KEY `key_end_om` (`end_om`),
   CONSTRAINT `fk_heatmeter_period__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Период теплосчетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Период теплосчетчика';
 
 -- ------------------------------
 -- Payload
@@ -371,7 +371,7 @@ CREATE TABLE `heatmeter_payload`(
   KEY `key_tablegram_record_id` (`tablegram_record_id`),
   CONSTRAINT `fk_heatmeter_payload__heatmeter_period` FOREIGN KEY (`id`) REFERENCES `heatmeter_period` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_heatmeter_payload__tablegram_record` FOREIGN KEY (`tablegram_record_id`) REFERENCES `tablegram_record` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Проценты распределения расходов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Проценты распределения расходов';
 
 -- ------------------------------
 -- Input
@@ -383,7 +383,7 @@ CREATE TABLE `heatmeter_input`(
   `value` DECIMAL(15, 7),
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_heatmeter_input__heatmeter_period` FOREIGN KEY (`id`) REFERENCES `heatmeter_period` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Расход со счетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Расход со счетчика';
 
 -- ------------------------------
 -- Consumption
@@ -406,7 +406,7 @@ CREATE TABLE `heatmeter_consumption`(
   KEY `key_om` (`om`),
   CONSTRAINT `fk_heatmeter_consumption__heatmeter_input` FOREIGN KEY (`heatmeter_input_id`)
     REFERENCES `heatmeter_input` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Результаты расчета';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Результаты расчета';
 
 -- ------------------------------
 -- Tablegram
@@ -419,7 +419,7 @@ CREATE TABLE `tablegram`(
     `begin_date` DATE NOT NULL COMMENT  'Операционный месяц',
     `uploaded` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT  'Дата загрузки',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы табуляграмм';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы табуляграмм';
 
 -- ------------------------------
 -- Tablegram Record
@@ -443,7 +443,7 @@ CREATE TABLE `tablegram_record`(
     KEY `key_heatmeter_id` (`heatmeter_id`),
     CONSTRAINT `fk_tablegram_record__tablegram` FOREIGN KEY (`tablegram_id`) REFERENCES `tablegram` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_tablegram_record__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Запись файла табуляграммы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Запись файла табуляграммы';
 
 -- ------------------------------
 -- Corrections
@@ -470,7 +470,7 @@ CREATE TABLE `city_correction` (
     CONSTRAINT `fk_city_correction__city` FOREIGN KEY (`object_id`) REFERENCES `city` (`object_id`),
     CONSTRAINT `fk_city_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_city_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция населенного пункта';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция населенного пункта';
 
 DROP TABLE IF EXISTS `city_type_correction`;
 
@@ -494,7 +494,7 @@ CREATE TABLE `city_type_correction` (
     CONSTRAINT `fk_city_type_correction__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type` (`object_id`),
     CONSTRAINT `fk_city_type_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_city_type_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция типа населенного пункта';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция типа населенного пункта';
 
 DROP TABLE IF EXISTS `district_correction`;
 
@@ -520,7 +520,7 @@ CREATE TABLE `district_correction` (
     CONSTRAINT `fk_district_correction__city_correction` FOREIGN KEY (`parent_id`) REFERENCES `city_correction` (`id`),
     CONSTRAINT `fk_district_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_district_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция района';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция района';
 
 DROP TABLE IF EXISTS `street_correction`;
 
@@ -550,7 +550,7 @@ CREATE TABLE `street_correction` (
     CONSTRAINT `fk_street_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_street_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_street_correction__street_type_correctionn` FOREIGN KEY (`street_type_correction_id`) REFERENCES `street_type_correction` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция улицы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция улицы';
 
 DROP TABLE IF EXISTS `street_type_correction`;
 
@@ -574,7 +574,7 @@ CREATE TABLE `street_type_correction` (
     CONSTRAINT `fk_street_type_correction__street_type` FOREIGN KEY (`object_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_street_type_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_street_type_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Коррекция типа улицы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция типа улицы';
 
 DROP TABLE IF EXISTS `building_correction`;
 
@@ -602,7 +602,7 @@ CREATE TABLE `building_correction` (
     CONSTRAINT `fk_building_correction__street_correction` FOREIGN KEY (`parent_id`) REFERENCES `street_correction` (`id`),
     CONSTRAINT `fk_building_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_building_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция дома';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция дома';
 
 DROP TABLE IF EXISTS `heatmeter_correction`;
 CREATE TABLE `heatmeter_correction` (
@@ -616,7 +616,7 @@ CREATE TABLE `heatmeter_correction` (
     PRIMARY KEY (`id`),
     KEY `key_system_heatmeter_id` (`system_heatmeter_id`),
     CONSTRAINT `fk_heatmeter_correction__heatmeter` FOREIGN KEY (`system_heatmeter_id`) REFERENCES `heatmeter` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция счетчика';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция счетчика';
 
 DROP TABLE IF EXISTS `heatmeter_bind`;
 CREATE TABLE `heatmeter_bind` (
@@ -624,7 +624,7 @@ CREATE TABLE `heatmeter_bind` (
     `processed` TINYINT (1) DEFAULT 0 NOT NULL COMMENT 'Индикатор обработки',
     PRIMARY KEY (`heatmeter_id`),
     CONSTRAINT `fk_heatmeter_bind__heatmeter` FOREIGN KEY (`heatmeter_id`) REFERENCES `heatmeter` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для связывания счетчиков';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Вспомогательная таблица для связывания счетчиков';
 
 -- ------------------------------
 -- Operating month
@@ -639,7 +639,7 @@ CREATE TABLE `operating_month`(
     PRIMARY KEY (`id`),
     KEY `key_organization_id` (`organization_id`),
     CONSTRAINT `fk_operating_month__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Журнал операционных месяцев';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Журнал операционных месяцев';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
