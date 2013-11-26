@@ -7,22 +7,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- ------------------------------
--- Auxiliary tables for organization import
--- ------------------------------
-
-DROP TABLE IF EXISTS `organization_import`;
-CREATE TABLE `organization_import` (
-  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
-  `organization_id` BIGINT(20) NOT NULL COMMENT 'ID организации',
-  `code` VARCHAR(100) NOT NULL COMMENT 'Код организации',
-  `short_name` VARCHAR(100) NOT NULL COMMENT 'Короткое название организации',
-  `full_name` VARCHAR(500) NOT NULL COMMENT 'Полное название организации',
-  `hlevel` BIGINT(20) COMMENT 'Ссылка на вышестоящую организацию',
-  PRIMARY KEY (`pk_id`),
-  KEY `key_organization_id` (`organization_id`),
-  KEY `key_hlevel` (`hlevel`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Вспомогательная таблица для импорта организаций';
 
 -- ------------------------------
 -- Tarif group

@@ -23,12 +23,6 @@ INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
 INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
   VALUES (1, 3, 2300, 3, 2300);
 
-INSERT INTO `organization_type`(`object_id`) VALUES (4);
-INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
-  VALUES (4, 1, UPPER('ОБСЛУЖИВАЮЩАЯ ОРГАНИЗАЦИЯ')), (4, 2, UPPER('ОБСЛУЖИВАЮЩАЯ ОРГАНИЗАЦИЯ'));
-INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
-  VALUES (1, 4, 2300, 4, 2300);
-
 INSERT INTO `organization_type`(`object_id`) VALUES (5);
 INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`)
   VALUES (5, 1, UPPER('ПОСТАВЩИК УСЛУГ')), (5, 2, UPPER('ПОСТАВЩИК УСЛУГ'));
