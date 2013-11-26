@@ -1,6 +1,5 @@
 package org.complitex.keconnection.organization.strategy;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.markup.html.WebPage;
@@ -304,13 +303,5 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
                 ImmutableMap.of("organizationId", organization.getId(),
                         "beginOm", addMonth(organization.getOperatingMonthDate(), 1),
                         "updated", getCurrentDate()));
-    }
-
-    public String displayShortNameAndCode(DomainObject organization, Locale locale) {
-        final String fullName = AttributeUtil.getStringCultureValue(organization, NAME, locale);
-        final String shortName = AttributeUtil.getStringCultureValue(organization, SHORT_NAME, locale);
-        final String code = getUniqueCode(organization);
-        final String name = !Strings.isNullOrEmpty(shortName) ? shortName : fullName;
-        return name + " (" + code + ")";
     }
 }

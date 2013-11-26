@@ -5,10 +5,11 @@
 package org.complitex.keconnection.organization_type.strategy;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collection;
-import javax.ejb.Stateless;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+
+import javax.ejb.Stateless;
+import java.util.Collection;
 
 /**
  *
@@ -23,7 +24,6 @@ public class KeConnectionOrganizationTypeStrategy extends OrganizationTypeStrate
      */
     public static final long CALCULATION_MODULE = 2;
     public static final long BALANCE_OWNER = 3;
-    public static final long SERVICING_ORGANIZATION = 4;
     public static final long SERVICE_PROVIDER = 5;
     public static final long CONTRACTOR = 6;
 
