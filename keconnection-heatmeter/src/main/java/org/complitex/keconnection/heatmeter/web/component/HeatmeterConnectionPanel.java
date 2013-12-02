@@ -150,7 +150,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                     public void setObject(String object) {
                         super.setObject(object);
 
-                        Long organizationId = organizationStrategy.getObjectId(object);
+                        Long organizationId = organizationStrategy.getObjectIdByCode(object);
 
                         connection.setOrganizationId(organizationId);
 
