@@ -170,7 +170,7 @@ public class HeatmeterImportService extends AbstractImportService {
     public void createHeatmeter(HeatmeterWrapper heatmeaterWrapper) throws BuildingNotFoundException,
             OrganizationNotFoundException, DuplicateException, NumberLsException, ConcurrentModificationException {
         //find organization by code
-        Long organizationId = organizationStrategy.getObjectId(heatmeaterWrapper.getOrganizationCode());
+        Long organizationId = organizationStrategy.getObjectIdByCode(heatmeaterWrapper.getOrganizationCode());
 
         if (organizationId == null) {
             throw new OrganizationNotFoundException(heatmeaterWrapper);
