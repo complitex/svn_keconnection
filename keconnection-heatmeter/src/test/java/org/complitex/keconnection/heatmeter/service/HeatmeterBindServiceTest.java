@@ -4,8 +4,6 @@
  */
 package org.complitex.keconnection.heatmeter.service;
 
-import java.util.Date;
-import java.util.Locale;
 import org.apache.ibatis.session.SqlSession;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.keconnection.heatmeter.service.ExternalHeatmeterService.ExternalHeatmetersAndStatus;
@@ -13,13 +11,16 @@ import org.complitex.keconnection.heatmeter.service.exception.DBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+import java.util.Locale;
+
 /**
  *
  * @author Artem
  */
 public class HeatmeterBindServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(HeatmeterBindServiceTest.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterBindServiceTest.class);
     private static RemoteSqlSessionFactoryBean sqlSessionFactoryBean = new RemoteSqlSessionFactoryBean() {
 
         @Override
@@ -42,7 +43,7 @@ public class HeatmeterBindServiceTest {
 
         @Override
         protected void logError(long heatmeterId, String message) {
-            log.error(message);
+            LoggerFactory.getLogger(HeatmeterBindServiceTest.class).error(message);
         }
     }
 
@@ -57,6 +58,6 @@ public class HeatmeterBindServiceTest {
 
     public static void main(String[] args) throws DBException {
         ExternalHeatmetersAndStatus info = fetchExternalHeatmeters(1, 1, "1", 1, DateUtil.getCurrentDate());
-        log.info(info.toString());
+        LoggerFactory.getLogger(HeatmeterBindServiceTest.class).info(info.toString());
     }
 }

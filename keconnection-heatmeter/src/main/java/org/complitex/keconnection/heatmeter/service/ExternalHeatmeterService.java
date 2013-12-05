@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ExternalHeatmeterService {
 
-    private static final Logger log = LoggerFactory.getLogger(ExternalHeatmeterService.class);
+    private final Logger log = LoggerFactory.getLogger(ExternalHeatmeterService.class);
     private static final String MAPPING_NAMESPACE = ExternalHeatmeterService.class.getName();
     private static final String RESOURCE_BUNDLE = ExternalHeatmeterService.class.getName();
     private static final String FETCH_EXTERNAL_HEATMETER_STORED_PROCEDURE = "Z$RUNTIME_PROV_UTL.GETHEATMETERS";

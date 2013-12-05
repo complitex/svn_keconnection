@@ -33,7 +33,7 @@ import static org.complitex.dictionary.util.PageUtil.*;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class OperatingMonthList extends TemplatePage{
-    private final static Logger log = LoggerFactory.getLogger(OperatingMonthList.class);
+    private final Logger log = LoggerFactory.getLogger(OperatingMonthList.class);
 
     @EJB
     private OperatingMonthBean operatingMonthBean;

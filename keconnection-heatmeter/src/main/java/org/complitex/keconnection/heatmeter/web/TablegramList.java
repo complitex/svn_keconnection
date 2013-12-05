@@ -43,7 +43,7 @@ import static org.complitex.dictionary.util.PageUtil.*;
 public class TablegramList extends TemplatePage{
     final String[] properties = new String[]{"id", "fileName", "beginDate", "uploaded", "count",  "processedCount"};
 
-    private final static Logger log = LoggerFactory.getLogger(TablegramList.class);
+    private final Logger log = LoggerFactory.getLogger(TablegramList.class);
 
     @EJB
     private TablegramBean tablegramBean;

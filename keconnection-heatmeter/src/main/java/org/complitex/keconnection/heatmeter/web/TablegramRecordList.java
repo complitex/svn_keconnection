@@ -46,7 +46,7 @@ import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class TablegramRecordList extends TemplatePage{
 
-    private final static Logger log = LoggerFactory.getLogger(TablegramRecordList.class);
+    private final Logger log = LoggerFactory.getLogger(TablegramRecordList.class);
 
     @EJB
     private TablegramRecordBean tablegramRecordBean;

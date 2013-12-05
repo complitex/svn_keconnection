@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class RemoteSqlSessionFactoryBean {
 
-    private static final Logger log = LoggerFactory.getLogger(RemoteSqlSessionFactoryBean.class);
+    private final Logger log = LoggerFactory.getLogger(RemoteSqlSessionFactoryBean.class);
     public static final String CONFIGURATION_FILE_NAME = "mybatis-remote-config.xml";
     private SqlSessionManager sqlSessionManager;
 

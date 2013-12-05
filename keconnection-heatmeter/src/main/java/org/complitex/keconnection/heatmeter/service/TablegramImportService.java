@@ -32,7 +32,7 @@ import static org.complitex.keconnection.heatmeter.entity.TablegramRecordStatus.
  */
 @Stateless
 public class TablegramImportService extends AbstractImportService{
-    private static final Logger log = LoggerFactory.getLogger(TablegramImportService.class);
+    private final Logger log = LoggerFactory.getLogger(TablegramImportService.class);
 
     @EJB
     private ConfigBean configBean;

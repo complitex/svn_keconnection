@@ -36,7 +36,7 @@ import static org.complitex.dictionary.util.DateUtil.*;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class HeatmeterBindService {
 
-    private static final Logger log = LoggerFactory.getLogger(HeatmeterBindService.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterBindService.class);
     private static final int BINDING_BATCH = 1000;
     @EJB
     private HeatmeterBindBean heatmeterBindBean;

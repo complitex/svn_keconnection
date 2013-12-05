@@ -37,7 +37,7 @@ import static org.complitex.keconnection.organization.strategy.KeConnectionOrgan
  */
 @Stateless
 public class HeatmeterImportService extends AbstractImportService {
-    private final static Logger log = LoggerFactory.getLogger(HeatmeterImportService.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterImportService.class);
 
     @EJB
     private ConfigBean configBean;

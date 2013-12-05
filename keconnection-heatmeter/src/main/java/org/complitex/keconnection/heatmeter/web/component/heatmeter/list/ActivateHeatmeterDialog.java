@@ -57,7 +57,7 @@ public abstract class ActivateHeatmeterDialog extends Panel {
         ActivateHeatmeterEntity() {
         }
     }
-    private static final Logger log = LoggerFactory.getLogger(ActivateHeatmeterDialog.class);
+    private final Logger log = LoggerFactory.getLogger(ActivateHeatmeterDialog.class);
 
     @EJB
     private HeatmeterService heatmeterService;

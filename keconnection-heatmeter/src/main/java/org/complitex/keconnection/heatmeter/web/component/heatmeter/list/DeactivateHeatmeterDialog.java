@@ -53,7 +53,7 @@ public abstract class DeactivateHeatmeterDialog extends Panel {
         DeactivateHeatmeterEntity() {
         }
     }
-    private static final Logger log = LoggerFactory.getLogger(DeactivateHeatmeterDialog.class);
+    private final Logger log = LoggerFactory.getLogger(DeactivateHeatmeterDialog.class);
 
     @EJB
     private HeatmeterService heatmeterService;

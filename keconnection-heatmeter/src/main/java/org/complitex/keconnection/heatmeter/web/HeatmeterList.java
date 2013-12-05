@@ -88,7 +88,7 @@ import static org.complitex.dictionary.util.PageUtil.newTextFields;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class HeatmeterList extends TemplatePage {
-    private final static Logger log = LoggerFactory.getLogger(HeatmeterList.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterList.class);
 
     private static final int IMPORT_AJAX_TIMER = 2;
     private static final int BIND_ALL_AJAX_TIMER = 10;

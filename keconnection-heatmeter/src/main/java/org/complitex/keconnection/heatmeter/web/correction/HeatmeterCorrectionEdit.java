@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public final class HeatmeterCorrectionEdit extends FormTemplatePage {
 
-    private static final Logger log = LoggerFactory.getLogger(HeatmeterCorrectionEdit.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterCorrectionEdit.class);
     static final String CORRECTION_ID = "correction_id";
     @EJB
     private HeatmeterCorrectionBean heatmeterCorrectionBean;
