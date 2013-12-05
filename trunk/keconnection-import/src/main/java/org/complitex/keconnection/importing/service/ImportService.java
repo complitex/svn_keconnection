@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportService {
-    private static final Logger log = LoggerFactory.getLogger(ImportService.class);
+    private final Logger log = LoggerFactory.getLogger(ImportService.class);
 
     @Resource
     private UserTransaction userTransaction;

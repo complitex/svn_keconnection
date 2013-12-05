@@ -50,7 +50,7 @@ import static org.complitex.dictionary.util.DateUtil.*;
  */
 public abstract class HeatmeterItemPanel extends Panel {
 
-    private static final Logger log = LoggerFactory.getLogger(HeatmeterItemPanel.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterItemPanel.class);
 
     private static abstract class UpdatableContainer extends WebMarkupContainer {
 

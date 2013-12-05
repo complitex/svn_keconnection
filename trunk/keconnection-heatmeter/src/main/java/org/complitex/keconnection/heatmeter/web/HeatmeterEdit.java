@@ -53,7 +53,7 @@ import static org.complitex.keconnection.organization.strategy.KeConnectionOrgan
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class HeatmeterEdit extends FormTemplatePage {
-    private final static Logger log = LoggerFactory.getLogger(HeatmeterEdit.class);
+    private final Logger log = LoggerFactory.getLogger(HeatmeterEdit.class);
 
     @EJB
     private HeatmeterBean heatmeterBean;
