@@ -13,7 +13,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.FilterWrapper;
-import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.OperatingMonth;
