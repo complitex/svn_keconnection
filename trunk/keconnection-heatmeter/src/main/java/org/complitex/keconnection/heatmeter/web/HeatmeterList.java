@@ -36,7 +36,7 @@ import org.complitex.dictionary.service.ContextProcessListener;
 import org.complitex.dictionary.service.IProcessListener;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
-import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.EnumDropDownChoice;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.ShowMode;
