@@ -125,7 +125,7 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
 
     public boolean isServicingOrganization() {
         for (DomainObject organizationType : getOrganizationTypesModel().getObject()) {
-            if (organizationType.getId().equals(KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION)) {
+            if (organizationType.getId().equals(KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE)) {
                 return true;
             }
         }

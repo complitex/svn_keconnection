@@ -99,7 +99,7 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
     public List<Organization> getAllServicingOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
-                ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION));
+                ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE));
         if (locale != null) {
             example.setOrderByAttributeTypeId(NAME);
             example.setLocaleId(localeBean.convert(locale).getId());
@@ -143,7 +143,7 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
 
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER,
                 ImmutableList.of(KeConnectionOrganizationTypeStrategy.SERVICE_PROVIDER,
-                    KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION,
+                    KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE,
                     KeConnectionOrganizationTypeStrategy.CALCULATION_MODULE));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
 

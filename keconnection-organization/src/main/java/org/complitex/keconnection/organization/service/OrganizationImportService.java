@@ -189,7 +189,7 @@ public class OrganizationImportService extends AbstractImportService {
 
     private void addOrganizationTypes(DomainObject organization) {
         organization.removeAttribute(KeConnectionOrganizationStrategy.ORGANIZATION_TYPE);
-        organization.addAttribute(newOrganizationTypeAttribute(1L, KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION));
+        organization.addAttribute(newOrganizationTypeAttribute(1L, KeConnectionOrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE));
         organization.addAttribute(newOrganizationTypeAttribute(2L, KeConnectionOrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
     }
 
