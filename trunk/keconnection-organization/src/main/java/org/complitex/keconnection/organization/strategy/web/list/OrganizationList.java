@@ -229,7 +229,7 @@ public class OrganizationList extends ScrollListPage {
                 item.add(new Label("order", StringUtil.valueOf(getFirstItemOffset() + item.getIndex() + 1)));
                 item.add(new Label("name", AttributeUtil.getStringCultureValue(organization,
                         KeConnectionOrganizationStrategy.NAME, getLocale())));
-                item.add(new Label("code", organizationStrategy.getUniqueCode(organization)));
+                item.add(new Label("code", organizationStrategy.getCode(organization)));
                 item.add(new Label("shortName", AttributeUtil.getStringCultureValue(organization,
                         KeConnectionOrganizationStrategy.SHORT_NAME, getLocale())));
                 item.add(new Label("parentShortName", organization.getParentShortName()));

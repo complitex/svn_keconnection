@@ -34,7 +34,7 @@ public class KeConnectionMainUserOrganizationPicker extends MainUserOrganization
 
         final Locale locale = getLocale();
         final String name = organizationStrategy.displayDomainObject(o, locale);
-        final String code = organizationStrategy.getUniqueCode(o);
+        final String code = organizationStrategy.getCode(o);
         final String operatingMonth = o.getOperatingMonth(locale);
 
         if (isNullOrEmpty(operatingMonth)) {

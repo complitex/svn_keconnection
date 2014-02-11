@@ -166,7 +166,7 @@ public class HeatmeterConnectionPanel extends AbstractHeatmeterEditPanel {
                         String s = super.getObject();
 
                         if (s == null && connection.getOrganizationId() != null) {
-                            s = organizationStrategy.getUniqueCode(connection.getOrganizationId());
+                            s = organizationStrategy.getCode(connection.getOrganizationId());
                         }
 
                         return s;

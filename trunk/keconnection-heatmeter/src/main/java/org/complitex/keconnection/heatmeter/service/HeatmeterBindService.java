@@ -218,7 +218,7 @@ public class HeatmeterBindService {
         final BuildingCode buildingCodeObj = buildingStrategy.getBuildingCodeById(buildingCodeId);
         final long organizationId = buildingCodeObj.getOrganizationId();
         final int buildingCode = buildingCodeObj.getBuildingCode();
-        final String organizationCode = organizationStrategy.getUniqueCode(organizationId);
+        final String organizationCode = organizationStrategy.getCode(organizationId);
 
         return externalHeatmeterService.fetchExternalHeatmeters(
                 heatmeterId, ls, organizationCode, buildingCode,
