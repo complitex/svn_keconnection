@@ -143,7 +143,7 @@ public abstract class HeatmeterItemPanel extends Panel {
                 if (!heatmeter.getConnections().isEmpty()) {
                     HeatmeterConnection c = heatmeter.getConnections().get(0);
                     if (c.getOrganizationId() != null && c.getOrganizationId() > 0) {
-                        organization = organizationStrategy.getUniqueCode(c.getOrganizationId());
+                        organization = organizationStrategy.getCode(c.getOrganizationId());
                     }
                 }
                 add(new Label("organization", organization));
