@@ -375,7 +375,7 @@ public class HeatmeterList extends TemplatePage {
                 filter.setAscending(getSort().isAscending());
 
                 if (!sessionBean.isAdmin()){
-                    filter.add("organizations", sessionBean.getUserOrganizationString());
+                    filter.add("organizations", sessionBean.getUserOrganizationTreeString());
                 }
 
                 List<Heatmeter> heatmeters = heatmeterBean.getHeatmeters(filter);
