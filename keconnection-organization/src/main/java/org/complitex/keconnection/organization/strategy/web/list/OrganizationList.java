@@ -125,7 +125,7 @@ public class OrganizationList extends ScrollListPage {
         final DataProvider<Organization> dataProvider = new DataProvider<Organization>() {
 
             @Override
-            protected Iterable<? extends Organization> getData(int first, int count) {
+            protected Iterable<? extends Organization> getData(long first, long count) {
                 //store preference, but before clear data order related properties.
                 {
                     example.setAsc(false);

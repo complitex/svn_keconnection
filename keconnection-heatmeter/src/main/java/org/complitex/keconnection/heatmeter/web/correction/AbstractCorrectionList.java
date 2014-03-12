@@ -13,7 +13,8 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -76,8 +77,8 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.renderCSSReference(new PackageResourceReference(AbstractCorrectionList.class,
-                AbstractCorrectionList.class.getSimpleName() + ".css"));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(AbstractCorrectionList.class,
+                AbstractCorrectionList.class.getSimpleName() + ".css")));
     }
 
     protected String getEntity() {
@@ -132,7 +133,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         final DataProvider<Correction> dataProvider = new DataProvider<Correction>() {
 
             @Override
-            protected Iterable<? extends Correction> getData(int first, int count) {
+            protected Iterable<? extends Correction> getData(long first, long count) {
                 final CorrectionExample exampleObject = example.getObject();
 
                 //store preference, but before clear data order related properties.

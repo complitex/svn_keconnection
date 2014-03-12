@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.heatmeter.entity.example;
 
 import java.io.Serializable;
@@ -21,8 +17,8 @@ public class CorrectionExample implements Serializable {
     private String code;
     private String entity;
     private String parentEntity;
-    private int start;
-    private int size;
+    private long start;
+    private long size;
     private String orderByClause;
     private boolean asc;
     private Long localeId;
@@ -71,19 +67,19 @@ public class CorrectionExample implements Serializable {
         this.orderByClause = orderByClause;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
-    public int getStart() {
+    public long getStart() {
         return start;
     }
 
-    public void setStart(int start) {
+    public void setStart(long start) {
         this.start = start;
     }
 

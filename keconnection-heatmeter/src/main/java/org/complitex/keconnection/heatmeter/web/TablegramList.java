@@ -111,7 +111,7 @@ public class TablegramList extends TemplatePage{
         //Data Provider
         DataProvider<Tablegram> dataProvider = new DataProvider<Tablegram>() {
             @Override
-            protected Iterable<Tablegram> getData(int first, int count) {
+            protected Iterable<Tablegram> getData(long first, long count) {
                 FilterWrapper<Tablegram> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);

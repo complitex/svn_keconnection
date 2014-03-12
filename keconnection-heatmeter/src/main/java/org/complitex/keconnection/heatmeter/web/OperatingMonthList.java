@@ -95,7 +95,7 @@ public class OperatingMonthList extends TemplatePage{
         //Data Provider
         DataProvider<OperatingMonth> dataProvider = new DataProvider<OperatingMonth>() {
             @Override
-            protected Iterable<OperatingMonth> getData(int first, int count) {
+            protected Iterable<OperatingMonth> getData(long first, long count) {
                 FilterWrapper<OperatingMonth> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);

@@ -4,29 +4,31 @@
  */
 package org.complitex.keconnection.heatmeter.web.correction;
 
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.keconnection.heatmeter.entity.HeatmeterCorrectionView;
 import org.complitex.keconnection.heatmeter.service.HeatmeterCorrectionBean;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
+
+import javax.ejb.EJB;
+
 import static org.complitex.dictionary.util.PageUtil.*;
 
 /**
@@ -81,7 +83,7 @@ public final class HeatmeterCorrectionList extends TemplatePage {
         DataProvider<HeatmeterCorrectionView> dataProvider = new DataProvider<HeatmeterCorrectionView>() {
 
             @Override
-            protected Iterable<HeatmeterCorrectionView> getData(int first, int count) {
+            protected Iterable<HeatmeterCorrectionView> getData(long first, long count) {
                 FilterWrapper<HeatmeterCorrectionView> filter = filterModel.getObject();
 
                 filter.setFirst(first);
