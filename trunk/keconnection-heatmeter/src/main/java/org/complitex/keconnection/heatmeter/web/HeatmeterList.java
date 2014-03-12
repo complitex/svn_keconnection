@@ -11,7 +11,8 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -118,7 +119,7 @@ public class HeatmeterList extends TemplatePage {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
 
-        response.renderCSSReference(new PackageResourceReference(HeatmeterList.class, "HeatmeterList.css"));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(HeatmeterList.class, "HeatmeterList.css")));
     }
 
     public HeatmeterList() {
@@ -366,7 +367,7 @@ public class HeatmeterList extends TemplatePage {
         DataProvider<Heatmeter> dataProvider = new DataProvider<Heatmeter>() {
 
             @Override
-            protected Iterable<Heatmeter> getData(int first, int count) {
+            protected Iterable<Heatmeter> getData(long first, long count) {
                 FilterWrapper<Heatmeter> filter = filterModel.getObject();
 
                 filter.setFirst(first);
@@ -579,7 +580,7 @@ public class HeatmeterList extends TemplatePage {
                             target.add(paging);
 
                             if (stopTimer.get()) {
-                                stop();
+                                stop(target);
                             }
                         }
                     });
@@ -625,7 +626,7 @@ public class HeatmeterList extends TemplatePage {
                 target.add(paging);
 
                 if (stopCondition.get()) {
-                    stop();
+                    stop(target);
                     getComponent().remove(this);
                     bindAllIndicatorImage.setVisible(false);
                     bindAll.setEnabled(true);

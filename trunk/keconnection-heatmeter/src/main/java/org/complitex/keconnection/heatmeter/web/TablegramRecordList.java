@@ -120,7 +120,7 @@ public class TablegramRecordList extends TemplatePage{
         //Data Provider
         DataProvider<TablegramRecord> dataProvider = new DataProvider<TablegramRecord>() {
             @Override
-            protected Iterable<TablegramRecord> getData(int first, int count) {
+            protected Iterable<TablegramRecord> getData(long first, long count) {
                 FilterWrapper<TablegramRecord> filterWrapper = filterModel.getObject();
 
                 filterWrapper.setFirst(first);

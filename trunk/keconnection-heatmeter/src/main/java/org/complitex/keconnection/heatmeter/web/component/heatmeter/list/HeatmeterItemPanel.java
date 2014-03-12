@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.keconnection.heatmeter.web.component.heatmeter.list;
 
 import com.google.common.collect.ImmutableList;
@@ -10,7 +6,8 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -116,8 +113,8 @@ public abstract class HeatmeterItemPanel extends Panel {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.renderCSSReference(new PackageResourceReference(HeatmeterItemPanel.class,
-                HeatmeterItemPanel.class.getSimpleName() + ".css"));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(HeatmeterItemPanel.class,
+                HeatmeterItemPanel.class.getSimpleName() + ".css")));
     }
 
     public HeatmeterItemPanel(String id, final Heatmeter heatmeter) {

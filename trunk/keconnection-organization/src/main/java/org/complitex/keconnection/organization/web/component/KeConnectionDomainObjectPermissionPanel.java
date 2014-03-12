@@ -8,7 +8,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -52,8 +53,8 @@ public class KeConnectionDomainObjectPermissionPanel extends AbstractDomainObjec
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.renderCSSReference(new PackageResourceReference(KeConnectionDomainObjectPermissionPanel.class,
-                KeConnectionDomainObjectPermissionPanel.class.getSimpleName() + ".css"));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(KeConnectionDomainObjectPermissionPanel.class,
+                KeConnectionDomainObjectPermissionPanel.class.getSimpleName() + ".css")));
     }
     
     public KeConnectionDomainObjectPermissionPanel(String id, final DomainObjectPermissionParameters parameters) {
