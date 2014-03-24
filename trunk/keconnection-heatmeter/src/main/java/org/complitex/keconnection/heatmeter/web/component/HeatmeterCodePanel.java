@@ -112,8 +112,8 @@ public class HeatmeterCodePanel extends Panel {
                                 if (b != null) {
                                     Building building = buildingStrategy.findById(b.getId(), true);
 
-                                    if (building != null && building.getBuildingCodeList() != null){
-                                        for (BuildingCode buildingCode : building.getBuildingCodeList()){
+                                    if (building != null && building.getBuildingCodes() != null){
+                                        for (BuildingCode buildingCode : building.getBuildingCodes()){
                                             list.add(organizationStrategy.findById(buildingCode.getOrganizationId(), true));
                                         }
                                     }
