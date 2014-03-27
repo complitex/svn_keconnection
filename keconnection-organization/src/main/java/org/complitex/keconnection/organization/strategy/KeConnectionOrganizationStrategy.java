@@ -149,12 +149,6 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
 
         return find(example);
     }
-
-    @Override
-    public Long getModuleId() {
-        return null;
-    }
-
     @Override
     public Class<? extends AbstractComplexAttributesPanel> getComplexAttributesPanelAfterClass() {
         return KeConnectionOrganizationEditComponent.class;
