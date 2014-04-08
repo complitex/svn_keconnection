@@ -15,8 +15,8 @@ import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
+import org.complitex.dictionary.web.component.DomainObjectComponentUtil;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.complitex.dictionary.web.component.DomainObjectInputPanel;
 import org.complitex.keconnection.tarif.strategy.TarifGroupStrategy;
 import org.complitex.keconnection.tarif.strategy.TarifStrategy;
 
@@ -43,7 +43,7 @@ public final class TarifEditComponent extends AbstractComplexAttributesPanel {
         final EntityAttributeType tarifGroupAttributeType =
                 tarifStrategy.getEntity().getAttributeType(TarifStrategy.TARIF_GROUP);
         final IModel<String> tarifGroupLabelModel =
-                DomainObjectInputPanel.labelModel(tarifGroupAttributeType.getAttributeNames(), getLocale());
+                DomainObjectComponentUtil.labelModel(tarifGroupAttributeType.getAttributeNames(), getLocale());
         add(new Label("tarifGroupLabel", tarifGroupLabelModel));
 
         WebMarkupContainer tarifGroupRequiredContainer = new WebMarkupContainer("tarifGroupRequiredContainer");

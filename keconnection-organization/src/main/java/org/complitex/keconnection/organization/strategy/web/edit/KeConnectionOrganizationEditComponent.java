@@ -12,7 +12,7 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
-import org.complitex.dictionary.web.component.DomainObjectInputPanel;
+import org.complitex.dictionary.web.component.DomainObjectComponentUtil;
 import org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy;
 import org.complitex.keconnection.organization.strategy.entity.Organization;
 import org.complitex.keconnection.organization_type.strategy.KeConnectionOrganizationTypeStrategy;
@@ -69,10 +69,10 @@ public class KeConnectionOrganizationEditComponent extends OrganizationEditCompo
             final EntityAttributeType attributeType =
                     organizationStrategy.getEntity().getAttributeType(attributeTypeId);
             readyCloseOmSection.add(new Label("label",
-                    DomainObjectInputPanel.labelModel(attributeType.getAttributeNames(), getLocale())));
+                    DomainObjectComponentUtil.labelModel(attributeType.getAttributeNames(), getLocale())));
             readyCloseOmSection.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
 
-            readyCloseOmSection.add(DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
+            readyCloseOmSection.add(DomainObjectComponentUtil.newInputComponent("organization", getStrategyName(),
                     organization, attribute, getLocale(), true));
 
             //initial visibility
