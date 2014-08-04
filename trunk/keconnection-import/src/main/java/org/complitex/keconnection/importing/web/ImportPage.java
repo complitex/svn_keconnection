@@ -145,7 +145,7 @@ public final class ImportPage extends TemplatePage {
                             addAll(heatmeterDataModel.getObject()).
                             addAll(payloadDataModel.getObject()).
                             build();
-                    importService.process(allImportFiles, localeBean.convert(localeModel.getObject()).getId(),
+                    importService.process(allImportFiles, localeModel.getObject(),
                             getFirstDayOfMonth(beginOmModel.getObject()),
                             beginDateModel.getObject());
                     container.add(newTimer());

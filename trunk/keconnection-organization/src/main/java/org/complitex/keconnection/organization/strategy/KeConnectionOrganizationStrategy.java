@@ -280,17 +280,13 @@ public class KeConnectionOrganizationStrategy extends AbstractOrganizationStrate
 
     @Transactional
     public void setReadyCloseOperatingMonthFlag(Organization organization) {
-        AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
-                new BooleanConverter().toString(Boolean.TRUE),
-                localeBean.getSystemLocaleObject().getId());
+        organization.setStringValue(READY_CLOSE_OPER_MONTH, new BooleanConverter().toString(Boolean.TRUE));
         update(findById(organization.getId(), true), organization, getCurrentDate());
     }
 
     @Transactional
     public void closeOperatingMonth(Organization organization) {
-        AttributeUtil.setStringValue(organization.getAttribute(READY_CLOSE_OPER_MONTH),
-                new BooleanConverter().toString(Boolean.FALSE),
-                localeBean.getSystemLocaleObject().getId());
+        organization.setStringValue(READY_CLOSE_OPER_MONTH, new BooleanConverter().toString(Boolean.FALSE));
         update(findById(organization.getId(), true), organization, getCurrentDate());
 
         sqlSession().insert(MAPPING_NAMESPACE + ".insertOperatingMonth",

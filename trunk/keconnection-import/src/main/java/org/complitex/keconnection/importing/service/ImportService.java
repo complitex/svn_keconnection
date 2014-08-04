@@ -69,10 +69,10 @@ public class ImportService {
 
     private class ImportListener implements IImportListener {
 
-        private final long localeId;
+        private final Locale locale;
 
-        ImportListener(long localeId) {
-            this.localeId = localeId;
+        ImportListener(Locale locale) {
+            this.locale = locale;
         }
 
         @Override
@@ -91,7 +91,7 @@ public class ImportService {
             messageMap.get(importFile).setCompleted();
             logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
                     "Имя файла: {0}, количество записей: {1}, Идентификатор локали: {2}",
-                    importFile.getFileName(), recordCount, localeId);
+                    importFile.getFileName(), recordCount, locale);
         }
 
         @Override
@@ -166,7 +166,7 @@ public class ImportService {
     }
 
     @Asynchronous
-    public <T extends IImportFile> void process(List<T> importFiles, long localeId, Date beginOm, Date beginDate) {
+    public <T extends IImportFile> void process(List<T> importFiles, Locale locale, Date beginOm, Date beginDate) {
         if (processing) {
             return;
         }
@@ -174,7 +174,7 @@ public class ImportService {
         init();
         configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
 
-        final ImportListener listener = new ImportListener(localeId);
+        final ImportListener listener = new ImportListener(locale);
 
         //sort import files in right order
 //        SortedSet<T> sortedImportFiles = new TreeSet<>(new ImportFileComparator());
@@ -185,9 +185,9 @@ public class ImportService {
                 userTransaction.begin();
 
                 if (importFile instanceof OrganizationImportFile) { //import organizations
-                    organizationImportService.process(listener, localeId, beginOm, beginDate);
+                    organizationImportService.process(listener, locale, beginOm, beginDate);
                 } else if (importFile instanceof AddressImportFile) { //import addresses
-                    addressImportService.process((AddressImportFile) importFile, listener, localeId, beginDate);
+                    addressImportService.process((AddressImportFile) importFile, listener, locale, beginDate);
                 } else if (importFile instanceof HeatmeterImportFile){ //import heatmeter
                     heatmeterImportService.process(importFile, listener, beginOm, beginDate);
                 } else if (importFile instanceof PayloadImportFile){ //import payload

@@ -26,12 +26,12 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
+import static org.complitex.dictionary.strategy.organization.IOrganizationStrategy.CODE;
+import static org.complitex.dictionary.strategy.organization.IOrganizationStrategy.NAME;
 import static org.complitex.keconnection.organization.entity.OrganizationImportFile.ORGANIZATION;
+import static org.complitex.keconnection.organization.strategy.KeConnectionOrganizationStrategy.SHORT_NAME;
 
 /**
  *
@@ -54,7 +54,7 @@ public class OrganizationImportService extends AbstractImportService {
     /**
      * ID CODE SHORT_NAME NAME HLEVEL
      */
-    public void process(IImportListener listener, long localeId, Date beginOm, Date beginDate)
+    public void process(IImportListener listener, Locale locale, Date beginOm, Date beginDate)
             throws ImportFileNotFoundException, ImportFileReadException, RootOrganizationNotFound {
 
         organizationImportBean.delete();
@@ -135,28 +135,13 @@ public class OrganizationImportService extends AbstractImportService {
             }
 
             //code
-            AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.CODE),
-                    organization.getCode().toUpperCase(), localeId);
-            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(KeConnectionOrganizationStrategy.CODE)) == null) {
-                AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.CODE),
-                        organization.getCode().toUpperCase(), systemLocaleId);
-            }
+            newObject.setStringValue(CODE, organization.getCode().toUpperCase(), locale);
 
             //short name
-            AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.SHORT_NAME),
-                    organization.getShortName().toUpperCase(), localeId);
-            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(KeConnectionOrganizationStrategy.SHORT_NAME)) == null) {
-                AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.SHORT_NAME),
-                        organization.getShortName().toUpperCase(), systemLocaleId);
-            }
+            newObject.setStringValue(SHORT_NAME,  organization.getShortName().toUpperCase(), locale);
 
             //full name
-            AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.NAME),
-                    organization.getFullName().toUpperCase(), localeId);
-            if (AttributeUtil.getSystemStringCultureValue(newObject.getAttribute(KeConnectionOrganizationStrategy.NAME)) == null) {
-                AttributeUtil.setStringValue(newObject.getAttribute(KeConnectionOrganizationStrategy.NAME),
-                        organization.getFullName().toUpperCase(), systemLocaleId);
-            }
+            newObject.setStringValue(NAME, organization.getFullName().toUpperCase(), locale);
 
             //parent
             Long parentId = organization.getHlevel();
@@ -207,7 +192,7 @@ public class OrganizationImportService extends AbstractImportService {
         String value = AttributeUtil.getSystemStringCultureValue(attribute);
         if (Strings.isNullOrEmpty(value)) {
             value = new BooleanConverter().toString(Boolean.FALSE);
-            AttributeUtil.setStringValue(attribute, value, systemLocaleId);
+            attribute.setStringValue(value, systemLocaleId);
         }
     }
 
